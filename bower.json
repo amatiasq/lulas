@@ -1,0 +1,10 @@
+{
+  "name": "lulas",
+  "version": "0.0.1",
+  "dependencies": {
+    "require": "~1.0"
+  },
+  "devDependencies": {
+    "chai": "~1.8"
+  }
+}
