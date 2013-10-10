@@ -16,9 +16,9 @@ module.exports = function(config) {
 
 
 		files: [
-			'src/test_runner.js',
+			'test/runner.js',
 			{pattern: 'bower_components/chai/chai.js', included: false},
-			{pattern: 'lib/sinon-1.7.3.js', included: false},
+			{pattern: 'lib/*.js', included: false},
 			{pattern: 'src/**/*.js', included: false},
 			{pattern: 'test/**/*.js', included: false},
 		],

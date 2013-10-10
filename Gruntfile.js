@@ -51,6 +51,9 @@ module.exports = function(grunt) {
 				singleRun: true,
 				autoWatch: false,
 			},
+			run: {
+				configFile: 'karma.config.js',
+			}
 		},
 
 		jshint: {
