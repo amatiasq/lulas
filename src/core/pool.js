@@ -3,35 +3,46 @@ define(function(require) {
 
 	var type = require('core/type');
 
-	var Pool = type({
+	function wrapDispose(original, pool) {
+		return function() {
+			if (original) original.call(this);
+			pool.disposeItem(this);
+		};
+	}
 
-		init: function(id, creator) {
+	var pool = type({
+
+		init: function(id, creator, init) {
 			this.pool = [];
 			this.id = id;
 			this.creator = creator;
+			this.initializer = init;
+			return this;
 		},
 
 		create: function() {
-			var item = this.creator();
-			item.dispose = this.dispose.bind(this, item);
+			var item = this.creator.apply(null, arguments);
+			item.dispose = wrapDispose(item.dispose, this);
 			return item;
 		},
 
 		get: function() {
 			var item = this.pool.length ?
 				this.pool.pop() :
-				this.create();
+				this.create.apply(this, arguments);
 
-			item.init.apply(item, arguments);
+			item.constructor.apply(item, arguments);
 			return item;
 		},
 
-		dispose: function(item) {
+		disposeItem: function(item) {
 			this.pool.push(item);
+		},
+
+		count: function() {
+			return this.pool.length;
 		}
 	});
 
-	return function pool(type, creator) {
-		return new Pool(type, creator);
-	};
+	return pool;
 });

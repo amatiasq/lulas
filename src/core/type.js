@@ -3,13 +3,18 @@ define(function(require) {
 
 	var extend = require('core/extend');
 
-	function type(descriptor, parent) {
-		if (parent)
-			descriptor = extend(Object.create(parent), descriptor);
+	function type(parent, descriptor) {
+		descriptor = arguments.length === 2 ?
+			extend(Object.create(parent), descriptor) :
+			parent;
 
-		function ctor() {}
-		ctor.prototype = descriptor;
-		return ctor;
+		descriptor.new = function() {
+			var child = Object.create(descriptor);
+			child.init.apply(child, arguments);
+			return child;
+		};
+
+		return descriptor;
 	}
 
 	return type;
