@@ -1,11 +1,11 @@
 // Possible strict violation, using this on a non-method function
 //jshint -W040
 
-define(function(require) {
+define(function(require, module, exports) {
 	'use strict';
 
+	var proto = require('core/memory-prototypes');
 	var pool = require('core/pool');
-
 
 	function objectDispose() {
 		for (var i in this)
@@ -43,8 +43,7 @@ define(function(require) {
 		return pools[key];
 	}
 
-	return {
-		add: add,
-		resource: resource,
-	};
+	exports.proto = proto;
+	exports.add = add;
+	exports.resource = resource;
 });

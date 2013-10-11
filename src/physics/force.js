@@ -1,8 +1,8 @@
 define(function(require) {
 	'use strict';
 
-	var type = require('type');
-	var vector = require('vector');
+	var type = require('core/type');
+	var vector = require('physics/vector');
 
 	function fixStrength(force) {
 		if (force._strength < 0) {
@@ -38,7 +38,7 @@ define(function(require) {
 
 		init: function(degrees, strength) {
 			this.strength = strength || 0;
-			this.direction = degrees;
+			this.direction = degrees || 0;
 		},
 
 		clone: function() {

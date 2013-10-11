@@ -54,6 +54,13 @@ define(function(require) {
 			this._y = y;
 		},
 
+		setX: function(x) {
+			return vector(x, this._y);
+		},
+		setY: function(y) {
+			return vector(this._x, y);
+		},
+
 		add: overload(function(x, y) {
 			return vector(this.x + x, this.y + y);
 		}),

@@ -4,7 +4,6 @@
 		<meta charset="utf-8">
 		<title>DEMO INDEX</title>
 		<script type="text/javascript" src="../bower_components/requirejs/require.js"></script>
-
 		<script type="text/javascript">
 
 			require.config({
@@ -14,17 +13,11 @@
 				paths: {
 					'demo': '../demo',
 				}
-			});
-
-			require([ 'demo/main' ], function() {
-
-			});
+			})([ 'demo/main' ]);
 
 		</script>
 	</head>
 	<body>
-		<div ng-controller="DemoCtrl">
-			<input type="file" sui-file-selector onfileselected="upload(files)">
-		</div>
+		<canvas></canvas>
 	</body>
 </html>
