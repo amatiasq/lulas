@@ -41,7 +41,7 @@ define(function(require) {
 			if (this.initializer)
 				this.initializer(item);
 
-			item.constructor.apply(item, arguments);
+			item.init.apply(item, arguments);
 			return item;
 		},
 
