@@ -12,29 +12,30 @@ define(function(require) {
 				delete this[i];
 	}
 
-	var keys = [ ];
-	var values = [ ];
+	var values = [];
 	var idProp = '__memory_id__';
 
 	function invoke(original, dispose, toPool) {
-		if (original)
-			original.call(this);
+		return function() {
+			if (original)
+				original.call(this);
 
-		dispose.call(this);
-		toPool.call(this);
+			dispose.call(this);
+			toPool.call(this);
+		};
 	}
 
 	function defineProp(base) {
-		var index = keys.length;
+		var index = values.length;
 		var creator = Object.create.bind(Object, base);
 		var basePool = pool.new('MEMORY_' + index, creator);
 
 		base[idProp] = index;
-		keys.push(base);
-		values[index].push(basePool);
+		values[index] = basePool;
 
 		var poolDispose = basePool.disposeItem.bind(basePool);
 		base.dispose = invoke(base.dispose, objectDispose, poolDispose);
+		return index;
 	}
 
 	function proto(base) {
