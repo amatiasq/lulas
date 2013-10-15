@@ -4,7 +4,7 @@
 define(function(require) {
 	'use strict';
 	var proto = require('core/memory-prototypes');
-	var pool = require('core/pool');
+	var pool = require('core/memory-pool');
 
 	function objectDispose() {
 		for (var i in this)

@@ -13,6 +13,8 @@ define(function(require) {
 
 	var force = type({
 
+		$type: 'FORCE',
+
 		get radians() {
 			return this._direction.radians;
 		},

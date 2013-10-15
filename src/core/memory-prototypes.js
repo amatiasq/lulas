@@ -4,7 +4,7 @@
 define(function(require) {
 	'use strict';
 
-	var pool = require('core/pool');
+	var pool = require('core/memory-pool');
 
 	function objectDispose() {
 		for (var i in this)
@@ -12,7 +12,8 @@ define(function(require) {
 				delete this[i];
 	}
 
-	var values = [];
+	var lastIndex = 0;
+	var values = {};
 	var idProp = '__memory_id__';
 
 	function invoke(original, dispose, toPool) {
@@ -26,9 +27,9 @@ define(function(require) {
 	}
 
 	function defineProp(base) {
-		var index = values.length;
+		var index = base.hasOwnProperty('$type') ? base.$type : lastIndex++;
 		var creator = Object.create.bind(Object, base);
-		var basePool = pool.new('MEMORY_' + index, creator);
+		var basePool = pool.new('MEMORY_PROTOTYPE_' + index, creator);
 
 		base[idProp] = index;
 		values[index] = basePool;
@@ -39,7 +40,7 @@ define(function(require) {
 	}
 
 	function proto(base) {
-		var index = base[idProp] != null ? base[idProp] : defineProp(base);
+		var index = base.hasOwnProperty(idProp) ? base[idProp] : defineProp(base);
 		var pool = values[index];
 		return pool.get();
 	}

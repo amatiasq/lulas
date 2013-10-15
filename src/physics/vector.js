@@ -5,11 +5,13 @@ define(function(require) {
 
 	function overload(method) {
 		return function(x, y) {
-			method.call(this, x, arguments.length === 1 ? x : y);
+			return method.call(this, x, arguments.length === 1 ? x : y);
 		};
 	}
 
 	var internal = type({
+
+		$type: 'VECTOR',
 
 		get x() {
 			return this._x;
@@ -94,6 +96,10 @@ define(function(require) {
 		},
 		abs: function() {
 			return vector(Math.abs(this.x), Math.abs(this.y));
+		},
+
+		toString: function() {
+			return '[object Vector(x:' + this.x + ',y:' + this.y +')]';
 		}
 	});
 
