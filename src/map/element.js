@@ -6,6 +6,8 @@ define(function(require) {
 
 	var element = type({
 
+		$type: 'ELEMENT',
+
 		get x() {
 			return this.location.x;
 		},

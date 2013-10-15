@@ -10,13 +10,11 @@ define(function(require) {
 	}
 	*/
 
-	var pool = {
+	var type = require('core/type');
 
-		new: function() {
-			var child = Object.create(this);
-			child.init.apply(child, arguments);
-			return child;
-		},
+	var pool = type({
+
+		$type: 'POOL',
 
 		init: function(id, creator, init) {
 			console.log('Creating pool', id);
@@ -52,7 +50,7 @@ define(function(require) {
 		count: function() {
 			return this.pool.length;
 		}
-	};
+	});
 
 	return pool;
 });

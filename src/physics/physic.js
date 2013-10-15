@@ -7,6 +7,8 @@ define(function(require) {
 
 	var physic = type(element, {
 
+		$type: 'PHYSIC',
+
 		get direction() {
 			return this.movement.direction;
 		},
@@ -28,7 +30,7 @@ define(function(require) {
 		},
 
 		init: function(location, diameter) {
-			element.init.apply(this, location, diameter);
+			element.init.call(this, location, diameter);
 			this.movement = force.new();
 			//this.weight = 0;
 		},
