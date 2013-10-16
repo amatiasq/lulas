@@ -1,9 +1,14 @@
 define(function(require) {
 	'use strict';
 
+	var memory = require('core/memory');
+	var pool = require('core/pool');
 	var type = require('core/type');
-	var force = require('physics/force');
 	var element = require('map/element');
+
+	require('physics/force');
+	var force = memory.resource('FORCE');
+
 
 	var physic = type(element, {
 
@@ -35,6 +40,11 @@ define(function(require) {
 			//this.weight = 0;
 		},
 
+		dispose: function() {
+			this.movement.dispose();
+			this.movement = null;
+		},
+
 		move: function() {
 			this.location = this.location.merge(this.movement.vector);
 		},
@@ -61,8 +71,13 @@ define(function(require) {
 
 		stop: function() {
 			this.velocity = 0;
+		},
+
+		tick: function() {
+			this.move();
 		}
 	});
 
+	memory.add(pool.new(physic));
 	return physic;
 });

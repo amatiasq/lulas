@@ -1,6 +1,8 @@
 define(function(require) {
 	'use strict';
 
+	var memory = require('core/memory');
+	var pool = require('core/pool');
 	var type = require('core/type');
 	var vector = require('physics/vector');
 
@@ -60,5 +62,6 @@ define(function(require) {
 		}
 	});
 
+	memory.add(pool.new(force));
 	return force;
 });

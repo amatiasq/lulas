@@ -1,43 +1,46 @@
 define(function(require) {
 	'use strict';
 
-	/*
 	function wrapDispose(original, pool) {
 		return function() {
 			if (original) original.call(this);
 			pool.disposeItem(this);
 		};
 	}
-	*/
 
+	var proto = require('core/memory').proto;
 	var type = require('core/type');
 
 	var pool = type({
 
 		$type: 'POOL',
 
-		init: function(id, creator, init) {
-			console.log('Creating pool', id);
+		get represents() {
+			return this.type.$type;
+		},
+
+		init: function(type) {
+			console.log('Creating pool', type.$type);
 			this.pool = [];
-			this.id = id;
-			this.creator = creator;
-			this.initializer = init;
+			this.type = type;
+			this.new = this.get.bind(this);
 			return this;
 		},
 
+		isPrototypeOf: function(value) {
+			return this.type.isPrototypeOf(value);
+		},
+
 		create: function() {
-			var item = this.creator.apply(null, arguments);
-			//item.dispose = wrapDispose(item.dispose, this);
+			var item = proto(this.type);
+			item.dispose = wrapDispose(item.dispose, this);
 			return item;
 		},
 
 		get: function() {
 			var item = this.pool.length ?
 				this.pool.pop() :
-				this.create.apply(this, arguments);
-
-			if (this.initializer)
-				this.initializer(item);
+				this.create();
 
 			item.init.apply(item, arguments);
 			return item;
