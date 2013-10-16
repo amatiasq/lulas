@@ -1,12 +1,14 @@
 define(function(require) {
 	'use strict';
 
+	var memory = require('core/memory');
+	var pool = require('core/pool');
 	var type = require('core/type');
 	var vector = require('physics/vector');
 
 	var element = type({
 
-		$type: 'ELEMENT',
+		$type: 'MAP_ELEMENT',
 
 		get x() {
 			return this.location.x;
@@ -64,5 +66,6 @@ define(function(require) {
 		}
 	});
 
+	memory.add(pool.new(element));
 	return element;
 });

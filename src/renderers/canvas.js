@@ -1,5 +1,3 @@
-//jshint unused:false
-
 define(function(require) {
 	'use strict';
 
@@ -22,21 +20,27 @@ define(function(require) {
 			this.canvas.height = value;
 		},
 
-		init: function(element) {
-			this.canvas = element;
-			this.context = element.getContext('2d');
+		init: function() {
+			this.canvas = document.createElement('canvas');
+			this.context = this.canvas.getContext('2d');
 		},
 
-		drawElement: function(element) {
-			this.drawItem(element.location, element.radius, element.movement.vector);
+		append: function(parent) {
+			parent.appendChild(this.canvas);
+		},
+		remove: function() {
+			this.canvas.parentElement.removeChild(this.canvas);
+		},
+
+		drawEntity: function(entity) {
+			this.drawItem(entity.location, entity.radius, entity.movement.vector);
 		},
 
 		drawItem: function(position, radius, movement) {
 			var context = this.context;
 
 			context.save();
-			//context.fillStyle = element.color;
-			console.log('moving to ' + position);
+			//context.fillStyle = entity.color;
 			context.translate(position.x, position.y);
 
 			context.beginPath();
