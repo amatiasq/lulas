@@ -1,16 +1,15 @@
 define(function(require) {
 	'use strict';
 
-	var proto = require('core/memory').proto;
 	var extend = require('core/extend');
 
 	function type(parent, descriptor) {
 		descriptor = arguments.length === 2 ?
-			extend(proto(parent), descriptor) :
+			extend(Object.create(parent), descriptor) :
 			parent;
 
 		descriptor.new = function() {
-			var child = proto(descriptor);
+			var child = Object.create(descriptor);
 			child.init.apply(child, arguments);
 			return child;
 		};

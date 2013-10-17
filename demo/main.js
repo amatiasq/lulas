@@ -1,24 +1,44 @@
-//jshint unused:false
+//jshint maxstatements:30
 
 define(function(require) {
 	'use strict';
 
-	var vector = require('physics/vector');
-	var physic = require('physics/physic');
+	var width = 100 || document.documentElement.clientWidth;
+	var height = 100 || document.documentElement.clientHeight;
 
-	var renderer = require('renderers/canvas').new();
-	renderer.width = document.documentElement.clientWidth;
-	renderer.height = document.documentElement.clientHeight;
+	var memory = require('core/memory');
+	var vector = require('physics/vector');
+
+	require('life/plant');
+	require('life/herbivore');
+	require('life/carnivore');
 
 	var game = require('game').new();
 	game.container = document.body;
-	game.renderer = renderer;
-	game.addEntityType('BASIC', physic);
+	game.renderer = require('renderers/canvas').new();
+	game.width = width;
+	game.height = height;
 
-	var pepe = game.spawn('BASIC', vector(100, 100), 10);
-	pepe.movement.strength = 100;
-	pepe.movement.direction = 30;
+	game.addEntityType('PLANT', memory.resource('PLANT'));
+	game.addEntityType('HERBIVORE', memory.resource('HERBIVORE'));
+	game.addEntityType('CARNIVORE', memory.resource('CARNIVORE'));
+
+	function rand(max, min) {
+		min = min || 0;
+		return Math.round(Math.random() * (max - min)) + min;
+	}
+
+	var i;
+	for (i = 1; i--;)
+		game.spawn('PLANT', vector(rand(width), rand(height)), rand(10, 5));
+
+	for (i = 1; i--;)
+		game.spawn('HERBIVORE', vector(rand(width), rand(height)), rand(10, 5));
+
+	for (i = 0; i--;)
+		game.spawn('CARNIVORE', vector(rand(width), rand(height)), rand(15, 10));
 
 	window.game = game;
 	game.tick();
+	//setInterval(game.tick.bind(game), 1000 / 60);
 });

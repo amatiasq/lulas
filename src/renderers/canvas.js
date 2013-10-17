@@ -1,7 +1,13 @@
 define(function(require) {
 	'use strict';
 
+	var memory = require('core/memory');
 	var type = require('core/type');
+	var object = memory.resource('OBJECT');
+
+	function calcColor(base) {
+		return isNaN(base) ? Math.round(Math.random() * 128) : base;
+	}
 
 	var canvas = type({
 
@@ -20,6 +26,8 @@ define(function(require) {
 			this.canvas.height = value;
 		},
 
+		colors: [ 'r', 'g', 'b'],
+
 		init: function() {
 			this.canvas = document.createElement('canvas');
 			this.context = this.canvas.getContext('2d');
@@ -32,15 +40,25 @@ define(function(require) {
 			this.canvas.parentElement.removeChild(this.canvas);
 		},
 
-		drawEntity: function(entity) {
-			this.drawItem(entity.location, entity.radius, entity.movement.vector);
+		generateColor: function(entity) {
+			entity.color = 'rgb(' +
+				calcColor(entity.baseColor.r) + ',' +
+				calcColor(entity.baseColor.g) + ',' +
+				calcColor(entity.baseColor.b) + ')';
 		},
 
-		drawItem: function(position, radius, movement) {
+		drawEntity: function(entity) {
+			if (!entity.color)
+				this.generateColor(entity);
+
+			this.drawItem(entity.location, entity.radius, entity.movement.vector, entity.color);
+		},
+
+		drawItem: function(position, radius, movement, color) {
 			var context = this.context;
 
 			context.save();
-			//context.fillStyle = entity.color;
+			context.fillStyle = color;
 			context.translate(position.x, position.y);
 
 			context.beginPath();
@@ -48,7 +66,7 @@ define(function(require) {
 			context.fill();
 			//context.stroke();
 
-			//if (!movement.hipotenuse !== 0)
+			if (movement.hypotenuse !== 0)
 			{
 				context.beginPath();
 				context.moveTo(0, 0);

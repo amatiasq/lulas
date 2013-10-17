@@ -3,28 +3,25 @@
 
 define(function(require) {
 	'use strict';
-	var proto = require('core/memory-prototypes');
-	var memoryPool = require('core/memory-pool');
+	var nativePool = require('core/memory-pool');
 
 	function objectDispose() {
 		for (var i in this)
 			if (this.hasOwnProperty(i))
 				delete this[i];
-		this.dispos = objectDispose;
 	}
 
 	function arrayDispose() {
 		this.length = 0;
-		this.dispose = arrayDispose;
 	}
 
 	var pools = {
-		'OBJECT': memoryPool.new(Object, function() { return {} }, objectDispose),
-		'ARRAY': memoryPool.new(Array, function() { return [] }, arrayDispose),
+		'OBJECT': nativePool(Object, function() { return {} }, objectDispose),
+		'ARRAY': nativePool(Array, function() { return [] }, arrayDispose),
 	};
 
 	function add(pool) {
-		pools[pool.represents] = pool;
+		pools[pool.$type] = pool;
 	}
 
 	function resource(key) {
@@ -34,9 +31,19 @@ define(function(require) {
 		return pools[key];
 	}
 
+	function dispose(item) {
+		item.dispose();
+	}
+
+	function disposeAll() {
+		for (var i = arguments.length; i--;)
+			arguments[i].dispose();
+	}
+
 	return {
-		proto: proto,
 		add: add,
 		resource: resource,
+		dispose: dispose,
+		disposeAll: disposeAll,
 	};
 });

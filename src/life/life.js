@@ -2,11 +2,8 @@ define(function(require) {
 	'use strict';
 
 	var memory = require('core/memory');
-	var pool = require('core/pool');
 	var type = require('core/type');
-
-	require('physics/physic');
-	var physic = memory.resource('PHYSIC');
+	var physic = require('physics/physic');
 	var array = memory.resource('ARRAY');
 
 	var life = type(physic, {
@@ -18,12 +15,13 @@ define(function(require) {
 		},
 
 		init: function(location, diameter) {
-			physic.init.call(location, diameter);
+			physic.init.call(this, location, diameter);
 			this.parents = array.new();
 			this.isAlive = true;
 		},
 
 		dispose: function() {
+			physic.dispose.call(this);
 			this.parents.dispose();
 			this.parents = null;
 		},
@@ -38,6 +36,7 @@ define(function(require) {
 		die: function() {
 			if (this.isDead) return;
 			this.isAlive = false;
+			this.dispose();
 		},
 
 		setParents: function() {
@@ -62,6 +61,5 @@ define(function(require) {
 		}
 	});
 
-	memory.add(pool.new(life));
 	return life;
 });

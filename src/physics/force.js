@@ -21,7 +21,7 @@ define(function(require) {
 			return this._direction.radians;
 		},
 		set radians(value) {
-			this._direction.radians = value;
+			this._direction = vector.fromRadians(value);
 		},
 		get direction() {
 			return this._direction.angle;
@@ -62,6 +62,6 @@ define(function(require) {
 		}
 	});
 
-	memory.add(pool.new(force));
+	memory.add(pool(force));
 	return force;
 });
