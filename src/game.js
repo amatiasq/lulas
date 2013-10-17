@@ -1,7 +1,11 @@
 define(function(require) {
 	'use strict';
 
+	var memory = require('core/memory');
 	var type = require('core/type');
+
+	var map = require('map/map');
+	var array = memory.resource('ARRAY');
 
 	var game = type({
 
@@ -16,10 +20,26 @@ define(function(require) {
 			this._renderer = value;
 		},
 
+		get width() {
+			return this.map.width;
+		},
+		set width(value) {
+			this.map.width = value;
+			this.renderer.width = value;
+		},
+		get height() {
+			return this.map.height;
+		},
+		set height(value) {
+			this.map.height = value;
+			this.renderer.height = value;
+		},
+
 		init: function() {
 			this.contanier = null;
 			this.types = {};
-			this.entities = [];
+			this.entities = array.new();
+			this.map = map.new();
 		},
 
 		addEntityType: function(id, type) {
@@ -42,13 +62,48 @@ define(function(require) {
 		},
 
 		tick: function() {
-			var i, len;
+			var children = this.tickEntities();
+			this.addChildren(children);
+			this.removeDead();
+			this.render();
+		},
 
-			for (i = 0, len = this.entities.length; i < len; i++)
-				this.entities[i].tick();
+		tickEntities: function() {
+			var children = array.new();
+			this.map.entities = this.entities;
 
+			for (var i = 0, len = this.entities.length; i < len; i++)
+				children.push(this.entities[i].tick(this.map));
+
+			return children;
+		},
+
+		addChildren: function(children) {
+			for (var i = 0, len = children.length; i < len; i++) {
+				if (!children[i]) continue;
+
+				this.entities.push.apply(this.entities, children[i]);
+				children[i].dispose();
+			}
+
+			children.dispose();
+		},
+
+		removeDead: function() {
+			var entities = this.entities;
+			var alive = array.new();
+
+			for (var i = 0, len = entities.length; i < len; i++)
+				if (!entities[i].isDisposed)
+					alive.push(entities[i]);
+
+			this.entities = alive;
+			entities.dispose();
+		},
+
+		render: function() {
 			this.renderer.clear();
-			for (i = 0, len = this.entities.length; i < len; i++)
+			for (var i = 0, len = this.entities.length; i < len; i++)
 				this.renderer.drawEntity(this.entities[i]);
 		}
 	});

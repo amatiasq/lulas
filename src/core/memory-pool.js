@@ -1,38 +1,32 @@
+// Possible strict violation
+//jshint -W040
+
 define(function() {
 	'use strict';
 
-	var memoryPool = {
+	function MemoryPool(Constructor, creator, disposer) {
+		var pool = [];
 
-		new: function() {
-			var child = Object.create(this);
-			child.init.apply(child, arguments);
-			return child;
-		},
+		function dispose() {
+			disposer.call(this);
+			pool.push(this);
+		}
 
-		init: function(Constructor, creator, disposer) {
-			console.log('Creating pool', Constructor.name.toUpperCase());
-			this.pool = [];
-			this.ctor = Constructor;
-			this.creator = creator;
-			this.disposer = disposer;
-			this.new = this.get.bind(this);
-		},
+		function create() {
+			var item = pool.length ? pool.pop() : creator();
+			item.dispose = dispose;
+			return item;
+		}
 
-		isPrototypeOf: function(value) {
-			return value instanceof this.ctor;
-		},
+		function isPrototypeOf(object) {
+			return object instanceof this.ctor;
+		}
 
-		get: function() {
-			return this.pool.length ?
-				this.pool.pop() :
-				this.creator();
-		},
+		return {
+			new: create,
+			isPrototypeOf: isPrototypeOf,
+		};
+	}
 
-		disposeItem: function(item) {
-			this.disposer.call(item);
-			this.pool.push(item);
-		},
-	};
-
-	return memoryPool;
+	return MemoryPool;
 });

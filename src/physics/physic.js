@@ -1,8 +1,9 @@
+//jshint sub:true
+
 define(function(require) {
 	'use strict';
 
 	var memory = require('core/memory');
-	var pool = require('core/pool');
 	var type = require('core/type');
 	var element = require('map/element');
 
@@ -37,15 +38,17 @@ define(function(require) {
 		init: function(location, diameter) {
 			element.init.call(this, location, diameter);
 			this.movement = force.new();
-			//this.weight = 0;
+			this.factor['weight'] = 0;
 		},
 
 		dispose: function() {
+			element.dispose.call(this);
 			this.movement.dispose();
 			this.movement = null;
 		},
 
 		move: function() {
+			console.log(this.movement);
 			this.location = this.location.merge(this.movement.vector);
 		},
 
@@ -54,7 +57,7 @@ define(function(require) {
 				degrees :
 				force.new(degrees, strength);
 
-			effect.strength *= 1 - this.weight;
+			effect.strength *= 1 - this.factor['weight'];
 			this.movement.merge(effect);
 		},
 
@@ -78,6 +81,5 @@ define(function(require) {
 		}
 	});
 
-	memory.add(pool.new(physic));
 	return physic;
 });

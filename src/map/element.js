@@ -1,10 +1,16 @@
 define(function(require) {
 	'use strict';
 
-	var memory = require('core/memory');
 	var pool = require('core/pool');
 	var type = require('core/type');
 	var vector = require('physics/vector');
+
+	var factor = pool(type({
+		$type: 'ELEMENT_FACTORS',
+		init: function() { },
+	}));
+
+	var id = 0;
 
 	var element = type({
 
@@ -47,8 +53,17 @@ define(function(require) {
 		},
 
 		init: function(location, diameter) {
+			this.isDisposed = false;
+			this.id = id++;
+			this.factor = factor.new();
 			this.location = location || vector.zero;
 			this.diameter = diameter || 1;
+		},
+
+		dispose: function() {
+			this.isDisposed = true;
+			this.factor.dispose();
+			this.factor = null;
 		},
 
 		angle: function(target) {
@@ -66,6 +81,5 @@ define(function(require) {
 		}
 	});
 
-	memory.add(pool.new(element));
 	return element;
 });

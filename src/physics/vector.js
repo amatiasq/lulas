@@ -106,7 +106,14 @@ define(function(require) {
 
 	var cache = {};
 
+	function round(num) {
+		return Math.round(num * 100) / 100;
+	}
+
 	function vector(x, y) {
+		x = round(x);
+		y = round(y);
+
 		var key = x + '-' + y;
 		if (!cache[key])
 			cache[key] = internal.new(x, y);

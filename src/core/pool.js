@@ -1,59 +1,34 @@
-define(function(require) {
+// Possible strict violation
+//jshint -W040
+
+define(function() {
 	'use strict';
 
-	function wrapDispose(original, pool) {
-		return function() {
-			if (original) original.call(this);
-			pool.disposeItem(this);
-		};
-	}
+	function Pool(source) {
+		var pool = [];
+		var type = Object.create(source);
+		console.log('Creating pool', type.$type);
 
-	var proto = require('core/memory').proto;
-	var type = require('core/type');
+		function dispose() {
+			if (type.dispose)
+				type.dispose.call(this);
+			pool.push(this);
+		}
 
-	var pool = type({
-
-		$type: 'POOL',
-
-		get represents() {
-			return this.type.$type;
-		},
-
-		init: function(type) {
-			console.log('Creating pool', type.$type);
-			this.pool = [];
-			this.type = type;
-			this.new = this.get.bind(this);
-			return this;
-		},
-
-		isPrototypeOf: function(value) {
-			return this.type.isPrototypeOf(value);
-		},
-
-		create: function() {
-			var item = proto(this.type);
-			item.dispose = wrapDispose(item.dispose, this);
+		function create() {
+			var item = Object.create(type);
+			item.dispose = dispose;
 			return item;
-		},
+		}
 
-		get: function() {
-			var item = this.pool.length ?
-				this.pool.pop() :
-				this.create();
-
+		type.new = function() {
+			var item = pool.length ? pool.pop() : create();
 			item.init.apply(item, arguments);
 			return item;
-		},
+		};
 
-		disposeItem: function(item) {
-			this.pool.push(item);
-		},
+		return type;
+	}
 
-		count: function() {
-			return this.pool.length;
-		}
-	});
-
-	return pool;
+	return Pool;
 });
