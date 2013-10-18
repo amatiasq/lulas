@@ -11,8 +11,8 @@ define(function(require) {
 		$type: 'CARNIVORE',
 
 		baseColor: {
-			r: 0,
-			g: 255,
+			r: 255,
+			g: 0,
 			b: NaN,
 		},
 

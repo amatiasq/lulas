@@ -22,11 +22,12 @@ define(function(require) {
 
 		init: function(location, diameter) {
 			life.init.call(this, location, diameter);
-			this.factor['visibility'] = 50;
+			this.factor['visibility'] = 500;
 			this.factor['velocity'] = 1;
-			this.factor['velocity hunting'] = 100;
-			this.factor['velocity escaping'] = 20;
-			this.factor['velocity max'] = 1;
+			this.factor['velocity hunting'] = 1000;
+			this.factor['velocity escaping'] = 200;
+			this.factor['velocity max'] = 10;
+			this.factor['friction'] = 0.1;
 		},
 
 		tick: function(map) {
@@ -54,44 +55,25 @@ define(function(require) {
 			closerPrey.distance = closerPredator.distance = Infinity;
 
 			for (var i = neighbors.length; i--;)
-				this.seeObject(neighbors[i], map, closerPrey, closerPredator);
+				if (neighbors[i] !== this)
+					this.seeObject(neighbors[i], map, closerPrey, closerPredator);
 
 			neighbors.dispose();
-
-
-
-			//////// DEBUG
-			var estado;
-			var cosa;
-			if (closerPrey.target || closerPredator.target) {
-				if (closerPredator.distance < closerPrey.distance) {
-					estado = 'escaping from';
-					cosa = closerPredator;
-				} else {
-					estado = 'hunting',
-					cosa = closerPrey;
-				}
-			}
-			if (cosa) console.log('Animal', this.id, 'is ' + estado, cosa.target.$type, cosa.target.id, 'located at', cosa.distance);
-			else      console.log('Animal', this.id, 'is boored');
-			//////// DEBUG
-
-
 
 			this.boored = !closerPrey.target && !closerPredator.target;
 			if (this.boored)
 				return memory.disposeAll(closerPrey, closerPredator);
 
-			var force, target;
+			var target;
 			if (closerPredator.distance < closerPrey.distance) {
-				target = closerPredator.target;
-				force = this.factor['velocity escaping'] / closerPredator.distance;
+				target = closerPredator;
+				target.velocity = this.factor['velocity escaping'] / closerPredator.distance;
 			} else {
-				target = closerPrey.target;
-				force = this.factor['velocity hunting'] - closerPrey.distance;
+				target = closerPrey;
+				target.velocity = this.factor['velocity hunting'] / closerPrey.distance;
 			}
 
-			this.shove(this.angle(target), force * this.factor['velocity']);
+			this.shove(target.angle, target.velocity * this.factor['velocity']);
 			memory.disposeAll(closerPrey, closerPredator);
 		},
 
@@ -119,19 +101,21 @@ define(function(require) {
 
 		escape: function(predator, distance, closerPredator) {
 			if (!predator.canFight(this)) return;
-			if (distance >= closerPredator.distance) return;
+			if (distance.hypotenuse >= closerPredator.distance) return;
 
 			closerPredator.target = predator;
-			closerPredator.distance = distance;
+			closerPredator.distance = distance.hypotenuse;
+			closerPredator.angle = distance.angle;
 		},
 
 		hunt: function(prey, distance, closerPrey) {
 			//if (this.areSameSpecies(prey) && !this.areSameSpecies(food.prey)) return;
 			if (!this.canFight(prey)) return;
-			if (distance >= closerPrey.distance) return;
+			if (distance.hypotenuse >= closerPrey.distance) return;
 
 			closerPrey.target = prey;
-			closerPrey.distance = distance;
+			closerPrey.distance = distance.hypotenuse;
+			closerPrey.angle = distance.angle;
 
 			if (this.testCollision(prey))
 				this.eat(prey);
@@ -152,6 +136,8 @@ define(function(require) {
 		},
 
 		move: function() {
+			this.velocity *= 1 - this.factor['friction'];
+
 			if (this.velocity > this.factor['velocity max'])
 				this.velocity = this.factor['velocity max'];
 

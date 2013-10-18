@@ -24,6 +24,7 @@ define(function() {
 
 		return {
 			new: create,
+			pool: pool,
 			isPrototypeOf: isPrototypeOf,
 		};
 	}

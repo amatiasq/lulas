@@ -40,6 +40,15 @@ define(function(require) {
 			this.types = {};
 			this.entities = array.new();
 			this.map = map.new();
+			this.onEntityDie = this.onEntityDie.bind(this);
+			this.onEntityReproduce = this.onEntityReproduce.bind(this);
+		},
+
+		onEntityDie: function(entity) {
+			this.remove(entity);
+		},
+		onEntityReproduce: function(children) {
+			this.children.push.apply(this.children, children);
 		},
 
 		addEntityType: function(id, type) {
@@ -57,36 +66,49 @@ define(function(require) {
 			var type = this.types[id];
 			var entity = type.new(position, diameter);
 			entity.$entityType = id;
+			entity.onDie = this.onEntityDie;
+			entity.onEntityReproduce = this.onEntityReproduce;
 			this.entities.push(entity);
 			return entity;
 		},
 
+		remove: function(entity) {
+			var index = this.entities.indexOf(entity);
+			if (index === -1) return false;
+			this.entities.slice(index, 1);
+			return true;
+		},
+
 		tick: function() {
-			var children = this.tickEntities();
-			this.addChildren(children);
+			this.tickEntities();
 			this.removeDead();
+			this.roundMap();
 			this.render();
 		},
 
 		tickEntities: function() {
-			var children = array.new();
-			this.map.entities = this.entities;
+			this.children = array.new();
+			var entities = array.new();
+			entities.push.apply(entities, this.entities);
 
-			for (var i = 0, len = this.entities.length; i < len; i++)
-				children.push(this.entities[i].tick(this.map));
+			for (var i = 0, len = entities.length; i < len; i++) {
+				this.map.entities = this.entities;
 
-			return children;
+				if (entities[i].isAlive)
+					entities[i].tick(this.map);
+			}
+
+			entities.dispose();
+			this.addChildren(this.children);
+			this.children.dispose();
 		},
 
 		addChildren: function(children) {
 			for (var i = 0, len = children.length; i < len; i++) {
 				if (!children[i]) continue;
-
 				this.entities.push.apply(this.entities, children[i]);
 				children[i].dispose();
 			}
-
-			children.dispose();
 		},
 
 		removeDead: function() {
@@ -99,6 +121,11 @@ define(function(require) {
 
 			this.entities = alive;
 			entities.dispose();
+		},
+
+		roundMap: function() {
+			for (var i = 0, len = this.entities.length; i < len; i++)
+				this.map.round(this.entities[i]);
 		},
 
 		render: function() {

@@ -11,6 +11,14 @@ define(function(require) {
 
 		$type: 'HERBIVORE',
 
+		get movement() {
+			return this._movement;
+		},
+		set movement(value) {
+//			if (!value) debugger;
+			this._movement = value;
+		},
+
 		baseColor: {
 			r: 100,
 			g: 255,
