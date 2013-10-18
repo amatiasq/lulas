@@ -61,6 +61,7 @@ define(function(require) {
 		},
 
 		dispose: function() {
+			if (this.isDisposed) debugger;
 			this.isDisposed = true;
 			this.factor.dispose();
 			this.factor = null;
@@ -68,12 +69,12 @@ define(function(require) {
 
 		angle: function(target) {
 			target = target.location || target;
-			return this.location.diff(target).angle;
+			return target.diff(this.location).angle;
 		},
 
 		distance: function(target) {
 			target = target.location || target;
-			return this.location.diff(target).hypotenuse;
+			return target.diff(this.location).hypotenuse;
 		},
 
 		testCollision: function(target) {

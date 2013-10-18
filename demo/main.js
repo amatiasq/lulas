@@ -3,11 +3,11 @@
 define(function(require) {
 	'use strict';
 
-	var width = 100 || document.documentElement.clientWidth;
-	var height = 100 || document.documentElement.clientHeight;
+	var width = document.documentElement.clientWidth;
+	var height = document.documentElement.clientHeight;
 
 	var memory = require('core/memory');
-	var vector = require('physics/vector');
+	var vector = window.vector = require('physics/vector');
 
 	require('life/plant');
 	require('life/herbivore');
@@ -29,16 +29,20 @@ define(function(require) {
 	}
 
 	var i;
-	for (i = 1; i--;)
+	for (i = 10; i--;)
 		game.spawn('PLANT', vector(rand(width), rand(height)), rand(10, 5));
 
-	for (i = 1; i--;)
+	for (i = 5; i--;)
 		game.spawn('HERBIVORE', vector(rand(width), rand(height)), rand(10, 5));
 
-	for (i = 0; i--;)
+	for (i = 1; i--;)
 		game.spawn('CARNIVORE', vector(rand(width), rand(height)), rand(15, 10));
 
 	window.game = game;
 	game.tick();
-	//setInterval(game.tick.bind(game), 1000 / 60);
+	setInterval(game.tick.bind(game), 1000 / 20);
+
+	setInterval(function() {
+		game.spawn('PLANT', vector(rand(width), rand(height)), rand(10, 5));
+	}, 10);
 });

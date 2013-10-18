@@ -84,7 +84,7 @@ define(function(require) {
 			return vector(this.x + other.x, this.y + other.y);
 		},
 		diff: function(other) {
-			return vector(Math.abs(this.x - other.x), Math.abs(this.y - other.y));
+			return vector(this.x - other.x, this.y - other.y);
 		},
 
 		round: function(decimals) {

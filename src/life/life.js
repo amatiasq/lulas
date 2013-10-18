@@ -15,12 +15,15 @@ define(function(require) {
 		},
 
 		init: function(location, diameter) {
+			var id = this.id;
 			physic.init.call(this, location, diameter);
+			id ? console.log(id, 'reencarnated into', this.id) : console.log(this.id, 'HAS BORN');
 			this.parents = array.new();
 			this.isAlive = true;
 		},
 
 		dispose: function() {
+			console.log(this.id, 'IS DEAD');
 			physic.dispose.call(this);
 			this.parents.dispose();
 			this.parents = null;
@@ -35,6 +38,7 @@ define(function(require) {
 
 		die: function() {
 			if (this.isDead) return;
+			if (this.onDie) this.onDie();
 			this.isAlive = false;
 			this.dispose();
 		},

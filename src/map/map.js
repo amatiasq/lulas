@@ -50,12 +50,21 @@ define(function(require) {
 		},
 
 		getShorterDistance: function(from, to) {
-			var across = from.diff(to);
-			var shorter = vector(
-				across.x < this.halfWidth ? across.x : this.width - across.x,
-				across.y < this.halfHeight ? across.y : this.height - across.y
+			var diff = to.diff(from);
+			return vector(
+				diff.x < this.halfWidth ? diff.x : this.width - diff.x,
+				diff.y < this.halfHeight ? diff.y : this.height - diff.y
 			);
-			return shorter.hypotenuse;
+		},
+
+		round: function(entity) {
+			var x = entity.location.x % this.width;
+			var y = entity.location.y % this.height;
+
+			if (x < 0) x = this.width - x;
+			if (y < 0) y = this.height - y;
+
+			entity.location = vector(x, y);
 		}
 	});
 });

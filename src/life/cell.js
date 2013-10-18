@@ -28,12 +28,14 @@ define(function(require) {
 
 			child1.shove(direction, strength);
 			child2.shove(direction + 180, strength);
-			this.dispose();
 
 			var children = array.new();
 			children[0] = child1;
 			children[1] = child2;
-			return children;
+			if (this.onReproduce) this.onReproduce(children);
+			children.dispose();
+
+			this.die();
 		},
 
 		_createChild: function() {

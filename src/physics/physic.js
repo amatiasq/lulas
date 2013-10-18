@@ -22,7 +22,7 @@ define(function(require) {
 			this.movement.direction = value;
 		},
 		get velocity() {
-			return this.movement.stength;
+			return this.movement.strength;
 		},
 		set velocity(value) {
 			this.movement.strength = value;
@@ -48,7 +48,6 @@ define(function(require) {
 		},
 
 		move: function() {
-			console.log(this.movement);
 			this.location = this.location.merge(this.movement.vector);
 		},
 

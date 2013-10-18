@@ -8,7 +8,7 @@ define(function(require) {
 
 	function fixStrength(force) {
 		if (force._strength < 0) {
-			force._direction.multiply(-1);
+			force.direction *= -1;
 			force._strength *= -1;
 		}
 	}
@@ -33,7 +33,7 @@ define(function(require) {
 			return this._strength;
 		},
 		set strength(value) {
-			this._strength = value;
+			this._strength = Math.round(value * 100) / 100;
 			fixStrength(this);
 		},
 		get vector() {
@@ -41,8 +41,8 @@ define(function(require) {
 		},
 
 		init: function(degrees, strength) {
-			this.strength = strength || 0;
 			this.direction = degrees || 0;
+			this.strength = strength || 0;
 		},
 
 		clone: function() {
