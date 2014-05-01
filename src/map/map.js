@@ -2,15 +2,11 @@
 
 define(function(require) {
 	'use strict';
+	var Vector = require('physics/vector');
 
-	var memory = require('core/memory');
-	var type = require('core/type');
-	var vector = require('physics/vector');
-	var array = memory.resource('ARRAY');
-
-	return type({
-
+	return {
 		$type: 'MAP',
+		new: require('core/new'),
 
 		get width() {
 			return this._width;
@@ -34,7 +30,7 @@ define(function(require) {
 		},
 
 		getEntitiesAt: function(from, radius) {
-			var entities = array.new();
+			var entities = [];
 			var target, diff;
 
 			for (var i = this.entities.length; i--;) {
@@ -51,7 +47,7 @@ define(function(require) {
 
 		getShorterDistance: function(from, to) {
 			var diff = to.diff(from);
-			return vector(
+			return Vector.new(
 				diff.x < this.halfWidth ? diff.x : this.width - diff.x,
 				diff.y < this.halfHeight ? diff.y : this.height - diff.y
 			);
@@ -64,7 +60,7 @@ define(function(require) {
 			if (x < 0) x = this.width - x;
 			if (y < 0) y = this.height - y;
 
-			entity.location = vector(x, y);
+			entity.location = Vector.new(x, y);
 		}
-	});
+	};
 });

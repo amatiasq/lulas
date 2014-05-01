@@ -1,13 +1,10 @@
 define(function(require) {
 	'use strict';
+	var Map = require('map/map');
 
-	var memory = require('core/memory');
-	var type = require('core/type');
-
-	var map = require('map/map');
-	var array = memory.resource('ARRAY');
-
-	var game = type({
+	return {
+		$type: 'GAME',
+		new: require('core/new'),
 
 		get renderer() {
 			return this._renderer;
@@ -38,8 +35,8 @@ define(function(require) {
 		init: function() {
 			this.contanier = null;
 			this.types = {};
-			this.entities = array.new();
-			this.map = map.new();
+			this.entities = [];
+			this.map = Map.new();
 			this.onEntityDie = this.onEntityDie.bind(this);
 			this.onEntityReproduce = this.onEntityReproduce.bind(this);
 		},
@@ -48,7 +45,7 @@ define(function(require) {
 			this.remove(entity);
 		},
 		onEntityReproduce: function(children) {
-			this.children.push.apply(this.children, children);
+			this.children.push(children);
 		},
 
 		addEntityType: function(id, type) {
@@ -67,7 +64,7 @@ define(function(require) {
 			var entity = type.new(position, diameter);
 			entity.$entityType = id;
 			entity.onDie = this.onEntityDie;
-			entity.onEntityReproduce = this.onEntityReproduce;
+			entity.onReproduce = this.onEntityReproduce;
 			this.entities.push(entity);
 			return entity;
 		},
@@ -84,12 +81,12 @@ define(function(require) {
 			this.removeDead();
 			this.roundMap();
 			this.render();
+			//Vector.logDebugData();
 		},
 
 		tickEntities: function() {
-			this.children = array.new();
-			var entities = array.new();
-			entities.push.apply(entities, this.entities);
+			this.children = [];
+			var entities = this.entities.slice();
 
 			for (var i = 0, len = entities.length; i < len; i++) {
 				this.map.entities = this.entities;
@@ -98,29 +95,28 @@ define(function(require) {
 					entities[i].tick(this.map);
 			}
 
-			entities.dispose();
 			this.addChildren(this.children);
-			this.children.dispose();
+			this.children = null;
 		},
 
 		addChildren: function(children) {
+			children = Array.prototype.concat.apply([], children);
+
 			for (var i = 0, len = children.length; i < len; i++) {
 				if (!children[i]) continue;
-				this.entities.push.apply(this.entities, children[i]);
-				children[i].dispose();
+				this.entities.push(children[i]);
 			}
 		},
 
 		removeDead: function() {
 			var entities = this.entities;
-			var alive = array.new();
+			var alive = [];
 
 			for (var i = 0, len = entities.length; i < len; i++)
-				if (!entities[i].isDisposed)
+				if (!entities[i].isDisposed && !entities[i].isDead)
 					alive.push(entities[i]);
 
 			this.entities = alive;
-			entities.dispose();
 		},
 
 		roundMap: function() {
@@ -133,7 +129,5 @@ define(function(require) {
 			for (var i = 0, len = this.entities.length; i < len; i++)
 				this.renderer.drawEntity(this.entities[i]);
 		}
-	});
-
-	return game;
+	};
 });

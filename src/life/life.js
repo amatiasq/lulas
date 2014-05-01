@@ -1,31 +1,32 @@
 define(function(require) {
 	'use strict';
+	var extend = require('core/extend');
+	var Element = require('map/element');
+	var Physic = require('physics/physic');
 
-	var memory = require('core/memory');
-	var type = require('core/type');
-	var physic = require('physics/physic');
-	var array = memory.resource('ARRAY');
-
-	var life = type(physic, {
-
+	var a = 0;
+	return extend({}, Element, Physic, {
 		$type: 'LIFE',
+		new: require('core/new'),
 
 		get isDead() {
 			return !this.isAlive;
 		},
 
-		init: function(location, diameter) {
+		init: function(location, diameter, parents) {
 			var id = this.id;
-			physic.init.call(this, location, diameter);
-			id ? console.log(id, 'reencarnated into', this.id) : console.log(this.id, 'HAS BORN');
-			this.parents = array.new();
+			Element.init.call(this, location, diameter);
+			Physic.init.call(this);
+			id ? console.log(id, 'reencarnated into', this.id) : console.log(this.id, 'HAS BORN AS', this.$type);
+
+			this.parents = parents || [];
 			this.isAlive = true;
 		},
 
 		dispose: function() {
 			console.log(this.id, 'IS DEAD');
-			physic.dispose.call(this);
-			this.parents.dispose();
+			Physic.dispose.call(this);
+			Element.dispose.call(this);
 			this.parents = null;
 		},
 
@@ -33,19 +34,19 @@ define(function(require) {
 			if (this.isDead)
 				throw new Error('Dead life form can\'t tick');
 
-			physic.tick.call(this);
+			this.move();
+		},
+
+		move: function() {
+			//if (a++ < 100)
+			//	console.log(this.id, 'moving', this.location.toString(), this.movement.toString());
+			this.location = this.location.merge(this.movement);
 		},
 
 		die: function() {
 			if (this.isDead) return;
 			if (this.onDie) this.onDie();
 			this.isAlive = false;
-			this.dispose();
-		},
-
-		setParents: function() {
-			for (var i = 0, len = arguments.length; i < len; i++)
-				this.parents.push(arguments[i]);
 		},
 
 		isParent: function(target) {
@@ -64,6 +65,4 @@ define(function(require) {
 				this.isSibiling(target);
 		}
 	});
-
-	return life;
 });
