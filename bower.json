@@ -2,9 +2,9 @@
   "name": "lulas",
   "version": "0.0.1",
   "dependencies": {
-    "requirejs": "~1.0"
+    "requirejs": "~2.1.11"
   },
   "devDependencies": {
-    "chai": "~1.8",
+    "chai": "~1.8"
   }
 }

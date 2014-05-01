@@ -1,23 +1,12 @@
 define(function(require) {
 	'use strict';
+	var extend = require('core/extend');
+	var Cell = require('life/cell');
+	var Plant = require('life/plant');
 
-	var memory = require('core/memory');
-	var pool = require('core/pool');
-	var type = require('core/type');
-	var cell = require('life/cell');
-	var plant = require('life/plant');
-
-	var herbivore = type(cell, {
-
+	var Herbivore;
+	return Herbivore = extend(Object.create(Cell), {
 		$type: 'HERBIVORE',
-
-		get movement() {
-			return this._movement;
-		},
-		set movement(value) {
-//			if (!value) debugger;
-			this._movement = value;
-		},
 
 		baseColor: {
 			r: 100,
@@ -26,10 +15,7 @@ define(function(require) {
 		},
 
 		_isFood: function(target) {
-			return plant.isPrototypeOf(target);
+			return Plant.isPrototypeOf(target);
 		}
 	});
-
-	memory.add(pool(herbivore));
-	return herbivore;
 });

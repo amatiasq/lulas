@@ -2,62 +2,52 @@
 
 define(function(require) {
 	'use strict';
+	var Vector = require('physics/vector');
 
-	var memory = require('core/memory');
-	var type = require('core/type');
-	var element = require('map/element');
-
-	require('physics/force');
-	var force = memory.resource('FORCE');
-
-
-	var physic = type(element, {
-
+	return {
 		$type: 'PHYSIC',
+		new: require('core/new'),
 
 		get direction() {
-			return this.movement.direction;
+			return this.movement.degrees;
 		},
 		set direction(value) {
-			this.movement.direction = value;
+			this.movement = this.movement.setDegrees(value);
 		},
 		get velocity() {
-			return this.movement.strength;
+			return this.movement.magnitude;
 		},
 		set velocity(value) {
-			this.movement.strength = value;
+			this.movement = this.movement.setMagnitude(value);
 		},
 
 		get isStopped() {
-			return Math.round(this.velocity * 10) === 0;
+			return (this.velocity * 10 | 0) === 0;
 		},
 		get isMoving() {
 			return !this.isStopped;
 		},
 
-		init: function(location, diameter) {
-			element.init.call(this, location, diameter);
-			this.movement = force.new();
+		init: function() {
+			this.movement = Vector.new(0, 0);
 			this.factor['weight'] = 0;
 		},
 
 		dispose: function() {
-			element.dispose.call(this);
-			this.movement.dispose();
 			this.movement = null;
 		},
 
-		move: function() {
-			this.location = this.location.merge(this.movement.vector);
-		},
+		// abstract
+		move: function() { },
 
 		shove: function(degrees, strength) {
-			var effect = force.isPrototypeOf(degrees) ?
+			var effect = Vector.isPrototypeOf(degrees) ?
 				degrees :
-				force.new(degrees, strength);
+				Vector.from(degrees, strength);
 
-			effect.strength *= 1 - this.factor['weight'];
-			this.movement.merge(effect);
+			var magnitude = effect.magnitude * (1 - this.factor['weight']);
+			effect = effect.setMagnitude(magnitude);
+			this.movement = this.movement.merge(effect);
 		},
 
 		accelerate: function(cuantity) {
@@ -66,19 +56,12 @@ define(function(require) {
 
 		brake: function(cuantity) {
 			var velocity = this.velocity - cuantity;
-			if (velocity < 0)
-				velocity = 0;
+			if (velocity < 0) velocity = 0;
 			this.velocity = velocity;
 		},
 
 		stop: function() {
 			this.velocity = 0;
 		},
-
-		tick: function() {
-			this.move();
-		}
-	});
-
-	return physic;
+	};
 });

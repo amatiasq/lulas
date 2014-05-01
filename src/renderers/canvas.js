@@ -1,17 +1,13 @@
 define(function(require) {
 	'use strict';
 
-	var memory = require('core/memory');
-	var type = require('core/type');
-	var object = memory.resource('OBJECT');
-
 	function calcColor(base) {
 		return isNaN(base) ? Math.round(Math.random() * 128) : base;
 	}
 
-	var canvas = type({
-
+	return {
 		$type: 'CANVAS',
+		new: require('core/new'),
 
 		get width() {
 			return this.canvas.width;
@@ -51,7 +47,7 @@ define(function(require) {
 			if (!entity.color)
 				this.generateColor(entity);
 
-			this.drawItem(entity.location, entity.radius, entity.movement.vector, entity.color);
+			this.drawItem(entity.location, entity.radius, entity.movement, entity.color);
 		},
 
 		drawItem: function(position, radius, movement, color) {
@@ -66,7 +62,7 @@ define(function(require) {
 			context.fill();
 			//context.stroke();
 
-			if (movement.hypotenuse !== 0)
+			if (movement.magnitude !== 0)
 			{
 				context.beginPath();
 				context.moveTo(0, 0);
@@ -85,7 +81,5 @@ define(function(require) {
 		clear: function() {
 			this.context.clearRect(0, 0, this.width, this.height);
 		}
-	});
-
-	return canvas;
+	};
 });

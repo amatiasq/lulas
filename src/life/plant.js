@@ -1,13 +1,9 @@
 define(function(require) {
 	'use strict';
+	var extend = require('core/extend');
+	var Life = require('life/life');
 
-	var memory = require('core/memory');
-	var pool = require('core/pool');
-	var type = require('core/type');
-	var life = require('life/life');
-
-	var plant = type(life, {
-
+	return extend(Object.create(Life), {
 		$type: 'PLANT',
 
 		baseColor: {
@@ -17,12 +13,9 @@ define(function(require) {
 		},
 
 		tick: function() {
-			life.tick.call(this);
+			Life.tick.call(this);
 			if (this.area < 100)
 				this.diameter += 0.05;
 		}
 	});
-
-	memory.add(pool(plant));
-	return plant;
 });

@@ -1,13 +1,10 @@
 define(function(require) {
 	'use strict';
+	var extend = require('core/extend');
+	var Cell = require('life/cell');
 
-	var memory = require('core/memory');
-	var pool = require('core/pool');
-	var type = require('core/type');
-	var cell = require('life/cell');
-
-	var carnivore = type(cell, {
-
+	var Carnivore;
+	return Carnivore = extend(Object.create(Cell), {
 		$type: 'CARNIVORE',
 
 		baseColor: {
@@ -17,10 +14,7 @@ define(function(require) {
 		},
 
 		_isFood: function(target) {
-			return cell.isPrototypeOf(target);
+			return Cell.isPrototypeOf(target);
 		}
 	});
-
-	memory.add(pool(carnivore));
-	return carnivore;
 });
