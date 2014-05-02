@@ -27,7 +27,7 @@ define(function(require) {
 			child2.shove(direction + 180, strength);
 
 			if (this.onReproduce)
-				this.onReproduce([ child1, child2 ]);
+				this.onReproduce([ child1, child2 ], this);
 
 			this.die();
 		},

@@ -1,7 +1,9 @@
 define(function() {
 	'use strict';
 
-	var Vector = {
+	function V() {}
+
+	var Vector = V.prototype = {
 		$type: 'VECTOR',
 		_cache: {},
 		created: 0,
@@ -28,9 +30,10 @@ define(function() {
 
 		new: function(x, y) {
 			if (isNaN(x) || isNaN(y)) debugger;
+			return new V().init(x, y);
 			var decimals = 100;
-			x = (x * decimals | 0) / decimals;
-			y = (y * decimals | 0) / decimals;
+			x = Math.round(x * decimals) / decimals;
+			y = Math.round(y * decimals) / decimals;
 
 			var key = x + '-' + y;
 
@@ -92,7 +95,7 @@ define(function() {
 			this.x = x;
 			this.y = y;
 			this.isZero = x === 0 && y === 0;
-			Object.freeze(this);
+			//Object.freeze(this);
 			return this;
 		},
 
@@ -145,8 +148,8 @@ define(function() {
 		round: function(decimals) {
 			var operator = Math.pow(10, arguments.length ? decimals : 0);
 			return Vector.new(
-				(this.x * operator | 0) / operator,
-				(this.y * operator | 0) / operator
+				Math.round(this.x * operator) / operator,
+				Math.round(this.y * operator) / operator
 			);
 		},
 		abs: function() {
