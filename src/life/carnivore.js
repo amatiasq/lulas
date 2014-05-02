@@ -13,6 +13,11 @@ define(function(require) {
 			b: NaN,
 		},
 
+		init: function(location, diameter, parents) {
+			Cell.init.call(this, location, diameter, parents);
+			this.factor['velocity'] = 2;
+		},
+
 		_isFood: function(target) {
 			return Cell.isPrototypeOf(target);
 		}

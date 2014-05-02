@@ -12,6 +12,11 @@ define(function(require) {
 			b: NaN,
 		},
 
+		init: function(location, diameter, parents) {
+			Life.init.call(this, location, diameter, parents);
+			this.factor['weight'] = 1;
+		},
+
 		tick: function() {
 			Life.tick.call(this);
 			if (this.area < 100)

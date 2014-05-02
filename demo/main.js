@@ -22,31 +22,46 @@ define(function(require) {
 	game.addEntityType('HERBIVORE', Herbivore);
 	game.addEntityType('CARNIVORE', Carnivore);
 
+	game.onEntityDie = function(entity) {
+		if (entity.$entityType === 'PLANT')
+			game.spawn('PLANT', Vector.new(rand(width), rand(height)), rand(10, 5));
+	}
+
 	function rand(max, min) {
 		min = min || 0;
 		return (Math.random() * (max - min) | 0) + min;
 	}
 
 	var i;
-	for (i = 1; i--;)
+	for (i = 10; i--;)
 		game.spawn('PLANT', Vector.new(rand(width), rand(height)), rand(10, 5));
 
-	for (i = 1; i--;)
+	for (i = 5; i--;)
 		game.spawn('HERBIVORE', Vector.new(rand(width), rand(height)), rand(10, 5));
 
-	for (i = 1; i--;)
+	for (i = 3; i--;)
 		game.spawn('CARNIVORE', Vector.new(rand(width), rand(height)), rand(15, 10));
 
 	game.entities.forEach(function(entity) {
 		var direction = rand(360);
-		console.log(direction);
 		entity.shove(direction, rand(100));
 	});
 
 	window.game = game;
 	game.tick();
 
-	setInterval(game.tick.bind(game), 1000 / 1);
+	var interval = null;
+	function toggle() {
+		if (interval) {
+			clearInterval(interval);
+			interval = null;
+			return;
+		}
+		interval = setInterval(game.tick.bind(game), 1000 / 20);
+	}
+
+	document.addEventListener('click', toggle);
+	toggle();
 
 	/*
 	setInterval(function() {

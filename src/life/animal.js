@@ -57,7 +57,7 @@ define(function(require) {
 			if (this.boored)
 				return;
 
-			var force = closer.predator.hipotenuse < closer.prey.hipotenuse ?
+			var force = closer.predator.magnitude < closer.prey.magnitude ?
 				Vector.from(closer.predator.degrees + 180,
 					this.factor['velocity escaping'] / closer.predator.magnitude) :
 				Vector.from(closer.prey.degrees,

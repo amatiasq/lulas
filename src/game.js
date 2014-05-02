@@ -37,15 +37,24 @@ define(function(require) {
 			this.types = {};
 			this.entities = [];
 			this.map = Map.new();
-			this.onEntityDie = this.onEntityDie.bind(this);
-			this.onEntityReproduce = this.onEntityReproduce.bind(this);
+			this._onEntityDie = this._onEntityDie.bind(this);
+			this._onEntityReproduce = this._onEntityReproduce.bind(this);
 		},
 
-		onEntityDie: function(entity) {
-			this.remove(entity);
+		_onEntityDie: function(entity) {
+			this.dead.push(entity);
+			//this.remove(entity);
+			if (this.onEntityDie)
+				this.onEntityDie(entity);
 		},
-		onEntityReproduce: function(children) {
+		_onEntityReproduce: function(children, parent) {
 			this.children.push(children);
+
+			for (var i = 0; i < children.length; i++)
+				children[i].$entityType = parent.$entityType;
+
+			if (this.onEntityReproduce)
+				this.onEntityReproduce(children, parent);
 		},
 
 		addEntityType: function(id, type) {
@@ -59,14 +68,18 @@ define(function(require) {
 			});
 		},
 
+		_newEntity: function(entity) {
+			entity.onDie = this._onEntityDie;
+			entity.onReproduce = this._onEntityReproduce;
+			this.entities.push(entity);
+			return entity;
+		},
+
 		spawn: function(id, position, diameter) {
 			var type = this.types[id];
 			var entity = type.new(position, diameter);
 			entity.$entityType = id;
-			entity.onDie = this.onEntityDie;
-			entity.onReproduce = this.onEntityReproduce;
-			this.entities.push(entity);
-			return entity;
+			return this._newEntity(entity);
 		},
 
 		remove: function(entity) {
@@ -78,13 +91,13 @@ define(function(require) {
 
 		tick: function() {
 			this.tickEntities();
-			this.removeDead();
 			this.roundMap();
 			this.render();
 			//Vector.logDebugData();
 		},
 
 		tickEntities: function() {
+			this.dead = [];
 			this.children = [];
 			var entities = this.entities.slice();
 
@@ -95,16 +108,18 @@ define(function(require) {
 					entities[i].tick(this.map);
 			}
 
+			this.removeDead(this.dead);
 			this.addChildren(this.children);
 			this.children = null;
+			this.dead = null;
 		},
 
 		addChildren: function(children) {
 			children = Array.prototype.concat.apply([], children);
 
 			for (var i = 0, len = children.length; i < len; i++) {
-				if (!children[i]) continue;
-				this.entities.push(children[i]);
+				if (children[i])
+					this._newEntity(children[i]);
 			}
 		},
 

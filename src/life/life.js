@@ -7,6 +7,7 @@ define(function(require) {
 	var a = 0;
 	return extend({}, Element, Physic, {
 		$type: 'LIFE',
+		log: false,
 		new: require('core/new'),
 
 		get isDead() {
@@ -17,14 +18,21 @@ define(function(require) {
 			var id = this.id;
 			Element.init.call(this, location, diameter);
 			Physic.init.call(this);
-			id ? console.log(id, 'reencarnated into', this.id) : console.log(this.id, 'HAS BORN AS', this.$type);
+
+			if (this.log) {
+				id ?
+					console.log(id, 'reencarnated into', this.id) :
+					console.log(this.id, 'HAS BORN AS', this.$type);
+			}
 
 			this.parents = parents || [];
 			this.isAlive = true;
 		},
 
 		dispose: function() {
-			console.log(this.id, 'IS DEAD');
+			if (this.log)
+				console.log(this.id, 'IS DEAD');
+
 			Physic.dispose.call(this);
 			Element.dispose.call(this);
 			this.parents = null;
@@ -45,7 +53,7 @@ define(function(require) {
 
 		die: function() {
 			if (this.isDead) return;
-			if (this.onDie) this.onDie();
+			if (this.onDie) this.onDie(this);
 			this.isAlive = false;
 		},
 
