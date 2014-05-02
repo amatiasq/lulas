@@ -17,17 +17,13 @@
 		</style>
 	</head>
 	<body>
-		<script type="text/javascript" src="../bower_components/requirejs/require.js"></script>
+		<script type="text/javascript" src="bower_components/requirejs/require.js"></script>
 		<script type="text/javascript">
 
 			require.config({
-				baseUrl: '../src/',
+				baseUrl: 'src/',
 				urlArgs: Date.now(),
-
-				paths: {
-					'demo': '../demo',
-				}
-			})([ 'demo/main' ]);
+			})([ '../main' ]);
 
 		</script>
 	</body>
