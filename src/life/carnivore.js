@@ -1,11 +1,17 @@
 define(function(require) {
 	'use strict';
-	var extend = require('core/extend');
+	var descriptors = require('core/descriptors');
 	var Cell = require('life/cell');
+	var Herbivore = require('life/herbivore');
 
-	var Carnivore;
-	return Carnivore = extend(Object.create(Cell), {
-		$type: 'CARNIVORE',
+	function Carnivore(location, diameter, parents) {
+		Cell.call(this, location, diameter, parents);
+		this.factor['velocity'] = 2;
+		this.factor['velocity max'] = 8;
+	}
+
+	Carnivore.prototype = Object.create(Cell.prototype, descriptors({
+		constructor: Carnivore,
 
 		baseColor: {
 			r: 255,
@@ -13,13 +19,10 @@ define(function(require) {
 			b: NaN,
 		},
 
-		init: function(location, diameter, parents) {
-			Cell.init.call(this, location, diameter, parents);
-			this.factor['velocity'] = 2;
-		},
-
 		_isFood: function(target) {
-			return Cell.isPrototypeOf(target);
+			return target instanceof Herbivore;
 		}
-	});
+	}));
+
+	return Carnivore;
 });

@@ -7,14 +7,14 @@ define(function(require) {
 	var Herbivore = require('life/herbivore');
 	var Carnivore = require('life/carnivore');
 	var Game = require('game');
-	var CanvasRenderer = require('renderers/canvas')
+	var CanvasRenderer = require('renderers/canvas');
 
 	var width = document.documentElement.clientWidth;
 	var height = document.documentElement.clientHeight;
 
-	var game = Game.new();
+	var game = new Game();
 	game.container = document.body;
-	game.renderer = CanvasRenderer.new();
+	game.renderer = new CanvasRenderer();
 	game.height = height;
 	game.width = width;
 
@@ -24,8 +24,8 @@ define(function(require) {
 
 	game.onEntityDie = function(entity) {
 		if (entity.$entityType === 'PLANT')
-			game.spawn('PLANT', Vector.new(rand(width), rand(height)), rand(10, 5));
-	}
+			game.spawn('PLANT', new Vector(rand(width), rand(height)), rand(10, 5));
+	};
 
 	function rand(max, min) {
 		min = min || 0;
@@ -34,13 +34,13 @@ define(function(require) {
 
 	var i;
 	for (i = 10; i--;)
-		game.spawn('PLANT', Vector.new(rand(width), rand(height)), rand(10, 5));
+		game.spawn('PLANT', new Vector(rand(width), rand(height)), rand(10, 5));
 
 	for (i = 5; i--;)
-		game.spawn('HERBIVORE', Vector.new(rand(width), rand(height)), rand(10, 5));
+		game.spawn('HERBIVORE', new Vector(rand(width), rand(height)), rand(10, 5));
 
 	for (i = 3; i--;)
-		game.spawn('CARNIVORE', Vector.new(rand(width), rand(height)), rand(15, 10));
+		game.spawn('CARNIVORE', new Vector(rand(width), rand(height)), rand(15, 10));
 
 	game.entities.forEach(function(entity) {
 		var direction = rand(360);

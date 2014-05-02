@@ -2,11 +2,15 @@
 
 define(function(require) {
 	'use strict';
+	var descriptors = require('core/descriptors');
 	var Vector = require('physics/vector');
 
-	return {
-		$type: 'PHYSIC',
-		new: require('core/new'),
+	function Physic() {
+		this.movement = new Vector(0, 0);
+		this.factor['weight'] = 0;
+	}
+
+	Physic.prototype = {
 
 		get direction() {
 			return this.movement.degrees;
@@ -22,16 +26,15 @@ define(function(require) {
 		},
 
 		get isStopped() {
-			return (this.velocity * 10 | 0) === 0;
+			return Math.round(this.velocity * 10) === 0;
 		},
 		get isMoving() {
 			return !this.isStopped;
 		},
+	};
 
-		init: function() {
-			this.movement = Vector.new(0, 0);
-			this.factor['weight'] = 0;
-		},
+	Object.defineProperties(Physic.prototype, descriptors({
+		constructor: Physic,
 
 		dispose: function() {
 			this.movement = null;
@@ -41,7 +44,7 @@ define(function(require) {
 		move: function() { },
 
 		shove: function(degrees, strength) {
-			var effect = Vector.isPrototypeOf(degrees) ?
+			var effect = degrees instanceof Vector ?
 				degrees :
 				Vector.from(degrees, strength);
 
@@ -63,5 +66,7 @@ define(function(require) {
 		stop: function() {
 			this.velocity = 0;
 		},
-	};
+	}));
+
+	return Physic;
 });

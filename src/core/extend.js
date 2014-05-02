@@ -6,7 +6,7 @@ define(function() {
 		var sources = Array.prototype.slice.call(arguments, 1);
 
 		sources.forEach(function(source) {
-			Object.keys(source).forEach(function(key) {
+			Object.getOwnPropertyNames(source).forEach(function(key) {
 				descriptors[key] = Object.getOwnPropertyDescriptor(source, key);
 			});
 		});

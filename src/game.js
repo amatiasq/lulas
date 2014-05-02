@@ -1,11 +1,21 @@
 define(function(require) {
 	'use strict';
+	var descriptors = require('core/descriptors');
 	var Map = require('map/map');
 
-	return {
-		$type: 'GAME',
-		new: require('core/new'),
+	function Game() {
+		this.contanier = null;
+		this.types = {};
+		this.entities = [];
+		this.map = new Map();
 
+		Object.defineProperties(this, descriptors({
+			_onEntityDie: this._onEntityDie.bind(this),
+			_onEntityReproduce: this._onEntityReproduce.bind(this),
+		}));
+	}
+
+	Game.prototype = {
 		get renderer() {
 			return this._renderer;
 		},
@@ -31,16 +41,9 @@ define(function(require) {
 			this.map.height = value;
 			this.renderer.height = value;
 		},
+	};
 
-		init: function() {
-			this.contanier = null;
-			this.types = {};
-			this.entities = [];
-			this.map = Map.new();
-			this._onEntityDie = this._onEntityDie.bind(this);
-			this._onEntityReproduce = this._onEntityReproduce.bind(this);
-		},
-
+	Object.defineProperties(Game.prototype, descriptors({
 		_onEntityDie: function(entity) {
 			this.dead.push(entity);
 			//this.remove(entity);
@@ -76,8 +79,8 @@ define(function(require) {
 		},
 
 		spawn: function(id, position, diameter) {
-			var type = this.types[id];
-			var entity = type.new(position, diameter);
+			var Type = this.types[id];
+			var entity = new Type(position, diameter);
 			entity.$entityType = id;
 			return this._newEntity(entity);
 		},
@@ -127,9 +130,12 @@ define(function(require) {
 			var entities = this.entities;
 			var alive = [];
 
-			for (var i = 0, len = entities.length; i < len; i++)
+			for (var i = 0, len = entities.length; i < len; i++) {
 				if (!entities[i].isDisposed && !entities[i].isDead)
 					alive.push(entities[i]);
+				else
+					entities[i].dispose();
+			}
 
 			this.entities = alive;
 		},
@@ -144,5 +150,7 @@ define(function(require) {
 			for (var i = 0, len = this.entities.length; i < len; i++)
 				this.renderer.drawEntity(this.entities[i]);
 		}
-	};
+	}));
+
+	return Game;
 });

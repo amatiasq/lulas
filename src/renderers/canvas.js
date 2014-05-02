@@ -1,14 +1,17 @@
 define(function(require) {
 	'use strict';
+	var descriptors = require('core/descriptors');
 
 	function calcColor(base) {
 		return isNaN(base) ? Math.round(Math.random() * 128) : base;
 	}
 
-	return {
-		$type: 'CANVAS',
-		new: require('core/new'),
+	function CanvasRenderer() {
+		this.canvas = document.createElement('canvas');
+		this.context = this.canvas.getContext('2d');
+	}
 
+	CanvasRenderer.prototype = {
 		get width() {
 			return this.canvas.width;
 		},
@@ -21,13 +24,11 @@ define(function(require) {
 		set height(value) {
 			this.canvas.height = value;
 		},
+	};
 
+	Object.defineProperties(CanvasRenderer.prototype, descriptors({
+		constructor: CanvasRenderer,
 		colors: [ 'r', 'g', 'b'],
-
-		init: function() {
-			this.canvas = document.createElement('canvas');
-			this.context = this.canvas.getContext('2d');
-		},
 
 		append: function(parent) {
 			parent.appendChild(this.canvas);
@@ -81,5 +82,7 @@ define(function(require) {
 		clear: function() {
 			this.context.clearRect(0, 0, this.width, this.height);
 		}
-	};
+	}));
+
+	return CanvasRenderer;
 });

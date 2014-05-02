@@ -1,71 +1,17 @@
-define(function() {
+define(function(require) {
 	'use strict';
+	var descriptors = require('core/descriptors');
 
-	function V() {}
+	function Vector(x, y) {
+		if (isNaN(x) || isNaN(y)) debugger;
+		this.x = x;
+		this.y = y;
+		this.isZero = x === 0 && y === 0;
+		//Object.freeze(this);
+		return this;
+	}
 
-	var Vector = V.prototype = {
-		$type: 'VECTOR',
-		_cache: {},
-		created: 0,
-		cached: 0,
-		bad: 0,
-		good: 0,
-		none: 0,
-
-		logDebugData: function() {
-			var message;
-
-			if (Vector.cached < Vector.created)
-				message = 'bad';
-			else if (Vector.cached > Vector.created)
-				message = 'good';
-			else
-				message = 'none';
-
-			Vector[message]++;
-			console.log(Vector.good, Vector.bad, Vector.none, message, '(', Vector.cached, '-', Vector.created, ')');
-
-			Vector.created = Vector.cached = 0;
-		},
-
-		new: function(x, y) {
-			if (isNaN(x) || isNaN(y)) debugger;
-			return new V().init(x, y);
-			var decimals = 100;
-			x = Math.round(x * decimals) / decimals;
-			y = Math.round(y * decimals) / decimals;
-
-			var key = x + '-' + y;
-
-			if (!this._cache[key]) {
-				this._cache[key] = Object.create(this).init(x, y);
-				Vector.created++;
-			} else {
-				Vector.cached++;
-			}
-
-			return this._cache[key];
-		},
-
-		fromRadians: function(radians) {
-			return Vector.new(Math.cos(radians), Math.sin(radians));
-		},
-		fromDegrees: function(degrees) {
-			degrees = degrees % 360;
-
-			if (degrees < 0)
-				degrees += 360;
-
-			return this.fromRadians(degrees * Math.PI / 180);
-		},
-		fromMagnitude: function(value) {
-			return Vector.new(value, 0);
-		},
-		from: function(degrees, magnitude) {
-			var vector = this.fromDegrees(degrees);
-			return vector.setMagnitude(magnitude);
-		},
-
+	Vector.prototype = {
 		get radians() {
 			if (this.isZero)
 				return 0;
@@ -90,24 +36,20 @@ define(function() {
 
 			return Math.sqrt(this.x * this.x + this.y * this.y, 2);
 		},
+	};
 
-		init: function(x, y) {
-			this.x = x;
-			this.y = y;
-			this.isZero = x === 0 && y === 0;
-			//Object.freeze(this);
-			return this;
-		},
+	Object.defineProperties(Vector.prototype, descriptors({
+		constructor: Vector,
 
 		setX: function(value) {
-			return Vector.new(value, this.y);
+			return new Vector(value, this.y);
 		},
 		setY: function(value) {
-			return Vector.new(this.x, value);
+			return new Vector(this.x, value);
 		},
 		setMagnitude: function(value) {
 			if (this.isZero)
-				return this.fromMagnitude(value);
+				return Vector.fromMagnitude(value);
 
 			var operator = value / this.magnitude;
 			return this.multiply(operator);
@@ -123,45 +65,68 @@ define(function() {
 
 		add: function(x, y) {
 			if (arguments.length === 1) y = x;
-			return Vector.new(this.x + x, this.y + y);
+			return new Vector(this.x + x, this.y + y);
 		},
 		sustract: function(x, y) {
 			if (arguments.length === 1) y = x;
-			return Vector.new(this.x - x, this.y - y);
+			return new Vector(this.x - x, this.y - y);
 		},
 		multiply: function(x, y) {
 			if (arguments.length === 1) y = x;
-			return Vector.new(this.x * x, this.y * y);
+			return new Vector(this.x * x, this.y * y);
 		},
 		divide: function(x, y) {
 			if (arguments.length === 1) y = x;
-			return Vector.new(this.x / x, this.y / y);
+			return new Vector(this.x / x, this.y / y);
 		},
 
 		merge: function(other) {
-			return Vector.new(this.x + other.x, this.y + other.y);
+			return new Vector(this.x + other.x, this.y + other.y);
 		},
 		diff: function(other) {
-			return Vector.new(this.x - other.x, this.y - other.y);
+			return new Vector(this.x - other.x, this.y - other.y);
 		},
 
 		round: function(decimals) {
 			var operator = Math.pow(10, arguments.length ? decimals : 0);
-			return Vector.new(
+			return new Vector(
 				Math.round(this.x * operator) / operator,
 				Math.round(this.y * operator) / operator
 			);
 		},
 		abs: function() {
-			return Vector.new(Math.abs(this.x), Math.abs(this.y));
+			return new Vector(Math.abs(this.x), Math.abs(this.y));
 		},
 
 		toString: function() {
 			return '[Vector(' + this.x + ',' + this.y +')]';
 		}
-	};
+	}));
 
-	Vector.ZERO = Vector.new(0, 0);
-	Vector.BIGGER = Vector.new(Infinity, Infinity);
+	Object.defineProperties(Vector, descriptors({
+		ZERO: new Vector(0, 0),
+		BIGGER: new Vector(Infinity, Infinity),
+
+		fromRadians: function(radians) {
+			return new Vector(Math.cos(radians), Math.sin(radians));
+		},
+		fromDegrees: function(degrees) {
+			degrees = degrees % 360;
+
+			if (degrees < 0)
+				degrees += 360;
+
+			return this.fromRadians(degrees * Math.PI / 180);
+		},
+		fromMagnitude: function(value) {
+			return new Vector(value, 0);
+		},
+		from: function(degrees, magnitude) {
+			var vector = this.fromDegrees(degrees);
+			return vector.setMagnitude(magnitude);
+		},
+	}));
+
+
 	return Vector;
 });
