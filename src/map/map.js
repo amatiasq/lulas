@@ -2,12 +2,16 @@
 
 define(function(require) {
 	'use strict';
+	var descriptors = require('core/descriptors');
 	var Vector = require('physics/vector');
 
-	return {
-		$type: 'MAP',
-		new: require('core/new'),
+	function Map() {
+		this.width = 100;
+		this.height = 100;
+		this.cellSize = 10;
+	}
 
+	Map.prototype = {
 		get width() {
 			return this._width;
 		},
@@ -22,12 +26,10 @@ define(function(require) {
 			this._height = value;
 			this.halfHeight = value / 2;
 		},
+	};
 
-		init: function() {
-			this.width = 100;
-			this.height = 100;
-			this.cellSize = 10;
-		},
+	Object.defineProperties(Map.prototype, descriptors({
+		constructor: Map,
 
 		getEntitiesAt: function(from, radius) {
 			var entities = [];
@@ -47,7 +49,7 @@ define(function(require) {
 
 		getShorterDistance: function(from, to) {
 			var diff = to.diff(from);
-			return Vector.new(
+			return new Vector(
 				diff.x < this.halfWidth ? diff.x : this.width - diff.x,
 				diff.y < this.halfHeight ? diff.y : this.height - diff.y
 			);
@@ -60,7 +62,9 @@ define(function(require) {
 			if (x < 0) x = this.width - x;
 			if (y < 0) y = this.height - y;
 
-			entity.location = Vector.new(x, y);
+			entity.location = new Vector(x, y);
 		}
-	};
+	}));
+
+	return Map;
 });

@@ -2,34 +2,33 @@
 
 define(function(require) {
 	'use strict';
-	var extend = require('core/extend');
+	var descriptors = require('core/descriptors');
 	var Vector = require('physics/vector');
 	var Life = require('life/life');
 
 	function isAnimal(entity) {
-		return Animal.isPrototypeOf(entity);
+		return entity instanceof Animal;
 	}
 
-	var Animal;
-	return Animal = extend(Object.create(Life), {
-		$type: 'ANIMAL',
+	function Animal(location, diameter, parents) {
+		Life.call(this, location, diameter, parents);
+		this.factor['visibility'] = 100;
+		this.factor['velocity'] = 1;
+		this.factor['velocity hunting'] = 1000;
+		this.factor['velocity escaping'] = 200;
+		this.factor['velocity max'] = 7;
+		this.factor['friction'] = 0.1;
+	}
+
+	Animal.prototype = Object.create(Life.prototype, descriptors({
+		constructor: Animal,
 
 		// abstract
 		canReproduce: function() { },
 		reproduce: function() { },
 
-		init: function(location, diameter, parents) {
-			Life.init.call(this, location, diameter, parents);
-			this.factor['visibility'] = 500;
-			this.factor['velocity'] = 1;
-			this.factor['velocity hunting'] = 1000;
-			this.factor['velocity escaping'] = 200;
-			this.factor['velocity max'] = 10;
-			this.factor['friction'] = 0.1;
-		},
-
 		tick: function(map) {
-			Life.tick.call(this);
+			Life.prototype.tick.call(this);
 
 			if (this.canReproduce())
 				return this.reproduce();
@@ -123,7 +122,9 @@ define(function(require) {
 			if (this.velocity > this.factor['velocity max'])
 				this.velocity = this.factor['velocity max'];
 
-			Life.move.call(this);
+			Life.prototype.move.call(this);
 		}
-	});
+	}));
+
+	return Animal;
 });

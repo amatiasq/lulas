@@ -1,40 +1,40 @@
 define(function(require) {
 	'use strict';
+	var descriptors = require('core/descriptors');
 	var extend = require('core/extend');
 	var Element = require('map/element');
 	var Physic = require('physics/physic');
 
-	var a = 0;
-	return extend({}, Element, Physic, {
-		$type: 'LIFE',
-		log: false,
-		new: require('core/new'),
+	function Life(location, diameter, parents) {
+		var id = this.id;
+		Element.call(this, location, diameter);
+		Physic.call(this);
 
+		if (this.log) {
+			id ?
+				console.log(id, 'reencarnated into', this.id) :
+				console.log(this.id, 'HAS BORN AS', this.$type);
+		}
+
+		this.parents = parents || [];
+		this.isAlive = true;
+	}
+
+	extend(Life.prototype, Element.prototype, Physic.prototype, {
 		get isDead() {
 			return !this.isAlive;
 		},
+	});
 
-		init: function(location, diameter, parents) {
-			var id = this.id;
-			Element.init.call(this, location, diameter);
-			Physic.init.call(this);
-
-			if (this.log) {
-				id ?
-					console.log(id, 'reencarnated into', this.id) :
-					console.log(this.id, 'HAS BORN AS', this.$type);
-			}
-
-			this.parents = parents || [];
-			this.isAlive = true;
-		},
+	Object.defineProperties(Life.prototype, descriptors({
+		log: true,
 
 		dispose: function() {
 			if (this.log)
 				console.log(this.id, 'IS DEAD');
 
-			Physic.dispose.call(this);
-			Element.dispose.call(this);
+			Physic.prototype.dispose.call(this);
+			Element.prototype.dispose.call(this);
 			this.parents = null;
 		},
 
@@ -72,5 +72,7 @@ define(function(require) {
 				this.isParent(target) ||
 				this.isSibiling(target);
 		}
-	});
+	}));
+
+	return Life;
 });

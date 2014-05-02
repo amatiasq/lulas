@@ -1,12 +1,15 @@
 define(function(require) {
 	'use strict';
-	var extend = require('core/extend');
+	var descriptors = require('core/descriptors');
 	var Cell = require('life/cell');
 	var Plant = require('life/plant');
 
-	var Herbivore;
-	return Herbivore = extend(Object.create(Cell), {
-		$type: 'HERBIVORE',
+	function Herbivore(location, diameter, parents) {
+		Cell.call(this, location, diameter, parents);
+	}
+
+	Herbivore.prototype = Object.create(Cell.prototype, descriptors({
+		constructor: Herbivore,
 
 		baseColor: {
 			r: 100,
@@ -15,7 +18,9 @@ define(function(require) {
 		},
 
 		_isFood: function(target) {
-			return Plant.isPrototypeOf(target);
+			return target instanceof Plant;
 		}
-	});
+	}));
+
+	return Herbivore;
 });

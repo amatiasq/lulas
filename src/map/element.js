@@ -1,11 +1,17 @@
 define(function(require) {
 	'use strict';
+	var descriptors = require('core/descriptors');
 	var Vector = require('physics/vector');
 	var id = 0;
 
-	return {
-		$type: 'MAP_ELEMENT',
-		new: require('core/new'),
+	function Element(location, diameter) {
+		this.id = id++;
+		this.factor = {};
+		this.location = location || new Vector(0, 0);
+		this.diameter = diameter || 1;
+	}
+
+	Element.prototype = {
 
 		get x() {
 			return this.location.x;
@@ -42,13 +48,10 @@ define(function(require) {
 		get area() {
 			return Math.PI * this.radius * this.radius;
 		},
+	};
 
-		init: function(location, diameter) {
-			this.id = id++;
-			this.factor = {};
-			this.location = location || Vector.new(0, 0);
-			this.diameter = diameter || 1;
-		},
+	Object.defineProperties(Element.prototype, descriptors({
+		constructor: Element,
 
 		dispose: function() {
 			this.factor = null;
@@ -68,5 +71,7 @@ define(function(require) {
 		testCollision: function(target) {
 			return this.distance(target) < this.radius + target.radius;
 		}
-	};
+	}));
+
+	return Element;
 });
