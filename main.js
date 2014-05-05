@@ -7,6 +7,7 @@ define(function(require) {
 	var Herbivore = require('life/herbivore');
 	var Carnivore = require('life/carnivore');
 	var Game = require('game');
+	var Ticker = require('ticker');
 	var CanvasRenderer = require('renderers/canvas');
 
 	var width = document.documentElement.clientWidth;
@@ -47,25 +48,20 @@ define(function(require) {
 		entity.shove(direction, rand(100));
 	});
 
-	window.game = game;
-	game.tick();
-
-	var interval = null;
-	function toggle() {
-		if (interval) {
-			clearInterval(interval);
-			interval = null;
-			return;
+	var last = Date.now();
+	var ticker = new Ticker(function(iteration) {
+		if (!(iteration % 100)) {
+			var now = Date.now();
+			console.log(iteration, game.entities.length, (now - last) / 1000);
+			last = now;
 		}
-		interval = setInterval(game.tick.bind(game), 1000 / 20);
-	}
 
-	document.addEventListener('click', toggle);
-	toggle();
+		document.title = iteration;
+		game.tick();
+		window.DEBUG = false;
+	});
 
-	/*
-	setInterval(function() {
-		game.spawn('PLANT', vector(rand(width), rand(height)), rand(10, 5));
-	}, 10);
-	*/
+	document.addEventListener('click', ticker.toggle.bind(ticker));
+	ticker.start();
+	window.game = game;
 });

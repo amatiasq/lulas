@@ -5,6 +5,15 @@ define(function(require) {
 	var Element = require('map/element');
 	var Physic = require('physics/physic');
 
+	function getId(item) {
+		return item.id;
+	}
+
+	function idHashmap(map, item) {
+		map[item.id] = true;
+		return map;
+	}
+
 	function Life(location, diameter, parents) {
 		var id = this.id;
 		Element.call(this, location, diameter);
@@ -16,7 +25,8 @@ define(function(require) {
 				console.log(this.id, 'HAS BORN AS', this.$type);
 		}
 
-		this.parents = parents || [];
+		this.parents = parents ? parents.reduce(idHashmap, {}) : {};
+		this.parentArray = parents ? parents.map(getId) : [];
 		this.isAlive = true;
 	}
 
@@ -27,7 +37,7 @@ define(function(require) {
 	});
 
 	Object.defineProperties(Life.prototype, descriptors({
-		log: true,
+		log: false,
 
 		dispose: function() {
 			if (this.log)
@@ -46,8 +56,6 @@ define(function(require) {
 		},
 
 		move: function() {
-			//if (a++ < 100)
-			//	console.log(this.id, 'moving', this.location.toString(), this.movement.toString());
 			this.location = this.location.merge(this.movement);
 		},
 
@@ -58,12 +66,12 @@ define(function(require) {
 		},
 
 		isParent: function(target) {
-			return target.parents.indexOf(this) !== -1;
+			return target.parents[this.id];
 		},
 
 		isSibiling: function(target) {
-			for (var i = 0, len = this.parents.length; i < len; i++)
-				if (target.parents.indexOf(this.parents[i]) !== -1)
+			for (var i = 0, len = this.parentArray.length; i < len; i++)
+				if (target.parents[this.parentArray[i]])
 					return true;
 		},
 

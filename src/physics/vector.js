@@ -3,7 +3,10 @@ define(function(require) {
 	var descriptors = require('core/descriptors');
 
 	function Vector(x, y) {
-		if (isNaN(x) || isNaN(y)) debugger;
+		//if (isNaN(x) || isNaN(y)) debugger;
+		x = Math.round(x * 1000) / 1000;
+		y = Math.round(y * 1000) / 1000;
+
 		this.x = x;
 		this.y = y;
 		this.isZero = x === 0 && y === 0;
@@ -127,6 +130,7 @@ define(function(require) {
 		},
 	}));
 
+	// HACK: fast round operation "(x * 100 | 0) / 100" returns NaN for Infinity
 
 	return Vector;
 });

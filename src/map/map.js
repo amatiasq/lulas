@@ -28,6 +28,16 @@ define(function(require) {
 		},
 	};
 
+	function roundMap(value, max) {
+		if (Math.abs(value) <= max / 2)
+			return value;
+
+		if (value < 0)
+			return value + max;
+
+		return value - max;
+	}
+
 	Object.defineProperties(Map.prototype, descriptors({
 		constructor: Map,
 
@@ -49,9 +59,12 @@ define(function(require) {
 
 		getShorterDistance: function(from, to) {
 			var diff = to.diff(from);
+
 			return new Vector(
-				diff.x < this.halfWidth ? diff.x : this.width - diff.x,
-				diff.y < this.halfHeight ? diff.y : this.height - diff.y
+				roundMap(diff.x, this.width),
+				roundMap(diff.y, this.height)
+				//Math.abs(diff.x) < this.halfWidth ? diff.x : -diff.x,
+				//Math.abs(diff.y) < this.halfHeight ? diff.y : this.height - diff.y
 			);
 		},
 
