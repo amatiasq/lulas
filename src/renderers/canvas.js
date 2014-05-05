@@ -56,10 +56,10 @@ define(function(require) {
 
 			context.save();
 			context.fillStyle = color;
-			context.translate(position.x, position.y);
+			context.translate(position.x | 0, position.y | 0);
 
 			context.beginPath();
-			context.arc(0, 0, radius, 0, Math.PI * 2);
+			context.arc(0, 0, radius | 0, 0, Math.PI * 2);
 			context.fill();
 			//context.stroke();
 
@@ -67,11 +67,11 @@ define(function(require) {
 			{
 				context.beginPath();
 				context.moveTo(0, 0);
-				context.lineTo(movement.x, movement.y);
+				context.lineTo(movement.x | 0, movement.y | 0);
 				context.stroke();
 
 				context.fillStyle = 'blue';
-				context.translate(movement.x, movement.y);
+				context.translate(movement.x | 0, movement.y | 0);
 				context.arc(0, 0, 2, 0, Math.PI * 2);
 				context.fill();
 			}
