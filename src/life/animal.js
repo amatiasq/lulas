@@ -12,7 +12,7 @@ define(function(require) {
 
 	function Animal(location, diameter, parents) {
 		Life.call(this, location, diameter, parents);
-		this.factor['visibility'] = 20;
+		this.factor['visibility'] = 30;
 		this.factor['velocity'] = 1;
 		this.factor['velocity hunting'] = 1000;
 		this.factor['velocity escaping'] = 200;
