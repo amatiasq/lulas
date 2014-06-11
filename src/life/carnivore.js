@@ -34,7 +34,6 @@ define(function(require) {
 			if (alternative instanceof Herbivore)
 				return tmp(false);
 
-			return false;
 			return tmp(target instanceof Cell);
 		}
 	}));

@@ -33,7 +33,7 @@ define(function(require) {
 
 		_createChild: function() {
 			var Type = this.constructor;
-			return new Type(this.location, this.radius, [ this ]);
+			return new Type(this.location, this.radius * 0.9, [ this ]);
 		}
 	}));
 

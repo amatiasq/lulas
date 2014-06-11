@@ -48,15 +48,23 @@ define(function(require) {
 		entity.shove(direction, rand(100));
 	});
 
-	var last = Date.now();
+
+	var fps = document.querySelector('.fps');
+
+	var lastLog = Date.now();
+	var lastTick = Date.now();
 	var ticker = new Ticker(function(iteration) {
+		var now = Date.now();
+
 		if (!(iteration % 100)) {
-			var now = Date.now();
-			console.log(iteration, game.entities.length, (now - last) / 1000);
-			last = now;
+			console.log(iteration, game.entities.length, (now - lastLog) / 1000);
+			lastLog = now;
 		}
 
-		document.title = iteration;
+		var diff = now - lastTick;
+		fps.innerText = iteration + ' - ' + (1000 / diff);
+		lastTick = now;
+
 		game.tick();
 		window.DEBUG = false;
 	});
