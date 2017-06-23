@@ -1,21 +1,52 @@
 {
   "name": "lulas",
-  "version": "0.0.1",
-  "dependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.6.4",
-    "grunt-contrib-watch": "~0.5.3",
-    "karma-script-launcher": "~0.1.0",
-    "karma-chrome-launcher": "~0.1.0",
-    "karma-firefox-launcher": "~0.1.0",
-    "karma-html2js-preprocessor": "~0.1.0",
-    "karma-requirejs": "~0.1.0",
-    "karma-jasmine": "~0.1.3",
-    "karma-coffee-preprocessor": "~0.1.0",
-    "karma-phantomjs-launcher": "~0.1.0",
-    "karma": "~0.10.2",
-    "grunt-karma": "~0.6.2",
-    "mocha": "~1.13.0",
-    "karma-mocha": "~0.1.0"
-  }
+  "version": "1.1.0",
+  "description": "A life simulator",
+  "main": "main.js",
+  "directories": {
+    "test": "test"
+  },
+  "jest": {
+    "mapCoverage": true,
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "testRegex": "\\.spec\\.ts$",
+    "testPathIgnorePatterns": [
+      ".bakup"
+    ],
+    "transform": {
+      "\\.ts$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    }
+  },
+  "scripts": {
+    "test": "jest",
+    "test-watch": "jest --watch",
+    "test-coverage": "jest --coverage",
+    "upload-coverage": "cat ./coverage/lcov.info | coveralls",
+    "build": "cd config; webpack --config ./webpack.config.js",
+    "lint": "tslint -c tslint.json --type-check --project tsconfig.json 'src/**/*.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amatiasq/lulas.git"
+  },
+  "author": "A. Matías Quezada <amatiasq@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/amatiasq/lulas/issues"
+  },
+  "devDependencies": {
+    "@types/jest": "^19.2.3",
+    "coveralls": "^2.13.1",
+    "jest": "^20.0.4",
+    "ts-jest": "^20.0.4",
+    "ts-loader": "^2.0.3",
+    "tslint": "^5.3.2",
+    "tslint-language-service": "^0.9.6",
+    "typescript": "^2.3.3",
+    "webpack": "^2.4.1"
+  },
+  "homepage": "https://github.com/amatiasq/lulas#readme"
 }
