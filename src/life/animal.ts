@@ -1,6 +1,5 @@
 import Circle from '../map/circle';
 import WorldMap from '../map/map';
-import * as params from '../parameters';
 import { IPhysicElementFactors } from '../physics/physic-element';
 import Vector from '../physics/vector';
 import Life from './life';
@@ -127,8 +126,7 @@ export default abstract class Animal extends Life {
 
     prey.die();
 
-    const before = this.direction;
-    const after = this.direction = Math.random() * 360;
+    this.direction = Math.random() * 360;
     this.velocity *= 10;
   }
 

@@ -1,5 +1,4 @@
 import WorldMap from '../map/map';
-import * as params from '../parameters';
 import { IPhysicElementFactors } from '../physics/physic-element';
 import Vector from '../physics/vector';
 import { IRgbColor } from '../utils';
