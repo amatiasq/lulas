@@ -1,3 +1,4 @@
+import * as params from '../parameters';
 import Vector from '../physics/vector';
 import Circle from './circle';
 
@@ -10,7 +11,11 @@ export default class Map {
   entities: Circle[];
 
 
-  constructor(width = 100, height = 100, public readonly cellSize = 10) {
+  constructor(
+    width = params.MAP_DEFAULT_WIDTH,
+    height = params.MAP_DEFAULT_HEIGHT,
+    public readonly cellSize = params.MAP_DEFAULT_CELL_SIZE,
+  ) {
     this.width = width;
     this.height = height;
     this.entities = [];

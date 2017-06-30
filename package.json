@@ -21,6 +21,7 @@
     }
   },
   "scripts": {
+    "start": "webpack-dev-server",
     "test": "jest",
     "test-watch": "jest --watch",
     "test-coverage": "jest --coverage",
@@ -46,7 +47,8 @@
     "tslint": "^5.4.3",
     "tslint-language-service": "^0.9.6",
     "typescript": "^2.3.4",
-    "webpack": "^3.0.0"
+    "webpack": "^3.0.0",
+    "webpack-dev-server": "^2.5.0"
   },
   "homepage": "https://github.com/amatiasq/lulas#readme"
 }

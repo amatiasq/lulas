@@ -1,12 +1,16 @@
+import { applyFactors } from '../utils';
 import Vector, { MutableVector } from './vector';
 
 
 export default abstract class PhysicElement {
   private _isDisposed = false;
   movement = Vector.ZERO;
-  factor: IPhysicsElementFactors = {
-    weight: 0,
-  };
+  factor: IPhysicElementFactors;
+
+
+  constructor() {
+    applyFactors(this);
+  }
 
 
   get direction() {
@@ -67,6 +71,6 @@ export default abstract class PhysicElement {
 }
 
 
-export interface IPhysicsElementFactors {
+export interface IPhysicElementFactors {
   weight: number;
 }

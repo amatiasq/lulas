@@ -6,6 +6,14 @@ node_js:
 script:
   - npm run lint
   - npm run test-coverage
+  - npm run build
 
 after_script:
- - npm run upload-coverage
+  - npm run upload-coverage
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  on:
+    branch: master
