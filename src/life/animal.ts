@@ -1,6 +1,7 @@
 import Circle from '../map/circle';
 import WorldMap from '../map/map';
-import { IPhysicsElementFactors } from '../physics/physic-element';
+import * as params from '../parameters';
+import { IPhysicElementFactors } from '../physics/physic-element';
 import Vector from '../physics/vector';
 import Life from './life';
 
@@ -15,20 +16,6 @@ const PREDATOR_DISTANCE = 'predator-distance';
 export default abstract class Animal extends Life {
   factor: IAnimalFactors;
   isBored: boolean;
-
-
-  constructor(location: Vector, diameter: number, parents: Life[]) {
-    super(location, diameter, parents);
-
-    this.factor.maxBite = 0.6;
-    this.factor.visibility = 50;
-    this.factor.velocity = 1;
-    this.factor.velocityHunting = 100;
-    this.factor.velocityEscaping = 200;
-    this.factor.maxVelocity = 7;
-    this.factor.friction = 0.01;
-    this.factor.consumption = 0.1;
-  }
 
 
   abstract canReproduce(): boolean;
@@ -156,7 +143,7 @@ export default abstract class Animal extends Life {
 }
 
 
-export interface IAnimalFactors extends IPhysicsElementFactors {
+export interface IAnimalFactors extends IPhysicElementFactors {
   consumption: number;
   friction: number;
   maxBite: number;

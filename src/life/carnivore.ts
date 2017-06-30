@@ -13,16 +13,6 @@ export default class Carnivore extends Cell {
   readonly baseColor: IRgbColor = { r: 255, g: 0, b: -1 };
 
 
-  constructor(location: Vector, diameter: number, parents: Carnivore[]) {
-    super(location, diameter, parents);
-
-    this.factor.velocity = 2;
-    this.factor.velocityHunting = 100;
-    this.factor.maxVelocity = 6 + Math.random();
-    this.factor.consumption = 0.01;
-  }
-
-
   canFight(target: Life): boolean {
     return !(target instanceof Animal) || this.diameter > target.diameter;
   }

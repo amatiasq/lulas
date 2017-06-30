@@ -1,3 +1,4 @@
+import * as params from '../parameters';
 import Vector from '../physics/vector';
 import Animal, { IAnimalFactors } from './animal';
 import Life from './life';
@@ -6,16 +7,6 @@ import Life from './life';
 export default class Cell extends Animal {
 
   factor: ICellFactor;
-
-
-  constructor(location: Vector, diameter: number, parents: Life[]) {
-    super(location, diameter, parents);
-
-    this.factor.maxSize = 15;
-    this.factor.mitosisSplitVelocity = 5;
-    this.factor.mitosisGrowth = 1.8;
-    this.factor.mitosisMaxSize = 13;
-  }
 
 
   canReproduce() {

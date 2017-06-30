@@ -2,6 +2,7 @@ import Game from './game';
 import Carnivore from './life/carnivore';
 import Herbivore from './life/herbivore';
 import Plant from './life/plant';
+import * as params from './parameters';
 import Vector from './physics/vector';
 import CanvasRenderer from './renderers/canvas';
 import Ticker from './ticker';
@@ -36,12 +37,11 @@ function rand(max: number, min = 0) {
 const SPAWN_PLANTS_PER_10K_PX = 0.2;
 const SPAWN_HERBIVORES_PER_10K_PX = 0.2;
 const SPAWN_CARNIVORES_PER_10K_PX = 0.05;
-const CHUNK_10K_PX = 10000;
-const chunks = area / CHUNK_10K_PX;
+const chunks = area / params.CHUNK_SIZE;
 
-const plantCount = Math.round(chunks * SPAWN_PLANTS_PER_10K_PX);
-const herbivoresCount = Math.round(chunks * SPAWN_HERBIVORES_PER_10K_PX);
-const carnivoresCount = Math.round(chunks * SPAWN_PLANTS_PER_10K_PX);
+const plantCount = Math.round(chunks * params.SPAWN_PLANTS_PER_CHUNK);
+const herbivoresCount = Math.round(chunks * params.SPAWN_HERBIVORES_PER_CHUNK);
+const carnivoresCount = Math.round(chunks * params.SPAWN_CARNIVORES_PER_CHUNK);
 
 for (let i = 0; i < plantCount; i++)
   game.spawn('PLANT', new Vector(rand(width), rand(height)), rand(10, 5));
@@ -49,6 +49,7 @@ for (let i = 0; i < plantCount; i++)
 for (let i = 0; i < herbivoresCount; i++)
   game.spawn('HERBIVORE', new Vector(rand(width), rand(height)), rand(10, 5));
 
+debugger;
 for (let i = 0; i < carnivoresCount; i++)
   game.spawn('CARNIVORE', new Vector(rand(width), rand(height)), rand(15, 10));
 
