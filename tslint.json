@@ -97,7 +97,7 @@
     "arrow-return-shorthand": true,
     "callable-types": true,
     "class-name": true,
-    "comment-format": [true, "check-space", "check-uppercase"],
+    "comment-format": [true, "check-space"],
     "import-spacing": true,
     "interface-name": [true, "always-prefix"],
     "interface-over-type-literal": true,
@@ -119,8 +119,8 @@
     "object-literal-sort-keys": false,
     "one-variable-per-declaration": [true],
     "ordered-imports": [true, {
-      "import-sources-order": "lowercase-last",
-      "named-imports-order": "lowercase-first"
+      "import-sources-order": "case-insensitive",
+      "named-imports-order": "case-insensitive"
     }],
     "prefer-function-over-method": false,
     "prefer-method-signature": true,

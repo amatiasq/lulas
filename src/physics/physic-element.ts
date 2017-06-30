@@ -1,5 +1,5 @@
 import { applyFactors } from '../utils';
-import Vector, { MutableVector } from './vector';
+import Vector from './vector';
 
 
 export default abstract class PhysicElement {

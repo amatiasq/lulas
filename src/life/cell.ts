@@ -1,4 +1,3 @@
-import * as params from '../parameters';
 import Vector from '../physics/vector';
 import Animal, { IAnimalFactors } from './animal';
 import Life from './life';
