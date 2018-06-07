@@ -1,6 +1,6 @@
-import Stat from "../stat.js";
-import World from "../world.js";
-import Cell from "./index.js";
+import Stat from '../stat';
+import World from '../world';
+import Cell from './index';
 
 export default class CellSenses {
 

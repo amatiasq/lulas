@@ -1,6 +1,6 @@
-import Cell from "./cell.js";
-import { IEnergySource } from "./cell/diet.js";
-import Vector from "./vector.js";
+import Cell from './cell';
+import { IEnergySource } from './cell/diet';
+import Vector from './vector';
 
 export default class World {
 

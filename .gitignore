@@ -5,3 +5,5 @@ dist
 coverage
 src.bak
 out
+.cache
+tslint.bak.json

@@ -1,7 +1,7 @@
-import Stat from "../stat.js";
-import Vector from "../vector.js";
-import World from "../world.js";
-import Cell from "./index.js";
+import Stat from '../stat';
+import Vector from '../vector';
+import World from '../world';
+import Cell from './index';
 
 export default class CellBehavior {
 
@@ -35,7 +35,7 @@ export default class CellBehavior {
 
     hunt(target: Cell) {
         const force = this.cell.getStat(Stat.HUNT_ACCELERATION);
-        const direction = this.cell.pos.diff(target.pos);
+        const direction = target.pos.sub(this.cell.pos);
         const push = Vector.withMagnitude(direction, force);
 
         this.cell.shove(push);

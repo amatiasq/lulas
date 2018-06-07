@@ -1,3 +1,3 @@
-import Cell from "./cell/index.js";
+import Cell from './cell/index';
 
 export default Cell;

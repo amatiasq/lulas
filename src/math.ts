@@ -1,6 +1,8 @@
 export const TAU = Math.PI * 2;
 
 export const abs = Math.abs;
+export const max = Math.max;
+export const min = Math.min;
 export const sqrt = Math.sqrt;
 export const pow = Math.pow;
 

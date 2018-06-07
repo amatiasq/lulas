@@ -1,10 +1,14 @@
-import { abs } from "./math.js";
+import { abs } from './math';
 
 export default class Vector {
 
     static ZERO = Vector.of(0, 0);
 
     static of(x: number, y: number) {
+        return new Vector(x, y);
+    }
+
+    static from({ x = 0, y = 0 }: IVectorSetter) {
         return new Vector(x, y);
     }
 

@@ -1,4 +1,4 @@
-import Cell from "./index.js";
+import Cell from './index';
 
 export default class CellRelations {
 

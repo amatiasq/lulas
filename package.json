@@ -6,6 +6,9 @@
   "directories": {
     "test": "test"
   },
+  "browserslist": [
+    "last 2 Chrome versions"
+  ],
   "jest": {
     "moduleFileExtensions": [
       "ts",
@@ -20,7 +23,7 @@
     }
   },
   "scripts": {
-    "start": "http-server",
+    "start": "parcel -t browser demo/index.html",
     "build": "tsc -p .",
     "build:watch": "npm run build -- --watch",
     "test": "jest",
@@ -42,13 +45,14 @@
   "devDependencies": {
     "@types/jest": "^23.0.0",
     "coveralls": "^3.0.1",
-    "http-server": "^0.11.1",
     "jest": "^23.1.0",
+    "parcel-bundler": "^1.8.1",
     "ts-jest": "^22.4.6",
     "ts-loader": "^4.3.1",
     "tslint": "^5.10.0",
     "tslint-language-service": "^0.9.9",
     "typescript": "^2.9.1"
   },
-  "homepage": "https://github.com/amatiasq/lulas#readme"
+  "homepage": "https://github.com/amatiasq/lulas#readme",
+  "dependencies": {}
 }
