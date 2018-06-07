@@ -1,6 +1,6 @@
-import { pow, sqrt } from "../math.js";
-import Stat from "../stat.js";
-import Cell from "./index.js";
+import { pow, sqrt } from '../math';
+import Stat from '../stat';
+import Cell from './index';
 
 export default class CellBody {
 
@@ -35,13 +35,13 @@ export default class CellBody {
             children.push(child);
         }
 
-        this.cell.emit("mitos", children);
+        this.cell.emit('mitos', children);
 
         return children;
     }
 
     die() {
-        this.cell.emit("die", this);
+        this.cell.emit('die', this);
     }
 
     private inherit(child: Cell) {

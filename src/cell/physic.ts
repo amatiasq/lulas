@@ -1,6 +1,6 @@
-import Stat from "../stat.js";
-import Vector from "../vector.js";
-import Cell from "./index.js";
+import Stat from '../stat';
+import Vector from '../vector';
+import Cell from './index';
 
 export default class CellPhysic {
 

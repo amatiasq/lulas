@@ -1,14 +1,14 @@
-import Emitter, { Listener } from "../emitter.js";
-import Stat from "../stat.js";
-import Vector from "../vector.js";
-import World from "../world.js";
-import CellBehavior from "./behavior.js";
-import CellBody from "./body.js";
-import CellDiet, { IEnergySource, IEnergySourceConstructor } from "./diet.js";
-import CellPhysic from "./physic.js";
-import CellRelations from "./relations.js";
-import CellRenderer from "./renderer.js";
-import CellSenses from "./senses.js";
+import Emitter, { Listener } from '../emitter';
+import Stat from '../stat';
+import Vector from '../vector';
+import World from '../world';
+import CellBehavior from './behavior';
+import CellBody from './body';
+import CellDiet, { IEnergySource, IEnergySourceConstructor } from './diet';
+import CellPhysic from './physic';
+import CellRelations from './relations';
+import CellRenderer from './renderer';
+import CellSenses from './senses';
 
 export default class Cell {
 

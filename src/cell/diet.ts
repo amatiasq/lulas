@@ -1,5 +1,5 @@
-import Stat from "../stat.js";
-import Cell from "./index.js";
+import Stat from '../stat';
+import Cell from './index';
 
 export default class CellDiet {
 
@@ -25,7 +25,7 @@ export default class CellDiet {
 
         target.energy -= bite;
         this.cell.energy += bite * nutrition;
-        this.cell.emit("eat", target);
+        this.cell.emit('eat', target);
 
         return true;
     }

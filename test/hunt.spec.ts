@@ -11,8 +11,10 @@ beforeEach(() => {
     hunter = new Cell();
     prey = new Cell();
 
+    hunter.size = 1;
     hunter.pos = Vector.of(2, 2);
     hunter.velocity = Vector.of(0, 0);
+    prey.size = 0.8;
     prey.pos = Vector.of(8, 8);
 
     hunter.setDietType(Cell);
@@ -24,6 +26,30 @@ test('Hunter sees prey', () => {
     hunter.setStat(Stats.VISION_RANGE, 20);
 
     expect(hunter.canSee(prey)).toBeTrue();
+});
+
+test.each`
+    x    | y
+    ${2} | ${2}
+    ${2} | ${8}
+    ${8} | ${2}
+    ${8} | ${8}
+`('Hunter moves torwards prey at $x, $y', (coords) => {
+    prey.pos = Vector.from(coords);
+    hunter.pos = Vector.of(5, 5);
+
+    hunter.setStat(Stats.MAX_RADIUS, 100);
+    hunter.setStat(Stats.VISION_RANGE, 20);
+    hunter.setStat(Stats.HUNT_ACCELERATION, 1);
+
+    hunter.tick(world);
+
+    const direction = prey.pos.sub(hunter.pos);
+    const { x, y } = hunter.velocity;
+
+    expect(x).toBeBetween(0, direction.x);
+    expect(y).toBeBetween(0, direction.y);
+
 });
 
 test('Hunter moves torwards prey', () => {

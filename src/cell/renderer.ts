@@ -1,11 +1,11 @@
-import { random, TAU } from "../math.js";
-import Cell from "./index.js";
+import { random, TAU } from '../math';
+import Cell from './index';
 
 export default class CellRenderer {
 
-    color = "#" + random(0, 0xFFFFFF)
+    color = '#' + random(0, 0xFFFFFF)
         .toString(16)
-        .padStart(6, "0");
+        .padStart(6, '0');
 
     constructor(
         private cell: Cell,

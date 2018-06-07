@@ -1,7 +1,7 @@
-import Cell from "./cell.js";
-import Stat from "./stat.js";
-import Vector from "./vector.js";
-import World from "./world.js";
+import Cell from './cell';
+import Stat from './stat';
+import Vector from './vector';
+import World from './world';
 
 export default class Game {
 
@@ -41,7 +41,7 @@ export default class Game {
         }
 
         const { width, height } = this.canvas;
-        const context = this.canvas.getContext("2d");
+        const context = this.canvas.getContext('2d');
 
         context.clearRect(0, 0, width, height);
 
