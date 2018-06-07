@@ -4,9 +4,19 @@
 
   "compilerOptions": {
     "noImplicitAny": true,
+    "experimentalDecorators": true,
+    "outDir": "out",
 
-    "module": "commonjs",
-    "target": "es6",
+    "module": "es2015",
+    "target": "es2018",
+    "lib": [
+      "dom",
+      "es5",
+      "es2015",
+      "es2017",
+      "es2018"
+    ],
+
     "plugins": [
       { "name": "tslint-language-service" }
     ]

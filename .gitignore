@@ -1,4 +1,7 @@
 node_modules
+node_modules.bak
 dist
 .idea
 coverage
+src.bak
+out
