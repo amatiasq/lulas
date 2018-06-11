@@ -12,18 +12,78 @@ export default class Vector {
         return new Vector(x, y);
     }
 
-    static withMagnitude({ x, y, magnitude}: Vector, value: number) {
-        const ratio = magnitude / value;
-        return Vector.of(x / ratio, y / ratio);
+    static apply(action: (...values: number[]) => number, ...vectors: IVector[]) {
+        return Vector.of(
+            action(...vectors.map(vector => vector.x)),
+            action(...vectors.map(vector => vector.y)),
+        );
+    }
+
+    static range({ x = 0, y = 0 }: IVectorSetter) {
+        return this.iterate(Vector.of(x, y));
+    }
+
+    static *iterate(vectorA: IVector, vectorB: IVector = new Vector(0, 0)) {
+        const start = this.apply(Math.min, vectorA, vectorB);
+        const end = this.apply(Math.max, vectorA, vectorB);
+
+        for (let x = start.x; x < end.x; x++) {
+            for (let y = start.y; y < end.y; y++) {
+                yield start.add({ x, y });
+            }
+        }
     }
 
     constructor(
         readonly x: number,
         readonly y: number,
-    ) {}
+    ) {
+        if (isNaN(x) || isNaN(y)) {
+            throw new Error(`Creating vector with NaN: ${this}`);
+        }
+    }
+
+    get isZero() {
+        return this.x === 0 && this.y === 0;
+    }
+
+    private _magnitude: number;
 
     get magnitude() {
-        return Math.hypot(this.x, this.y);
+        if (this.isZero) {
+            return 0;
+        }
+
+        if (!this._magnitude) {
+            this._magnitude = Math.hypot(this.x, this.y);
+        }
+
+        return this._magnitude;
+    }
+
+
+    get radians(): number {
+        if (this.isZero) {
+            return 0;
+        }
+
+        const { x, y } = this;
+        let arctan = Math.atan(y / x);
+
+        if (arctan < 0) {
+            arctan += Math.PI;
+        }
+
+        if (y < 0 || (y === 0 && x < 0)) {
+            arctan += Math.PI;
+        }
+
+        return arctan;
+    }
+
+    setMagnitude(value: number) {
+        const ratio = this.magnitude / value;
+        return Vector.of(this.x / ratio, this.y / ratio);
     }
 
     distance(target: Vector) {
@@ -48,6 +108,10 @@ export default class Vector {
 
     diff({ x = this.x, y = this.y }: IVectorSetter) {
         return Vector.of(abs(this.x - x), abs(this.y - y));
+    }
+
+    toString() {
+        return `[Vector(${this.x}, ${this.y})]`;
     }
 
 }

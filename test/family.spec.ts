@@ -1,33 +1,28 @@
 import './matchers';
-import Stats  from '../src/stat';
-import Vector  from '../src/vector';
-import World  from '../src/world';
+import Stat  from '../src/stat';
 import Cell  from '../src/cell';
 
-let world, sut, parent, sibling, child;
-
-beforeEach(() => {
-    sut = new Cell();
-    parent = new Cell();
-    sibling = new Cell();
-
-    sut.setParent(parent);
-    sibling.setParent(parent);
-});
-
 test('A child recognizes it\'s parent', () => {
+    const { sut, parent } = makeFamily();
+
     expect(sut.isChildOf(parent)).toBeTrue();
 });
 
 test('A parent recognizes it\'s child', () => {
+    const { sut, parent } = makeFamily();
+
     expect(parent.isParentOf(sut)).toBeTrue();
 });
 
 test('Siblings recognize each other', () => {
+    const { sut, sibling } = makeFamily();
+
     expect(sut.isSibling(sibling)).toBeTrue();
 });
 
 test('Family don\'t eat each other', () => {
+    const { sut, parent, sibling } = makeFamily();
+
     parent.setDietType(Cell);
     sut.setDietType(Cell);
     sibling.setDietType(Cell);
@@ -41,10 +36,11 @@ test('Family don\'t eat each other', () => {
 });
 
 test('When a cell undergoes mitosis it creates two or more siblings', () => {
+    const sut = new Cell();
     const spy = jest.fn();
     sut.on('mitos', spy);
     sut.size = 3;
-    sut.setStat(Stats.MITOSIS_MIN_RADIUS, 2);
+    sut.setStat(Stat.MITOSIS_MIN_RADIUS, 2);
 
     expect(sut.canMitos()).toBeTrue();
 
@@ -56,6 +52,38 @@ test('When a cell undergoes mitosis it creates two or more siblings', () => {
 
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith(children);
+});
+
+test('When a cell undergoes mitosis the energy of all childen sum the parent\'s energy', () => {
+    const sut = new Cell();
+
+    sut.size = 3;
+    sut.setStat(Stat.MITOSIS_MIN_RADIUS, 2);
+
+    const { energy } = sut;
+
+    expect(sut.canMitos()).toBeTrue();
+
+    const children = sut.mitos();
+    const childrenEnergy = children.reduce((sum, child) => child.energy + sum, 0);
+
+    expect(childrenEnergy).toBeAprox(energy);
+});
+
+test('A cell must die when undergoes mitosis', () => {
+    const sut = new Cell();
+    const spy = jest.fn();
+
+    sut.size = 3;
+    sut.setStat(Stat.MITOSIS_MIN_RADIUS, 2);
+    sut.on('die', spy);
+
+    expect(sut.canMitos()).toBeTrue();
+
+    sut.mitos();
+
+    expect(sut.isAlive).toBeFalse();
+    expect(spy).toHaveBeenCalledTimes(1);
 });
 
 // test('When a cell undergoes mitosis it\'s children inherit it\'s listeners', () => {
@@ -70,3 +98,14 @@ test('When a cell undergoes mitosis it creates two or more siblings', () => {
 //     expect(spy).toHaveBeenCalledWith(sut);
 //     expect(spy).toHaveBeenCalledWith(firstChild);
 // });
+
+function makeFamily() {
+    const sut = new Cell();
+    const parent = new Cell();
+    const sibling = new Cell();
+
+    sut.setParent(parent);
+    sibling.setParent(parent);
+
+    return { sut, parent, sibling };
+}

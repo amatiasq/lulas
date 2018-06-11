@@ -14,20 +14,23 @@ export default class World {
         this.entities.add(entity);
     }
 
+    remove(entity: IWorldEntity) {
+        this.entities.delete(entity);
+    }
+
     getAllEntities() {
         return [...this.entities];
     }
 
-    getEntitiesAt(point: Vector, radius: number) {
-        const start = point.sub({ x: radius, y: radius });
-        const end = point.add({ x: radius, y: radius });
+    getEntitiesAt(point: Vector) {
         const result: IWorldEntity[] = [];
 
         for (const entity of this.entities) {
-            const { x, y } = entity.pos;
-            const isInBox = x >= start.x && x <= end.x && y >= start.y && y <= end.y;
+            const { x, y } = point.diff(entity.pos);
+            const { size } = entity;
+            const isInBox = x < size && y < size;
 
-            if (isInBox && entity.pos.distance(point) <= radius) {
+            if (isInBox && entity.pos.distance(point) <= size) {
                 result.push(entity);
             }
         }
@@ -35,9 +38,30 @@ export default class World {
         return result;
     }
 
+    getEntitiesIn(point: Vector, radius: number) {
+        const start = point.sub({ x: radius, y: radius });
+        const end = point.add({ x: radius, y: radius });
+        const result: IWorldEntity[] = [];
+
+        for (const entity of this.entities) {
+            const { x, y } = entity.pos;
+            const range = radius + entity.size;
+            const isInBox = x >= start.x && x <= end.x && y >= start.y && y <= end.y;
+
+            if (isInBox && entity.pos.distance(point) <= range) {
+                result.push(entity);
+            }
+        }
+
+        return result;
+    }
+
+
+
 }
 
 export interface IWorldEntity extends IEnergySource {
+    size: number;
     pos: Vector;
     tick(map: World): void;
     render(context: CanvasRenderingContext2D): void;

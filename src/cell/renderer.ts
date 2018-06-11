@@ -1,4 +1,4 @@
-import { random, TAU } from '../math';
+import { random, TAU, PI } from '../math';
 import Cell from './index';
 
 export default class CellRenderer {
@@ -15,30 +15,27 @@ export default class CellRenderer {
         const {
             pos,
             velocity,
-            size: radius,
+            size,
         } = this.cell;
+
+        /* tslint:disable-next-line:no-bitwise */
+        const radius = size | 0;
+        const padding = radius * 0.;
 
         context.save();
         context.translate(pos.x, pos.y);
+        context.rotate(velocity.radians - TAU / 4);
+
         context.fillStyle = this.color;
 
-        /* tslint:disable:no-bitwise */
-        context.beginPath();
-        context.arc(0, 0, radius | 0, 0, TAU);
-        context.fill();
-
-        // if (movement.magnitude !== 0) {
-        //   context.beginPath();
-        //   context.moveTo(0, 0);
-        //   context.lineTo(movement.x | 0, movement.y | 0);
-        //   context.stroke();
-
-        //   context.fillStyle = 'blue';
-        //   context.translate(movement.x | 0, movement.y | 0);
-        //   context.arc(0, 0, 2, 0, Math.PI * 2);
-        //   context.fill();
-        // }
-        /* tslint:enable:no-bitwise */
+        context.beginPath()
+        context.arc(0, 0, radius, 0, TAU)
+        context.fill()
+        context.moveTo(radius, padding)
+        context.lineTo(0, radius * 1.5 + padding)
+        context.lineTo(-radius, padding)
+        context.closePath()
+        context.fill()
 
         context.restore();
     }

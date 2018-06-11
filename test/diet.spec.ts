@@ -57,43 +57,82 @@ test('A cell should throw when try to eat a invalid target', () => {
 });
 
 test('A cell should grow it\'s maximum bite size when eating', () => {
+    const SUT_ENERGY = 10;
+    const TARGET_ENERGY = 10;
+    const BITE_SIZE = 0.1;
     const sut = new Cell();
     const target = new Dummy();
 
-    sut.energy = 1;
-    target.energy = 10;
+    sut.energy = SUT_ENERGY;
+    target.energy = TARGET_ENERGY;
 
-    sut.setStat(Stat.MAX_BITE_SIZE, 5);
+    sut.setStat(Stat.MAX_BITE_SIZE, BITE_SIZE);
     sut.setDietType(Dummy, 1);
     sut.eat(target);
 
-    expect(sut.energy).toBeAprox(6);
+    expect(sut.energy).toBeAprox(SUT_ENERGY + SUT_ENERGY * BITE_SIZE);
 });
 
 test('A cell should absorb it\'s food if it\'s smaller than it\'s bite size', () => {
+    const SUT_ENERGY = 10;
+    const TARGET_ENERGY = 3;
+    const BITE_SIZE = 0.5;
     const sut = new Cell();
     const target = new Dummy();
 
-    sut.energy = 1;
-    target.energy = 3;
+    sut.energy = SUT_ENERGY;
+    target.energy = TARGET_ENERGY;
 
-    sut.setStat(Stat.MAX_BITE_SIZE, 5);
+    sut.setStat(Stat.MAX_BITE_SIZE, BITE_SIZE);
     sut.setDietType(Dummy, 1);
     sut.eat(target);
 
-    expect(sut.energy).toBeAprox(4);
+    expect(sut.energy).toBeAprox(SUT_ENERGY + TARGET_ENERGY);
 });
 
 test('A cell should grow proportionally to how nutritive the food is', () => {
+    const SUT_ENERGY = 10;
+    const TARGET_ENERGY = 3;
+    const NITRITIOUS_VALUE = 0.5;
     const sut = new Cell();
     const target = new Dummy();
 
-    sut.energy = 1;
-    target.energy = 3;
+    sut.energy = SUT_ENERGY;
+    target.energy = TARGET_ENERGY;
 
-    sut.setStat(Stat.MAX_BITE_SIZE, 10);
-    sut.setDietType(Dummy, 0.5);
+    sut.setStat(Stat.MAX_BITE_SIZE, 1);
+    sut.setDietType(Dummy, NITRITIOUS_VALUE);
     sut.eat(target);
 
-    expect(sut.energy).toBeAprox(2.5);
+    expect(sut.energy).toBeAprox(SUT_ENERGY + TARGET_ENERGY * NITRITIOUS_VALUE);
+});
+
+test('The food source should shink proportionally to the eater bit size', () => {
+    const SUT_ENERGY = 4;
+    const TARGET_ENERGY = 3;
+    const BITE_SIZE = 0.25;
+    const sut = new Cell();
+    const target = new Dummy();
+
+    sut.energy = SUT_ENERGY;
+    target.energy = TARGET_ENERGY;
+
+    sut.setStat(Stat.MAX_BITE_SIZE, BITE_SIZE);
+    sut.setDietType(Dummy, 1);
+    sut.eat(target);
+
+    expect(target.energy).toBeAprox(TARGET_ENERGY - SUT_ENERGY * BITE_SIZE);
+});
+
+test('A cell should avoid trying to eat a bigger cell', () => {
+    const sut = new Cell();
+    const target = new Cell();
+
+    sut.energy = 3;
+    target.energy = 3.1;
+
+    sut.setStat(Stat.MAX_BITE_SIZE, 10);
+    sut.setDietType(Cell, 1);
+
+    expect(sut.canEat(target)).toBeFalse();
 });

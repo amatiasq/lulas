@@ -10,6 +10,9 @@ import CellRelations from './relations';
 import CellRenderer from './renderer';
 import CellSenses from './senses';
 
+let id = 0;
+const cells: Cell[] = (window as any).cells = [];
+
 export default class Cell {
 
     private senses = new CellSenses(this);
@@ -21,6 +24,17 @@ export default class Cell {
     private renderer = new CellRenderer(this);
     private emitter = new Emitter();
     private stats = new Map<Stat, number>();
+    private id: number;
+
+    constructor() {
+        this.id = id++;
+
+        cells[this.id] = this;
+    }
+
+    toString() {
+        return `[Cell ${this.id}]`;
+    }
 
     //
     // STATS
@@ -49,6 +63,10 @@ export default class Cell {
     //
     // BODY
     //
+
+    get isAlive() {
+        return this.body.isAlive;
+    }
 
     get size() {
         return this.body.size;
@@ -89,7 +107,7 @@ export default class Cell {
             return false;
         }
 
-        return this.diet.canEat(target);
+        return this.considerFood(target) > 0;
     }
 
     considerFood(target: IEnergySource) {
@@ -105,6 +123,10 @@ export default class Cell {
     //
     // SENSES
     //
+
+    getVisionRange() {
+        return this.senses.getVisionRange();
+    }
 
     getVisibleEntities(map: World) {
         return this.senses.getVisibleEntities(map);

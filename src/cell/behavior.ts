@@ -30,13 +30,23 @@ export default class CellBehavior {
             } else {
                 this.hunt(other);
             }
+        } else if (other.canEat(this.cell)) {
+            this.escapeFrom(other);
         }
     }
 
     hunt(target: Cell) {
         const force = this.cell.getStat(Stat.HUNT_ACCELERATION);
         const direction = target.pos.sub(this.cell.pos);
-        const push = Vector.withMagnitude(direction, force);
+        const push = direction.setMagnitude(force);
+
+        this.cell.shove(push);
+    }
+
+    escapeFrom(target: Cell) {
+        const force = this.cell.getStat(Stat.ESCAPE_ACCELERATION);
+        const direction = target.pos.sub(this.cell.pos);
+        const push = direction.setMagnitude(force);
 
         this.cell.shove(push);
     }
