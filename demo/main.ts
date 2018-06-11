@@ -1,6 +1,5 @@
-import Game from '../src/game';
+import Game from '../src/game/index';
 import Vector from '../src/vector';
-import Timer from '../src/timer';
 import { random } from '../src/math';
 import Cell from '../src/cell';
 
@@ -16,7 +15,6 @@ async function main() {
 
     const canvas = document.querySelector('canvas#world') as HTMLCanvasElement;
     const game = new Game(canvas, Vector.of(width, height));
-    const timer = new Timer(() => game.tick());
 
     canvas.width = width;
     canvas.height = height;
@@ -29,8 +27,9 @@ async function main() {
         cell.setDietType(Cell);
     }
 
-    document.body.addEventListener('click', () => timer.toggle());
-    timer.start();
+    document.body.addEventListener('click', () => game.toggle());
+    game.addListeners();
+    game.start();
 }
 
 function domLoaded() {

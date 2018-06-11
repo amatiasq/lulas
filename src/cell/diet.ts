@@ -1,5 +1,6 @@
 import Stat from '../stat';
 import Cell from './index';
+import { round } from '../math';
 
 export default class CellDiet {
 
@@ -14,14 +15,16 @@ export default class CellDiet {
     }
 
     eat(target: IEnergySource) {
-        if (!this.canEat(target)) {
+        if (!this.cell.canEat(target)) {
             throw new Error(`Invalid food source: ${target}`);
         }
 
+        const selfEnergy = this.cell.energy;
+        const targetEnergy = target.energy;
         const nutrition = this.consider(target);
-        const maxBite = this.cell.getStat(Stat.MAX_BITE_SIZE);
-        const { energy } = target;
-        const bite = energy > maxBite ? maxBite : energy;
+        const maxBitePercent = this.cell.getStat(Stat.MAX_BITE_SIZE);
+        const maxBite = selfEnergy * maxBitePercent;
+        const bite = targetEnergy > maxBite ? maxBite : targetEnergy;
 
         target.energy -= bite;
         this.cell.energy += bite * nutrition;
@@ -30,12 +33,10 @@ export default class CellDiet {
         return true;
     }
 
-    canEat(target: IEnergySource) {
-        return this.consider(target) > 0;
-    }
-
     consider(target: IEnergySource) {
-        return this.types.get(target.constructor as IEnergySourceConstructor) || 0;
+        const Type = target.constructor as IEnergySourceConstructor;
+
+        return this.types.get(Type) || 0;
     }
 
 }

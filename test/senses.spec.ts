@@ -1,7 +1,6 @@
 import './matchers';
 import Stat from '../src/stat';
 import Cell from '../src/cell';
-import World from '../src/world';
 import Vector from '../src/vector';
 
 test('A cell should be able to always see itself', () => {
@@ -48,7 +47,13 @@ test('A cell should know when another cell is the same size', () => {
     expect(sut.considerFight(target)).toBe(0);
 });
 
+test('A cell should detect another cell if it\'s in contact even with vision range 0', () => {
+    const { sut, target } = makeCellsAt([ 0, 0 ], [ 0, 2 ]);
 
+    sut.setStat(Stat.VISION_RANGE, 0);
+
+    expect(sut.canSee(target)).toBeTrue();
+});
 
 function makeCellsSize(sutSize, targetSize) {
     const sut = new Cell();

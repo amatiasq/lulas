@@ -6,7 +6,7 @@ export const min = Math.min;
 export const sqrt = Math.sqrt;
 export const pow = Math.pow;
 
-export function random(min: number, max: number) {
+export function random(min?: number, max?: number) {
     if (arguments.length === 0) {
         return Math.random();
     } else if (arguments.length === 1) {

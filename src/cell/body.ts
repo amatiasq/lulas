@@ -4,7 +4,24 @@ import Cell from './index';
 
 export default class CellBody {
 
-    size = 5;
+    private _isAlive = true;
+
+    get isAlive() {
+        return this._isAlive;
+    }
+
+    private _size = 5;
+
+    get size() {
+        return this._size;
+    }
+    set size(value) {
+        this._size = value;
+
+        if (value === 0) {
+            this.die();
+        }
+    }
 
     get energy() {
         return pow(this.size, 2) * Math.PI;
@@ -31,17 +48,20 @@ export default class CellBody {
 
         for (let i = 0; i < childCount; i++) {
             const child = new Cell();
+            child.energy = childEnergy;
             this.inherit(child);
             children.push(child);
         }
 
         this.cell.emit('mitos', children);
+        this.die();
 
         return children;
     }
 
     die() {
-        this.cell.emit('die', this);
+        this._isAlive = false;
+        this.cell.emit('die', this.cell);
     }
 
     private inherit(child: Cell) {

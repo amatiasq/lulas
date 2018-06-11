@@ -1,4 +1,4 @@
-export default class Timer {
+export default class GameTicker {
 
     private _isRunning = false;
 
@@ -7,7 +7,7 @@ export default class Timer {
     }
 
     constructor(
-        private callback: TimerCallback,
+        private callback: GameTickerCallback,
     ) {
         this.onTick = this.onTick.bind(this);
     }
@@ -48,4 +48,4 @@ export default class Timer {
 
 }
 
-export type TimerCallback = () => void;
+export type GameTickerCallback = () => void;

@@ -1,73 +1,61 @@
 import './matchers';
-import Stats  from '../src/stat';
+import Stat  from '../src/stat';
 import Vector  from '../src/vector';
 import World  from '../src/world';
 import Cell  from '../src/cell';
 
-let world, prey, hunter;
+const WORLD_SIZE = Vector.of(10, 10);
+const WORLD_CENTER = Vector.of(5, 5);
 
-beforeEach(() => {
-    world = new World(Vector.of(10, 10));
-    hunter = new Cell();
-    prey = new Cell();
+for (const vector of Vector.iterate(WORLD_SIZE)) {
+    test(`Hunter sees prey at ${vector}`, () => {
+        const { hunter, prey } = makeWorld(WORLD_CENTER, vector);
+        hunter.setStat(Stat.VISION_RANGE, 20);
+        expect(hunter.canSee(prey)).toBeTrue();
+    });
 
-    hunter.size = 1;
-    hunter.pos = Vector.of(2, 2);
-    hunter.velocity = Vector.of(0, 0);
-    prey.size = 0.8;
-    prey.pos = Vector.of(8, 8);
+    if (!vector.is(WORLD_CENTER)) {
+        test(`Hunter doesn't see prey out of range at ${vector}`, () => {
+            const { hunter, prey } = makeWorld(WORLD_CENTER, vector)
 
-    hunter.setDietType(Cell);
-    world.add(hunter);
-    world.add(prey);
-});
+            prey.size = 0.3;
+            hunter.setStat(Stat.VISION_RANGE, 0.1);
 
-test('Hunter sees prey', () => {
-    hunter.setStat(Stats.VISION_RANGE, 20);
+            expect(hunter.canSee(prey)).toBeFalse();
+        });
+    }
 
-    expect(hunter.canSee(prey)).toBeTrue();
-});
+    test(`Hunter moves torwards prey at ${vector}`, () => {
+        const { hunter, prey, world } = makeWorld(WORLD_CENTER, vector)
+        const direction = prey.pos.sub(hunter.pos);
 
-test.each`
-    x    | y
-    ${2} | ${2}
-    ${2} | ${8}
-    ${8} | ${2}
-    ${8} | ${8}
-`('Hunter moves torwards prey at $x, $y', (coords) => {
-    prey.pos = Vector.from(coords);
-    hunter.pos = Vector.of(5, 5);
+        hunter.setStat(Stat.FRICTION, 0);
+        hunter.setStat(Stat.MAX_RADIUS, 100);
+        hunter.setStat(Stat.VISION_RANGE, 20);
+        hunter.setStat(Stat.HUNT_ACCELERATION, 1);
 
-    hunter.setStat(Stats.MAX_RADIUS, 100);
-    hunter.setStat(Stats.VISION_RANGE, 20);
-    hunter.setStat(Stats.HUNT_ACCELERATION, 1);
+        hunter.tick(world);
 
-    hunter.tick(world);
+        const { x, y } = hunter.velocity;
 
-    const direction = prey.pos.sub(hunter.pos);
-    const { x, y } = hunter.velocity;
+        if (direction.x) {
+            expect(x).toBeBetween(0, direction.x);
+        }
 
-    expect(x).toBeBetween(0, direction.x);
-    expect(y).toBeBetween(0, direction.y);
-
-});
-
-test('Hunter moves torwards prey', () => {
-    hunter.setStat(Stats.MAX_RADIUS, 100);
-    hunter.setStat(Stats.VISION_RANGE, 20);
-    hunter.setStat(Stats.HUNT_ACCELERATION, 1);
-
-    hunter.tick(world);
-
-    expect(hunter.velocity.x).toBeGreaterThan(0);
-    expect(hunter.velocity.y).toBeGreaterThan(0);
-});
+        if (direction.y) {
+            expect(y).toBeBetween(0, direction.y);
+        }
+    })
+}
 
 test('Hunter eats prey on contact', () => {
+    const { hunter, prey, world } = makeWorld({ x: 5, y: 5 }, { x: 5, y: 5 });
     const spy = jest.fn();
+
     hunter.on('eat', spy);
-    hunter.pos = prey.pos;
-    hunter.setStat(Stats.VISION_RANGE, 10);
+    hunter.setStat(Stat.FRICTION, 0);
+    hunter.setStat(Stat.MAX_RADIUS, 100);
+    hunter.setStat(Stat.VISION_RANGE, 10);
 
     expect(hunter.isTouching(prey)).toBeTrue();
 
@@ -77,27 +65,26 @@ test('Hunter eats prey on contact', () => {
     expect(spy).toHaveBeenCalledWith(prey);
 });
 
-test('Hunter doesn\'t see prey out of range', () => {
-    hunter.setStat(Stats.VISION_RANGE, 1);
-
-    expect(hunter.canSee(prey)).toBeFalse();
-});
-
 test('Hunter doesn\'t move if prey is out of range', () => {
-    hunter.setStat(Stats.VISION_RANGE, 1);
+    const { hunter, world } = makeWorld({ x: 2, y: 2 }, { x: 8, y: 8 })
+
+    hunter.setStat(Stat.FRICTION, 0);
+    hunter.setStat(Stat.MAX_RADIUS, 100);
+    hunter.setStat(Stat.VISION_RANGE, 1);
 
     hunter.tick(world);
 
-    expect(hunter.velocity.is(0)).toBeTrue();
+    expect(hunter.velocity.isZero).toBeTrue();
 });
 
 test('Hunter doesn\'t eat prey even if close by', () => {
+    const { hunter, prey, world } = makeWorld({ x: 2, y: 2 }, { x: 3, y: 3 })
     const spy = jest.fn();
+
     hunter.on('eat', spy);
-    hunter.setStat(Stats.VISION_RANGE, 1);
-    hunter.size = 1;
-    prey.size = 1;
-    prey.pos = Vector.of(4, 4.1);
+    hunter.setStat(Stat.FRICTION, 0);
+    hunter.setStat(Stat.MAX_RADIUS, 100);
+    hunter.setStat(Stat.VISION_RANGE, 1);
 
     expect(hunter.isTouching(prey)).toBeFalse();
 
@@ -105,3 +92,22 @@ test('Hunter doesn\'t eat prey even if close by', () => {
 
     expect(spy).not.toHaveBeenCalled();
 });
+
+function makeWorld({ x: hunterX, y: hunterY }, { x: preyX, y: preyY }) {
+    const world = new World(WORLD_SIZE);
+    const hunter = new Cell();
+    const prey = new Cell();
+
+    hunter.velocity = Vector.of(0, 0);
+    hunter.pos = Vector.of(hunterX, hunterY);
+    hunter.size = 0.5;
+
+    prey.pos = Vector.of(preyX, preyY);
+    prey.size = 0.4;
+
+    hunter.setDietType(Cell);
+    world.add(hunter);
+    world.add(prey);
+
+    return { hunter, prey, world };
+}

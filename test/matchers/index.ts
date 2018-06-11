@@ -11,6 +11,10 @@ declare global {
             toBeAprox(value: number, decimals?: number): boolean;
             toBeBetween(value: number, decimals?: number): boolean;
         }
+
+        interface It {
+            each(...args: any[]): Function;
+        }
     }
 }
 
