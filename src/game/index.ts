@@ -9,10 +9,10 @@ import GameTicker, { GameTickerParams } from './ticker';
 export default class Game {
 
     private entities: GameEntities;
-    private interaction = new GameInteraction(this);
+    private interaction: GameInteraction;
     private renderer: GameRenderer;
-    private state = new GameState(this);
-    private ticker = new GameTicker(this.tick.bind(this));
+    private state: GameState;
+    private ticker: GameTicker;
 
     get world() {
         return this.entities.world;
@@ -21,12 +21,21 @@ export default class Game {
     constructor(
         private canvas: HTMLCanvasElement,
         mapSize: Vector,
+        { hasHistory }: GameOptions = {},
     ) {
         this.entities = new GameEntities(this, mapSize);
         this.renderer = new GameRenderer(this, canvas);
+        this.state = new GameState(this, { hasHistory });
+        this.ticker = new GameTicker(this.tick.bind(this));
+        this.interaction = new GameInteraction(this, {
+            isHistoryEnabled: Boolean(hasHistory),
+        });
     }
 
     tick({ turn }: GameTickerParams) {
+        const entities = this.getEntitiesAlive();
+        console.log(turn, entities.length);
+
         this.state.tick(turn);
         this.updateView();
     }
@@ -78,8 +87,8 @@ export default class Game {
     // ENTITIES
     //
 
-    getEntities() {
-        return this.entities.getEntities();
+    getEntitiesAlive() {
+        return this.entities.getEntitiesAlive();
     }
 
     addCell(position: Vector) {
@@ -110,4 +119,8 @@ export default class Game {
         return this.renderer.renderCellDetails(cell);
     }
 
+}
+
+export interface GameOptions {
+    hasHistory?: boolean;
 }

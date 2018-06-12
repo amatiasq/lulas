@@ -38,13 +38,13 @@ export default class GameEntities {
         return cell;
     }
 
-    getEntities() {
-        return this.world.getAllEntities();
+    getEntitiesAlive() {
+        return this.world.getEntitiesAlive();
     }
 
     tickEntities() {
         const { world } = this;
-        const entities = this.getEntities();
+        const entities = this.getEntitiesAlive();
 
         for (const entity of entities) {
             if (entity instanceof Cell && !entity.isAlive) {
@@ -54,6 +54,8 @@ export default class GameEntities {
 
             entity.tick(world);
         }
+
+        return entities;
     }
 
 }

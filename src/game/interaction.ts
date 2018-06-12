@@ -7,13 +7,17 @@ export default class GameInteraction {
     mouse: Vector = null;
     private isListening = false;
     private inspector = new Set<Cell>();
+    private isHistoryEnabled: boolean;
 
     constructor(
         private game: Game,
+        { isHistoryEnabled }: GameInteractionOptions = {},
     ) {
         this.onClick = this.onClick.bind(this);
-        this.onKeyPress = this.onKeyPress.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
+        this.onKeyPress = isHistoryEnabled
+            ? this.onKeyPressHistory.bind(this)
+            : this.onKeyPress.bind(this);
     }
 
     interact() {
@@ -64,6 +68,14 @@ export default class GameInteraction {
         switch (event.code) {
             case 'Space':
                 this.game.isPaused = !this.game.isPaused;
+        }
+    }
+
+    private onKeyPressHistory(event: KeyboardEvent) {
+        switch (event.code) {
+            case 'Space':
+                this.game.isPaused = !this.game.isPaused;
+                break;
 
             case 'KeyA':
             case 'KeyJ':
@@ -101,4 +113,8 @@ export default class GameInteraction {
         this.game.updateView();
     }
 
+}
+
+export interface GameInteractionOptions {
+    isHistoryEnabled?: boolean;
 }
