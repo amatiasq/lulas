@@ -32,6 +32,7 @@ export default class GameRenderer {
         for (const visible of cell.getVisibleEntities(this.game.world)) {
             this.drawLine(cell.pos, visible.pos, {
                 width: 0.5,
+                color: 'rgba(0, 0, 0, 50)',
             });
         }
 
