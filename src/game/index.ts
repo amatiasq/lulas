@@ -28,6 +28,10 @@ export default class Game {
 
     tick({ turn }: GameTickerParams) {
         this.state.tick(turn);
+        this.updateView();
+    }
+
+    updateView() {
         this.render();
         this.interaction.interact();
     }
@@ -60,10 +64,6 @@ export default class Game {
 
     pause() {
         return this.ticker.pause();
-    }
-
-    toggle() {
-        return this.ticker.toggle();
     }
 
     step() {

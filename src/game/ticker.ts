@@ -52,10 +52,6 @@ export default class GameTicker {
         this.isPaused = true;
     }
 
-    toggle() {
-        this.isPaused = !this.isPaused;
-    }
-
     step() {
         if (this.isBackwards && this.isAtBegining) {
             console.warn(`Can't go further in history!`);
@@ -63,7 +59,6 @@ export default class GameTicker {
             return;
         }
 
-        console.log(this.cursor);
         this.cursor += this.speed;
         this.callback.call(null, {
             turn: this.cursor,
