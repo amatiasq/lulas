@@ -13,7 +13,7 @@ export default class GameRenderer {
     renderEntities() {
         const { game, canvas } = this;
         const { width, height } = canvas;
-        const entities = game.getEntities();
+        const entities = game.getEntitiesAlive();
         const context = canvas.getContext('2d');
 
         context.clearRect(0, 0, width, height);

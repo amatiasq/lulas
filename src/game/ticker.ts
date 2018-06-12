@@ -1,6 +1,6 @@
 export default class GameTicker {
 
-    private _speed = 0;
+    private _speed = 1;
     private cursor = -1;
     private isRunning = false;
     isPaused = false;
@@ -25,7 +25,7 @@ export default class GameTicker {
     }
 
     get isAtBegining() {
-        return this.cursor === 0;
+        return this.cursor <= 0;
     }
 
     constructor(

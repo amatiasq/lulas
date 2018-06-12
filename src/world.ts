@@ -18,7 +18,7 @@ export default class World {
         this.entities.delete(entity);
     }
 
-    getAllEntities() {
+    getEntitiesAlive() {
         return [...this.entities];
     }
 
