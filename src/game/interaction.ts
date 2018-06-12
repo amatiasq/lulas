@@ -27,6 +27,35 @@ export default class GameInteraction {
         switch (event.code) {
             case 'Space':
                 this.game.toggle();
+
+            case 'KeyA':
+            case 'KeyJ':
+                this.game.speed = -1;
+                this.game.isPaused = false;
+                break;
+
+            case 'KeyS':
+            case 'KeyK':
+                this.game.speed = -1;
+                this.game.isPaused = true;
+                this.game.step();
+                break;
+
+            case 'KeyD':
+            case 'KeyL':
+                this.game.speed = 1;
+                this.game.isPaused = true;
+                this.game.step();
+                break;
+
+            case 'KeyF':
+            case 'Semicolon':
+                this.game.speed = 1;
+                this.game.isPaused = false;
+                break;
+
+            default:
+                console.log(`KEYPRESS ${event.code}`)
         }
     }
 

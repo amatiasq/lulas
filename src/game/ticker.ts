@@ -1,9 +1,31 @@
 export default class GameTicker {
 
-    private _isRunning = false;
+    private _speed = 0;
+    private cursor = -1;
+    private isRunning = false;
+    isPaused = false;
 
-    get isRunning() {
-        return this._isRunning;
+    get speed() {
+        return this._speed;
+    }
+    set speed(value) {
+        if (value !== 1 && value !== -1) {
+            throw new Error(`Invalid speed ${value}`);
+        }
+
+        this._speed = value;
+    }
+
+    get isForward() {
+        return this.speed === 1;
+    }
+
+    get isBackwards() {
+        return this.speed === -1;
+    }
+
+    get isAtBegining() {
+        return this.cursor === 0;
     }
 
     constructor(
@@ -13,39 +35,57 @@ export default class GameTicker {
     }
 
     start() {
-        if (this._isRunning) {
+        if (this.isRunning) {
             return;
         }
 
-        this._isRunning = true;
+        this.speed = 1;
+        this.isRunning = true;
         requestAnimationFrame(this.onTick);
     }
 
     stop() {
-        this._isRunning = false;
+        this.isRunning = false;
+    }
+
+    pause() {
+        this.isPaused = true;
     }
 
     toggle() {
-        if (this._isRunning) {
-            this.stop();
-        } else {
-            this.start();
-        }
+        this.isPaused = !this.isPaused;
     }
 
     step() {
-        this.callback.call(null);
+        if (this.isBackwards && this.isAtBegining) {
+            console.warn(`Can't go further in history!`);
+            this.isPaused = true;
+            return;
+        }
+
+        console.log(this.cursor);
+        this.cursor += this.speed;
+        this.callback.call(null, {
+            turn: this.cursor,
+        });
     }
 
     private onTick() {
-        if (!this._isRunning) {
+        if (!this.isRunning) {
             return;
         }
 
         requestAnimationFrame(this.onTick);
-        this.callback.call(null);
+
+        if (!this.isPaused) {
+            this.step();
+        }
     }
 
 }
 
 export type GameTickerCallback = () => void;
+
+export interface GameTickerParams {
+    turn: number;
+}

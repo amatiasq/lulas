@@ -62,6 +62,9 @@ function makeCellsSize(sutSize, targetSize) {
     sut.size = sutSize;
     target.size = targetSize;
 
+    sut.flushState();
+    target.flushState();
+
     return { sut, target };
 }
 
@@ -70,6 +73,9 @@ function makeCellsAt([ sutX, sutY ], [ targetX, targetY ]) {
 
     sut.pos = Vector.of(sutX, sutY);
     target.pos = Vector.of(targetX, targetY);
+
+    sut.flushState();
+    target.flushState();
 
     return { sut, target };
 }

@@ -10,7 +10,11 @@ const WORLD_CENTER = Vector.of(5, 5);
 for (const vector of Vector.iterate(WORLD_SIZE)) {
     test(`Prey sees predator at ${vector}`, () => {
         const { prey, predator } = makeWorld(WORLD_CENTER, vector);
+
         prey.setStat(Stat.VISION_RANGE, 20);
+        prey.flushState();
+        predator.flushState();
+
         expect(prey.canSee(predator)).toBeTrue();
     });
 
@@ -20,6 +24,8 @@ for (const vector of Vector.iterate(WORLD_SIZE)) {
 
             prey.size = 0.3;
             prey.setStat(Stat.VISION_RANGE, 0.1);
+            prey.flushState();
+            predator.flushState();
 
             expect(prey.canSee(predator)).toBeFalse();
         });
@@ -32,6 +38,8 @@ for (const vector of Vector.iterate(WORLD_SIZE)) {
             prey.setStat(Stat.MAX_RADIUS, 100);
             prey.setStat(Stat.VISION_RANGE, 20);
             prey.setStat(Stat.ESCAPE_ACCELERATION, 1);
+            prey.flushState();
+            predator.flushState();
 
             prey.tick(world);
 

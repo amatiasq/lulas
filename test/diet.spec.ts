@@ -36,6 +36,8 @@ test('A cell should take in account how much of a threat a food target is', () =
     target.size = 1 + SIZE_DIFF;
 
     sut.setDietType(Cell, FOOD_VALUE);
+    sut.flushState();
+    target.flushState();
 
     expect(sut.considerFood(target)).toBe(FOOD_VALUE - SIZE_DIFF);
 });
@@ -68,7 +70,10 @@ test('A cell should grow it\'s maximum bite size when eating', () => {
 
     sut.setStat(Stat.MAX_BITE_SIZE, BITE_SIZE);
     sut.setDietType(Dummy, 1);
+
+    sut.flushState();
     sut.eat(target);
+    sut.flushState();
 
     expect(sut.energy).toBeAprox(SUT_ENERGY + SUT_ENERGY * BITE_SIZE);
 });
@@ -85,7 +90,10 @@ test('A cell should absorb it\'s food if it\'s smaller than it\'s bite size', ()
 
     sut.setStat(Stat.MAX_BITE_SIZE, BITE_SIZE);
     sut.setDietType(Dummy, 1);
+
+    sut.flushState();
     sut.eat(target);
+    sut.flushState();
 
     expect(sut.energy).toBeAprox(SUT_ENERGY + TARGET_ENERGY);
 });
@@ -102,7 +110,10 @@ test('A cell should grow proportionally to how nutritive the food is', () => {
 
     sut.setStat(Stat.MAX_BITE_SIZE, 1);
     sut.setDietType(Dummy, NITRITIOUS_VALUE);
+
+    sut.flushState();
     sut.eat(target);
+    sut.flushState();
 
     expect(sut.energy).toBeAprox(SUT_ENERGY + TARGET_ENERGY * NITRITIOUS_VALUE);
 });
@@ -119,7 +130,10 @@ test('The food source should shink proportionally to the eater bit size', () => 
 
     sut.setStat(Stat.MAX_BITE_SIZE, BITE_SIZE);
     sut.setDietType(Dummy, 1);
+
+    sut.flushState();
     sut.eat(target);
+    sut.flushState();
 
     expect(target.energy).toBeAprox(TARGET_ENERGY - SUT_ENERGY * BITE_SIZE);
 });

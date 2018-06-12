@@ -22,6 +22,8 @@ export default class CellRenderer {
         const radius = size | 0;
         const padding = radius * 0.;
 
+        console.log('velocity', velocity);
+
         context.save();
         context.translate(pos.x, pos.y);
         context.rotate(velocity.radians - TAU / 4);

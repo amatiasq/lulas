@@ -31,6 +31,7 @@ test('World returns entity if entity is in border of radius', () => {
     const cell = new Cell();
 
     cell.pos = Vector.of(3, 0);
+    cell.flushState();
     world.add(cell);
 
     const entities = world.getEntitiesIn(Vector.ZERO, 3);
@@ -44,6 +45,7 @@ test('World returns no entity if entity is outside radius', () => {
 
     cell.size = 0.1;
     cell.pos = Vector.of(3, 3);
+    cell.flushState();
     world.add(cell);
 
     const entities = world.getEntitiesIn(Vector.ZERO, 3);
@@ -57,6 +59,7 @@ test('World returns as many entities as visible', () => {
     for (let i = 0; i < 10; i++) {
         const cell = new Cell();
         cell.pos = Vector.of(i, i);
+        cell.flushState();
         cells.push(cell);
         world.add(cell);
     }
@@ -101,6 +104,7 @@ function makeEntitiesAtTest() {
 
     cell.size = 1.1;
     cell.pos = Vector.of(5, 5);
+    cell.flushState();
     world.add(cell);
 
     return { cell, world };

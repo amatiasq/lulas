@@ -27,9 +27,9 @@ async function main() {
         cell.setDietType(Cell);
     }
 
-    document.body.addEventListener('click', () => game.toggle());
     game.addListeners();
     game.start();
+    game.pause();
 }
 
 function domLoaded() {
