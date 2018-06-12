@@ -1,32 +1,44 @@
 import Stat from '../stat';
 import Vector from '../vector';
 import Cell from './index';
+import CellState from './state';
 
 export default class CellPhysic {
 
-    pos = Vector.ZERO;
-    velocity = Vector.ZERO;
+    private shoves: Vector[] = [];
 
     constructor(
         private cell: Cell,
-    ) {}
+        private state: CellState,
+    ) {
+        state.pos = Vector.ZERO;
+        state.velocity = Vector.ZERO;
+    }
+
+    get pos() {
+        return this.state.pos;
+    }
+    set pos(value: Vector) {
+        this.state.pos = value;
+    }
+
+    get velocity() {
+        return this.state.velocity;
+    }
+    set velocity(value: Vector) {
+        this.state.velocity = value;
+    }
 
     shove(force: Vector) {
-        const maxVelocity = this.cell.getStat(Stat.MAX_VELOCITY);
         const maxSize = this.cell.getStat(Stat.MAX_RADIUS);
         const size = this.cell.size;
         const weight = 1 - Math.max(size / maxSize, 0);
         const modification = force.multiply({ x: weight, y: weight });
-        let velocity = this.velocity.add(modification);
 
-        if (velocity.magnitude > maxVelocity) {
-            velocity = velocity.setMagnitude(maxVelocity);
-        }
-
-        this.velocity = velocity;
+        this.shoves.push(modification);
     }
 
-    friction() {
+    friction(velocity = this.velocity) {
         const friction = this.cell.getStat(Stat.FRICTION);
         const maxSize = this.cell.getStat(Stat.MAX_RADIUS);
         const { size } = this.cell;
@@ -34,13 +46,25 @@ export default class CellPhysic {
         const sizeFactor = size / maxSize;
         const factor = frictionFactor * 0.5 + sizeFactor * 0.5;
 
-        this.velocity = this.velocity.multiply({ x: factor, y: factor });
+        this.velocity = velocity.multiply({ x: factor, y: factor });
     }
 
     move() {
-        this.pos = this.pos.add(this.velocity);
+        const maxVelocity = this.cell.getStat(Stat.MAX_VELOCITY);
+        let velocity = this.velocity;
 
-        this.friction();
+        for (const shove of this.shoves) {
+            velocity = velocity.add(shove);
+        }
+
+        if (velocity.magnitude > maxVelocity) {
+            velocity = velocity.setMagnitude(maxVelocity);
+        }
+
+        this.shoves.length = 0;
+        this.pos = this.pos.add(velocity);
+
+        this.friction(velocity);
     }
 
 }

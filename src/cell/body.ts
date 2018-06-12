@@ -1,22 +1,19 @@
 import { pow, sqrt } from '../math';
 import Stat from '../stat';
 import Cell from './index';
+import CellState from './state';
 
 export default class CellBody {
 
-    private _isAlive = true;
-
     get isAlive() {
-        return this._isAlive;
+        return this.state.isAlive;
     }
-
-    private _size = 5;
 
     get size() {
-        return this._size;
+        return this.state.size;
     }
-    set size(value) {
-        this._size = value;
+    set size(value: number) {
+        this.state.size = value;
 
         if (value === 0) {
             this.die();
@@ -24,15 +21,19 @@ export default class CellBody {
     }
 
     get energy() {
-        return pow(this.size, 2) * Math.PI;
+        return pow(this.state.size, 2) * Math.PI;
     }
     set energy(value) {
-        this.size = sqrt(value / Math.PI);
+        this.state.size = sqrt(value / Math.PI);
     }
 
     constructor(
         private cell: Cell,
-    ) {}
+        private state: CellState
+    ) {
+        this.state.isAlive = true;
+        this.state.size = 1;
+    }
 
     canMitos() {
         const minSize = this.cell.getStat(Stat.MITOSIS_MIN_RADIUS);
@@ -60,7 +61,7 @@ export default class CellBody {
     }
 
     die() {
-        this._isAlive = false;
+        this.state.isAlive = false;
         this.cell.emit('die', this.cell);
     }
 

@@ -56,13 +56,22 @@ export default class World {
         return result;
     }
 
-
-
 }
 
-export interface IWorldEntity extends IEnergySource {
+export interface IWorldEntity<T = EntityState> extends IEnergySource, StateHolder<T> {
+    id: number;
     size: number;
     pos: Vector;
     tick(map: World): void;
     render(context: CanvasRenderingContext2D): void;
+}
+
+export interface StateHolder<T> {
+    getState(): T;
+    setState(state: T): void;
+    flushState(): void;
+}
+
+export interface EntityState {
+
 }

@@ -82,6 +82,10 @@ export default class Vector {
     }
 
     setMagnitude(value: number) {
+        if (this.magnitude === 0) {
+            return Vector.of(value, 0);
+        }
+
         const ratio = this.magnitude / value;
         return Vector.of(this.x / ratio, this.y / ratio);
     }

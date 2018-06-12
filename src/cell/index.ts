@@ -9,27 +9,29 @@ import CellPhysic from './physic';
 import CellRelations from './relations';
 import CellRenderer from './renderer';
 import CellSenses from './senses';
+import CellState, { IStateScreenshot } from './state';
 
 let id = 0;
 const cells: Cell[] = (window as any).cells = [];
 
 export default class Cell {
 
-    private senses = new CellSenses(this);
-    private diet = new CellDiet(this);
-    private body = new CellBody(this);
-    private physic = new CellPhysic(this);
-    private relations = new CellRelations(this);
     private behavior = new CellBehavior(this);
+    private diet = new CellDiet(this);
+    private relations = new CellRelations(this);
     private renderer = new CellRenderer(this);
+    private senses = new CellSenses(this);
+    private state = new CellState(this);
+    private body = new CellBody(this, this.state);
+    private physic = new CellPhysic(this, this.state);
     private emitter = new Emitter();
-    private stats = new Map<Stat, number>();
-    private id: number;
+    id: number;
 
     constructor() {
         this.id = id++;
 
         cells[this.id] = this;
+        this.flushState();
     }
 
     toString() {
@@ -37,15 +39,27 @@ export default class Cell {
     }
 
     //
-    // STATS
+    // STATE
     //
 
     getStat(key: Stat) {
-        return this.stats.get(key);
+        return this.state.getStat(key);
     }
 
     setStat(key: Stat, value: number) {
-        this.stats.set(key, value);
+        this.state.setStat(key, value);
+    }
+
+    getState() {
+        return this.state.getState();
+    }
+
+    setState(value: IStateScreenshot) {
+        return this.state.setState(value);
+    }
+
+    flushState() {
+        return this.state.flushState();
     }
 
     //

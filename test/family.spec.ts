@@ -38,9 +38,11 @@ test('Family don\'t eat each other', () => {
 test('When a cell undergoes mitosis it creates two or more siblings', () => {
     const sut = new Cell();
     const spy = jest.fn();
-    sut.on('mitos', spy);
+
     sut.size = 3;
+    sut.on('mitos', spy);
     sut.setStat(Stat.MITOSIS_MIN_RADIUS, 2);
+    sut.flushState();
 
     expect(sut.canMitos()).toBeTrue();
 
@@ -59,13 +61,19 @@ test('When a cell undergoes mitosis the energy of all childen sum the parent\'s 
 
     sut.size = 3;
     sut.setStat(Stat.MITOSIS_MIN_RADIUS, 2);
+    sut.flushState();
 
     const { energy } = sut;
 
     expect(sut.canMitos()).toBeTrue();
 
     const children = sut.mitos();
-    const childrenEnergy = children.reduce((sum, child) => child.energy + sum, 0);
+    let childrenEnergy = 0;
+
+    for (const child of children) {
+        child.flushState();
+        childrenEnergy += child.energy;
+    }
 
     expect(childrenEnergy).toBeAprox(energy);
 });
@@ -78,9 +86,11 @@ test('A cell must die when undergoes mitosis', () => {
     sut.setStat(Stat.MITOSIS_MIN_RADIUS, 2);
     sut.on('die', spy);
 
+    sut.flushState();
     expect(sut.canMitos()).toBeTrue();
 
     sut.mitos();
+    sut.flushState();
 
     expect(sut.isAlive).toBeFalse();
     expect(spy).toHaveBeenCalledTimes(1);

@@ -10,7 +10,11 @@ const WORLD_CENTER = Vector.of(5, 5);
 for (const vector of Vector.iterate(WORLD_SIZE)) {
     test(`Hunter sees prey at ${vector}`, () => {
         const { hunter, prey } = makeWorld(WORLD_CENTER, vector);
+
         hunter.setStat(Stat.VISION_RANGE, 20);
+        hunter.flushState();
+        prey.flushState();
+
         expect(hunter.canSee(prey)).toBeTrue();
     });
 
@@ -20,6 +24,8 @@ for (const vector of Vector.iterate(WORLD_SIZE)) {
 
             prey.size = 0.3;
             hunter.setStat(Stat.VISION_RANGE, 0.1);
+            hunter.flushState();
+            prey.flushState();
 
             expect(hunter.canSee(prey)).toBeFalse();
         });
@@ -33,6 +39,8 @@ for (const vector of Vector.iterate(WORLD_SIZE)) {
         hunter.setStat(Stat.MAX_RADIUS, 100);
         hunter.setStat(Stat.VISION_RANGE, 20);
         hunter.setStat(Stat.HUNT_ACCELERATION, 1);
+        hunter.flushState();
+        prey.flushState();
 
         hunter.tick(world);
 
@@ -56,6 +64,8 @@ test('Hunter eats prey on contact', () => {
     hunter.setStat(Stat.FRICTION, 0);
     hunter.setStat(Stat.MAX_RADIUS, 100);
     hunter.setStat(Stat.VISION_RANGE, 10);
+    hunter.flushState();
+    prey.flushState();
 
     expect(hunter.isTouching(prey)).toBeTrue();
 
@@ -71,6 +81,7 @@ test('Hunter doesn\'t move if prey is out of range', () => {
     hunter.setStat(Stat.FRICTION, 0);
     hunter.setStat(Stat.MAX_RADIUS, 100);
     hunter.setStat(Stat.VISION_RANGE, 1);
+    hunter.flushState();
 
     hunter.tick(world);
 
@@ -85,6 +96,8 @@ test('Hunter doesn\'t eat prey even if close by', () => {
     hunter.setStat(Stat.FRICTION, 0);
     hunter.setStat(Stat.MAX_RADIUS, 100);
     hunter.setStat(Stat.VISION_RANGE, 1);
+    hunter.flushState();
+    prey.flushState();
 
     expect(hunter.isTouching(prey)).toBeFalse();
 

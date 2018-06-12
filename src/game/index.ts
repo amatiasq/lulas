@@ -1,15 +1,17 @@
+import Cell from '../cell';
 import Vector from '../vector';
 import GameEntities from './entities';
 import GameInteraction from './interaction';
 import GameRenderer from './renderer';
-import GameTicker from './ticker';
-import Cell from '../cell';
+import GameTicker, { GameTickerParams } from './ticker';
+import GameState from './state';
 
 export default class Game {
 
     private entities: GameEntities;
     private interaction = new GameInteraction(this);
     private renderer: GameRenderer;
+    private state = new GameState(this);
     private ticker = new GameTicker(this.tick.bind(this));
 
     get world() {
@@ -24,8 +26,8 @@ export default class Game {
         this.renderer = new GameRenderer(this, canvas);
     }
 
-    tick() {
-        this.entities.tick();
+    tick({ turn }: GameTickerParams) {
+        this.state.tick(turn);
         this.render();
         this.interaction.interact();
     }
@@ -34,12 +36,30 @@ export default class Game {
     // TICKER
     //
 
+    get isPaused() {
+        return this.ticker.isPaused;
+    }
+    set isPaused(value: boolean) {
+        this.ticker.isPaused = value;
+    }
+
+    get speed() {
+        return this.ticker.speed;
+    }
+    set speed(value: number) {
+        this.ticker.speed = value;
+    }
+
     start() {
         return this.ticker.start();
     }
 
     stop() {
         return this.ticker.stop();
+    }
+
+    pause() {
+        return this.ticker.pause();
     }
 
     toggle() {
@@ -62,6 +82,10 @@ export default class Game {
         return this.entities.addCell(position);
     }
 
+    tickEntities() {
+        return this.entities.tickEntities();
+    }
+
     //
     // INTERACTION
     //
@@ -73,14 +97,6 @@ export default class Game {
     //
     // RENDER
     //
-
-    // drawLine(from: Vector, to: Vector, options?: object) {
-    //     return this.renderer.drawLine(from, to, options);
-    // }
-
-    // drawCircle(at: Vector, radius: number, options?: object) {
-    //     return this.renderer.drawCircle(at, radius, options);
-    // }
 
     render() {
         return this.renderer.renderEntities();

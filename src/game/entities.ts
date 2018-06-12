@@ -1,9 +1,9 @@
-import Game from './index';
 import { random } from '../math';
 import Vector from '../vector';
-import Cell from '../cell/index';
+import Cell from '../cell';
 import Stat from '../stat';
 import World from '../world';
+import Game from './index';
 
 export default class GameEntities {
 
@@ -31,6 +31,8 @@ export default class GameEntities {
         cell.setStat(Stat.MITOSIS_MIN_RADIUS, 50);
         cell.setStat(Stat.VISION_RANGE, 300);
 
+        cell.flushState();
+
         this.world.add(cell);
 
         return cell;
@@ -40,7 +42,7 @@ export default class GameEntities {
         return this.world.getAllEntities();
     }
 
-    tick() {
+    tickEntities() {
         const { world } = this;
         const entities = this.getEntities();
 
