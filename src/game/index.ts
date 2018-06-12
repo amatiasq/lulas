@@ -54,6 +54,10 @@ export default class Game {
         this.ticker.speed = value;
     }
 
+    goTo(step: number) {
+        return this.state.tick(step);
+    }
+
     start() {
         return this.ticker.start();
     }
