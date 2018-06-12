@@ -45,4 +45,4 @@ exports.buffer=function(t){const r=t._bufferProps=t._bufferProps||[];t._isDouble
 },{"./entities":20,"./interaction":21,"./renderer":22,"./state":23,"./ticker":24}],4:[function(require,module,exports) {
 "use strict";var e=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(exports,"__esModule",{value:!0});const t=e(require("../src/game/index")),r=e(require("../src/vector")),n=require("../src/math"),o=e(require("../src/cell"));async function i(){await d();const e=window.innerWidth,i=window.innerHeight-4;console.log({width:e,height:i});const s=document.querySelector("canvas#world"),a=new t.default(s,r.default.of(e,i));s.width=e,s.height=i;for(let t=0;t<10;t++){const t=n.random(0,e),d=n.random(0,i);a.addCell(r.default.of(t,d)).setDietType(o.default)}a.addListeners(),a.start(),a.pause()}function d(){return new Promise(e=>window.addEventListener("DOMContentLoaded",e))}i();
 },{"../src/game/index":10,"../src/vector":7,"../src/math":8,"../src/cell":9}]},{},[4], null)
-//# sourceMappingURL=/main.580c93a4.map
+//# sourceMappingURL=main.580c93a4.map
