@@ -1,7 +1,7 @@
-import { random } from '../math';
-import Vector from '../vector';
 import Cell from '../cell';
+import { random } from '../math';
 import Stat from '../stat';
+import Vector from '../vector';
 import World from '../world';
 import Game from './index';
 

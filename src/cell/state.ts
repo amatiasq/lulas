@@ -15,7 +15,7 @@ export default class CellState {
     size: number;
 
     @bufferProp
-    pos: Vector
+    pos: Vector;
 
     @bufferProp
     velocity: Vector;

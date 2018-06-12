@@ -14,8 +14,8 @@ export default class Vector {
 
     static apply(action: (...values: number[]) => number, ...vectors: IVector[]) {
         return Vector.of(
-            action(...vectors.map(vector => vector.x)),
-            action(...vectors.map(vector => vector.y)),
+            action(...vectors.map((vector) => vector.x)),
+            action(...vectors.map((vector) => vector.y)),
         );
     }
 
@@ -60,7 +60,6 @@ export default class Vector {
 
         return this._magnitude;
     }
-
 
     get radians(): number {
         if (this.isZero) {

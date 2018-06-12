@@ -1,5 +1,5 @@
-import Vector from '../vector';
 import Cell from '../cell';
+import Vector from '../vector';
 import Game from './index';
 
 export default class GameInteraction {
@@ -8,7 +8,7 @@ export default class GameInteraction {
     private isListening = false;
 
     constructor(
-        private game: Game
+        private game: Game,
     ) {
         this.onKeyPress = this.onKeyPress.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
@@ -55,7 +55,7 @@ export default class GameInteraction {
                 break;
 
             default:
-                console.log(`KEYPRESS ${event.code}`)
+                console.log(`KEYPRESS ${event.code}`);
         }
     }
 

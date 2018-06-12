@@ -3,8 +3,8 @@ import Vector from '../vector';
 import GameEntities from './entities';
 import GameInteraction from './interaction';
 import GameRenderer from './renderer';
-import GameTicker, { GameTickerParams } from './ticker';
 import GameState from './state';
+import GameTicker, { GameTickerParams } from './ticker';
 
 export default class Game {
 

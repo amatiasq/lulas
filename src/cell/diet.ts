@@ -1,6 +1,6 @@
+import { round } from '../math';
 import Stat from '../stat';
 import Cell from './index';
-import { round } from '../math';
 
 export default class CellDiet {
 
