@@ -23,9 +23,8 @@
     }
   },
   "scripts": {
-    "start": "parcel -t browser demo/index.html",
-    "build": "tsc -p .",
-    "build:watch": "npm run build -- --watch",
+    "start": "parcel watch -t browser demo/index.html",
+    "build": "parcel build -t browser demo/index.html",
     "test": "jest",
     "test:watch": "jest --watch",
     "coverage:run": "jest --coverage",
