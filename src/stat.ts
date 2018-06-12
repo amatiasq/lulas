@@ -1,0 +1,12 @@
+enum Stat {
+    ESCAPE_ACCELERATION,
+    FRICTION,
+    HUNT_ACCELERATION,
+    MAX_BITE_SIZE,
+    MAX_RADIUS,
+    MITOSIS_MIN_RADIUS,
+    VISION_RANGE,
+    MAX_VELOCITY,
+}
+
+export default Stat;

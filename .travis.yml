@@ -5,15 +5,17 @@ node_js:
 
 script:
 #  - npm run lint
-  - npm run test-coverage
+  - npm run coverage:run
   - npm run build
 
 after_script:
-  - npm run upload-coverage
+  - npm run coverage:upload
 
 deploy:
   provider: pages
-  skip_cleanup: true
+  local-dir: dist
+  keep-history: true
+  skip-cleanup: true
   github_token: $GITHUB_TOKEN
   on:
     branch: master

@@ -6,8 +6,10 @@
   "directories": {
     "test": "test"
   },
+  "browserslist": [
+    "last 2 Chrome versions"
+  ],
   "jest": {
-    "mapCoverage": true,
     "moduleFileExtensions": [
       "ts",
       "js"
@@ -21,13 +23,14 @@
     }
   },
   "scripts": {
-    "start": "webpack-dev-server",
+    "start": "parcel watch -t browser demo/index.html",
+    "build": "parcel build -t browser demo/index.html",
     "test": "jest",
-    "test-watch": "jest --watch",
-    "test-coverage": "jest --coverage",
-    "upload-coverage": "cat ./coverage/lcov.info | coveralls",
-    "build": "cd config; webpack --config ./webpack.config.js",
-    "lint": "tslint -c tslint.json --type-check --project tsconfig.json 'src/**/*.ts'"
+    "test:watch": "jest --watch",
+    "coverage:run": "jest --coverage",
+    "coverage:upload": "cat ./coverage/lcov.info | coveralls",
+    "lint": "tslint -c tslint.json --project tsconfig.json 'src/**/*.ts'",
+    "lint:fix": "npm run lint -- --fix"
   },
   "repository": {
     "type": "git",
@@ -39,16 +42,16 @@
     "url": "https://github.com/amatiasq/lulas/issues"
   },
   "devDependencies": {
-    "@types/jest": "^20.0.2",
-    "coveralls": "^2.13.1",
-    "jest": "^20.0.4",
-    "ts-jest": "^20.0.6",
-    "ts-loader": "^2.2.0",
-    "tslint": "^5.4.3",
-    "tslint-language-service": "^0.9.6",
-    "typescript": "^2.4.1",
-    "webpack": "^3.0.0",
-    "webpack-dev-server": "^2.5.0"
+    "@types/jest": "^23.0.0",
+    "coveralls": "^3.0.1",
+    "jest": "^23.1.0",
+    "parcel-bundler": "^1.8.1",
+    "ts-jest": "^22.4.6",
+    "ts-loader": "^4.3.1",
+    "tslint": "^5.10.0",
+    "tslint-language-service": "^0.9.9",
+    "typescript": "^2.9.1"
   },
-  "homepage": "https://github.com/amatiasq/lulas#readme"
+  "homepage": "https://github.com/amatiasq/lulas#readme",
+  "dependencies": {}
 }
