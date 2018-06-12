@@ -19,7 +19,7 @@ async function main() {
     canvas.width = width;
     canvas.height = height;
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 100; i++) {
         const x = random(0, width);
         const y = random(0, height);
         const cell = game.addCell(Vector.of(x, y));
@@ -30,6 +30,8 @@ async function main() {
     game.addListeners();
     game.start();
     game.pause();
+
+    (window as any).game = game;
 }
 
 function domLoaded() {
