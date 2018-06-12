@@ -1,7 +1,7 @@
 import Stat from '../stat';
 import World from '../world';
-import Cell from './index';
 import { IEnergySource } from './diet';
+import Cell from './index';
 
 export default class CellBehavior {
 

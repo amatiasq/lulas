@@ -1,7 +1,7 @@
-import Game from './index';
-import Vector from '../vector';
-import { TAU } from '../math';
 import Cell from '../cell';
+import { TAU } from '../math';
+import Vector from '../vector';
+import Game from './index';
 
 export default class GameRenderer {
 

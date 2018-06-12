@@ -29,7 +29,7 @@ export default class CellBody {
 
     constructor(
         private cell: Cell,
-        private state: CellState
+        private state: CellState,
     ) {
         this.state.isAlive = true;
         this.state.size = 1;

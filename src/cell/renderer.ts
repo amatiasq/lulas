@@ -1,4 +1,4 @@
-import { random, TAU, PI } from '../math';
+import { PI, random, TAU } from '../math';
 import Cell from './index';
 
 export default class CellRenderer {
@@ -30,14 +30,14 @@ export default class CellRenderer {
 
         context.fillStyle = this.color;
 
-        context.beginPath()
-        context.arc(0, 0, radius, 0, TAU)
-        context.fill()
-        context.moveTo(radius, padding)
-        context.lineTo(0, radius * 1.5 + padding)
-        context.lineTo(-radius, padding)
-        context.closePath()
-        context.fill()
+        context.beginPath();
+        context.arc(0, 0, radius, 0, TAU);
+        context.fill();
+        context.moveTo(radius, padding);
+        context.lineTo(0, radius * 1.5 + padding);
+        context.lineTo(-radius, padding);
+        context.closePath();
+        context.fill();
 
         context.restore();
     }
