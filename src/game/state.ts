@@ -1,57 +1,79 @@
 import Game from './index';
+import { min, max } from '../math';
 
 export default class GameState {
 
-    private history: EntitiesState[] = [];
-    private hasHistory: boolean;
-    private lastCalculatedStep = -1;
+    private history = new Map<number, EntitiesState>();
+    private maxHistory: number;
+    private initialStep: EntitiesState;
+
+    private get olderStepSaved() {
+        return min(...this.history.keys());
+    }
+
+    private get newerStepSaved() {
+        return max(...this.history.keys());
+    }
 
     constructor(
         private game: Game,
-        { hasHistory = false }: GameStateOptions = {},
+        { maxHistory }: GameStateOptions = {},
     ) {
-        this.hasHistory = hasHistory;
+        this.maxHistory = maxHistory;
     }
 
     tick(cursor: number) {
-        if (!this.hasHistory) {
-            this.processStep();
+        if (this.hasStep(cursor)) {
+            this.load(this.history.get(cursor));
             return;
         }
 
-        if (this.hasStep(cursor)) {
-            this.load(cursor);
-            return;
+        if (cursor < this.olderStepSaved) {
+            if (cursor !== 0) {
+                console.warn('Wiped saved history');
+            }
+
+            this.reset();
         }
 
         while (!this.hasStep(cursor)) {
-            this.processHistoryStep(cursor);
+            this.processStep();
         }
     }
 
-    hasStep(cursor: number) {
-        return cursor < this.history.length;
+    reset() {
+        this.load(this.initialStep);
+        this.history.clear();
+        this.history.set(0, this.initialStep);
     }
 
-    load(index: number) {
-        const state = this.history[index];
+    hasStep(cursor: number) {
+        return this.history.has(cursor);
+    }
+
+    saveInitialStep() {
+        const entities = this.game.tickEntities();
+        const state: EntitiesState = {};
+
+        for (const entity of entities) {
+            state[entity.id] = entity.getState();
+        }
+
+        this.initialStep = state;
+        this.reset();
+    }
+
+    private load(state: EntitiesState) {
+        // TODO: Get all entities
         const entities = this.game.getEntitiesAlive();
 
         for (const entity of entities) {
+            // TODO: revive dead entities
             entity.setState(state[entity.id]);
         }
     }
 
-    processStep() {
-        const entities = this.game.tickEntities();
-
-        for (const entity of entities) {
-            entity.flushState();
-        }
-    }
-
-    processHistoryStep(cursor: number) {
-        const { history } = this;
+    private processStep() {
         const entities = this.game.tickEntities();
         const newState: EntitiesState = {};
 
@@ -60,13 +82,23 @@ export default class GameState {
             newState[entity.id] = entity.getState();
         }
 
-        history.push(newState);
+        this.saveStep(newState);
+    }
+
+    private saveStep(newState: EntitiesState) {
+        const { history } = this;
+
+        history.set(this.newerStepSaved + 1, newState);
+
+        if (history.size > this.maxHistory) {
+            history.delete(this.olderStepSaved);
+        }
     }
 
 }
 
 export interface GameStateOptions {
-    hasHistory?: boolean;
+    maxHistory?: number;
 }
 
 interface EntitiesState {

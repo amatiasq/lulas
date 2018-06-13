@@ -30,14 +30,10 @@ exports.buffer = function buffer(Class) {
             }
 
             this._isBufferDirty = false;
-            const prev = {};
 
-            for (const { prop, state, next } of bufferProps) {
-                prev[prop] = this[state];
+            for (const { state, next } of bufferProps) {
                 this[state] = this[next];
             }
-
-            return prev;
         },
 
     });
