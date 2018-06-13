@@ -117,6 +117,10 @@ export default class Vector {
         return `[Vector(${this.x}, ${this.y})]`;
     }
 
+    toJSON() {
+        return { x: this.x, y: this.y };
+    }
+
 }
 
 export interface IVector {

@@ -24,7 +24,7 @@ export default class GameState {
 
     tick(cursor: number) {
         if (this.hasStep(cursor)) {
-            this.load(this.history.get(cursor));
+            this.setState(this.history.get(cursor));
             return;
         }
 
@@ -41,8 +41,17 @@ export default class GameState {
         }
     }
 
+    loadForeignState(state: EntitiesState) {
+        this.initialStep = state;
+        this.reset();
+    }
+
+    getState() {
+        return this.history.get(this.newerStepSaved);
+    }
+
     reset() {
-        this.load(this.initialStep);
+        this.setState(this.initialStep);
         this.history.clear();
         this.history.set(0, this.initialStep);
     }
@@ -63,7 +72,7 @@ export default class GameState {
         this.reset();
     }
 
-    private load(state: EntitiesState) {
+    setState(state: EntitiesState) {
         // TODO: Get all entities
         const entities = this.game.getEntitiesAlive();
 
@@ -101,6 +110,6 @@ export interface GameStateOptions {
     maxHistory?: number;
 }
 
-interface EntitiesState {
+export interface EntitiesState {
     [id: number]: object;
 }
