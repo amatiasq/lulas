@@ -5,7 +5,7 @@ export default {
     load(id: string) {
         const json = localStorage.getItem(id);
 
-        return json ? JSON.parse(json, vectorReviver) : null;
+        return json ? JSON.parse(json, reviver) : null;
     },
 
     save(state: any) {
@@ -49,8 +49,12 @@ export default {
 
 };
 
-function vectorReviver(key, value) {
-    if (typeof value === 'object' && 'x' in value && 'y' in value) {
+function reviver(key, value) {
+    if (typeof value !== 'object' || !value.$type) {
+        return value;
+    }
+
+    if (value.$type === 'vector') {
         return Vector.from(value);
     }
 

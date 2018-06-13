@@ -13,19 +13,17 @@ export default class CellSenses {
     }
 
     getVisibleEntities(map: World) {
-        // TODO: Use getVisionRange();
-        const visionRange = this.cell.getStat(Stat.VISION_RANGE);
+        const visionRange = this.getVisionRange();
         const entities = map.getEntitiesIn(this.cell.pos, visionRange);
 
         return entities.filter((entry) => entry !== this.cell);
     }
 
     canSee(target: Cell) {
-        const borders = this.cell.size + target.size;
+        const visionRange = this.getVisionRange();
         const distance = this.cell.pos.distance(target.pos);
-        const visionRange = this.cell.getStat(Stat.VISION_RANGE);
 
-        return distance - borders <= visionRange;
+        return distance <= visionRange + target.size;
     }
 
     isTouching(target: Cell) {

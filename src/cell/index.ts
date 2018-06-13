@@ -38,6 +38,13 @@ export default class Cell {
         return `[Cell ${this.id}]`;
     }
 
+    toJSON() {
+        return {
+            $type: 'cell',
+            ...this.getState(),
+        }
+    }
+
     //
     // STATE
     //
