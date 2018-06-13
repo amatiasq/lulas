@@ -36,6 +36,10 @@ async function main() {
     state.save(game.getState());
     state.log();
 
+    if (!query.get('pause')) {
+        game.play();
+    }
+
     Object.assign(window, {
         game,
         rename: state.rename,

@@ -11,5 +11,6 @@ Game of life on steroids
 
 The following query parameters are acepted
 
+- **pause** (`pause=1`): Starts the game paused in the first frame.
 - **history** (`history=number`): Max frames to store in history cache.
 - **cells** (`cells=number`): Amount of cells to start with.
