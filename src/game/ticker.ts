@@ -34,12 +34,15 @@ export default class GameTicker {
         this.onTick = this.onTick.bind(this);
     }
 
+    //
+    // Timer execution
+    //
+
     start() {
         if (this.isRunning) {
             return;
         }
 
-        this.speed = 1;
         this.isRunning = true;
         requestAnimationFrame(this.onTick);
     }
@@ -48,11 +51,43 @@ export default class GameTicker {
         this.isRunning = false;
     }
 
+    //
+    // Flow control
+    //
+
+    play() {
+        this.speed = 1;
+        this.isPaused = false;
+        this.start();
+    }
+
+    playback() {
+        this.speed = -1;
+        this.isPaused = false;
+        this.start();
+    }
+
+    step() {
+        this.speed = 1;
+        this.isPaused = true;
+        this.execute();
+    }
+
+    stepback() {
+        this.speed = -1;
+        this.isPaused = true;
+        this.execute();
+    }
+
     pause() {
         this.isPaused = true;
     }
 
-    step() {
+    //
+    // Implementation details
+    //
+
+    private execute() {
         if (this.isBackwards && this.isAtBegining) {
             console.warn(`Can't go further in history!`);
             this.isPaused = true;
@@ -73,7 +108,7 @@ export default class GameTicker {
         requestAnimationFrame(this.onTick);
 
         if (!this.isPaused) {
-            this.step();
+            this.execute();
         }
     }
 

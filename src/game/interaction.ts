@@ -79,28 +79,22 @@ export default class GameInteraction {
 
             case 'KeyA':
             case 'KeyJ':
-                this.game.speed = -1;
-                this.game.isPaused = false;
+                this.game.playback()
                 break;
 
             case 'KeyS':
             case 'KeyK':
-                this.game.speed = -1;
-                this.game.isPaused = true;
-                this.game.step();
+                this.game.stepback();
                 break;
 
             case 'KeyD':
             case 'KeyL':
-                this.game.speed = 1;
-                this.game.isPaused = true;
                 this.game.step();
                 break;
 
             case 'KeyF':
             case 'Semicolon':
-                this.game.speed = 1;
-                this.game.isPaused = false;
+                this.game.play();
                 break;
 
             // default:

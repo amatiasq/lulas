@@ -11,6 +11,5 @@ Game of life on steroids
 
 The following query parameters are acepted
 
-- ~~**history** (`history=number`): Max ticks to store in navigable history.~~
-- **history** (`history=0|1`): Posibility to rewind back in time.
+- **history** (`history=number`): Max frames to store in history cache.
 - **cells** (`cells=number`): Amount of cells to start with.

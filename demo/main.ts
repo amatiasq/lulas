@@ -17,7 +17,7 @@ async function main() {
     const entities = query.get('cells') || 10;
     const canvas = document.querySelector('canvas#world') as HTMLCanvasElement;
     const game = new Game(canvas, Vector.of(width, height), {
-        hasHistory: Boolean(query.get('history')),
+        maxHistory: query.get('history'),
     });
 
     canvas.width = width;
@@ -31,10 +31,7 @@ async function main() {
         cell.setDietType(Cell);
     }
 
-    game.addListeners();
-    game.start();
-    game.pause();
-    game.render();
+    game.init();
 
     (window as any).game = game;
 }

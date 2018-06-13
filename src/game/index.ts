@@ -21,15 +21,23 @@ export default class Game {
     constructor(
         private canvas: HTMLCanvasElement,
         mapSize: Vector,
-        { hasHistory }: GameOptions = {},
+        { maxHistory = 100 }: GameOptions = {},
     ) {
         this.entities = new GameEntities(this, mapSize);
         this.renderer = new GameRenderer(this, canvas);
-        this.state = new GameState(this, { hasHistory });
+        this.state = new GameState(this, { maxHistory });
         this.ticker = new GameTicker(this.tick.bind(this));
         this.interaction = new GameInteraction(this, {
-            isHistoryEnabled: Boolean(hasHistory),
+            isHistoryEnabled: Boolean(maxHistory),
         });
+    }
+
+    init() {
+        this.addListeners();
+        this.state.saveInitialStep();
+        this.start();
+        this.pause();
+        this.render();
     }
 
     tick({ turn }: GameTickerParams) {
@@ -75,12 +83,24 @@ export default class Game {
         return this.ticker.stop();
     }
 
+    play() {
+        return this.ticker.play();
+    }
+
+    playback() {
+        return this.ticker.playback();
+    }
+
     pause() {
         return this.ticker.pause();
     }
 
     step() {
         return this.ticker.step();
+    }
+
+    stepback() {
+        return this.ticker.stepback();
     }
 
     //
@@ -122,5 +142,5 @@ export default class Game {
 }
 
 export interface GameOptions {
-    hasHistory?: boolean;
+    maxHistory?: number;
 }
