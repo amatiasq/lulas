@@ -7,7 +7,7 @@ Game of life on steroids
 
 [Demo](https://amatiasq.github.io/lulas/)
 
-## Options
+## Options
 
 The following query parameters are acepted
 

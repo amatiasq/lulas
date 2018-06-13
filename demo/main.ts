@@ -2,6 +2,7 @@ import Game from '../src/game/index';
 import Vector from '../src/vector';
 import { random } from '../src/math';
 import Cell from '../src/cell';
+import state from './persisted-state';
 
 main();
 
@@ -32,8 +33,17 @@ async function main() {
     }
 
     game.init();
+    state.save(game.getState());
+    state.log();
 
-    (window as any).game = game;
+    Object.assign(window, {
+        game,
+        rename: state.rename,
+        load(id: string) {
+            game.setState(state.load(id));
+            game.render();
+        },
+    });
 }
 
 function domLoaded() {

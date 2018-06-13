@@ -3,7 +3,7 @@ import Vector from '../vector';
 import GameEntities from './entities';
 import GameInteraction from './interaction';
 import GameRenderer from './renderer';
-import GameState from './state';
+import GameState, { EntitiesState } from './state';
 import GameTicker, { GameTickerParams } from './ticker';
 
 export default class Game {
@@ -125,6 +125,18 @@ export default class Game {
 
     addListeners() {
         this.interaction.addListeners(this.canvas);
+    }
+
+    //
+    // STATE
+    //
+
+    getState() {
+        return this.state.getState();
+    }
+
+    setState(value: EntitiesState) {
+        return this.state.loadForeignState(value);
     }
 
     //
