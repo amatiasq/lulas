@@ -39,12 +39,15 @@ export default class World {
     }
 
     getEntitiesIn(point: Vector, radius: number) {
-        const start = point.sub({ x: radius, y: radius });
-        const end = point.add({ x: radius, y: radius });
+        const rawStart = point.sub({ x: radius, y: radius });
+        const rawEnd = point.add({ x: radius, y: radius });
         const result: IWorldEntity[] = [];
 
         for (const entity of this.entities) {
-            const { x, y } = entity.pos;
+            const { size } = entity;
+            const start = rawStart.sub({ x: size, y: size });
+            const end = rawEnd.add({ x: size, y: size });
+            const { x, y } = entity.pos
             const range = radius + entity.size;
             const isInBox = x >= start.x && x <= end.x && y >= start.y && y <= end.y;
 

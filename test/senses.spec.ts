@@ -2,6 +2,7 @@ import './matchers';
 import Stat from '../src/stat';
 import Cell from '../src/cell';
 import Vector from '../src/vector';
+import World from '../src/world';
 
 test('A cell should be able to always see itself', () => {
     const sut = new Cell();
@@ -53,6 +54,54 @@ test('A cell should detect another cell if it\'s in contact even with vision ran
     sut.setStat(Stat.VISION_RANGE, 0);
 
     expect(sut.canSee(target)).toBeTrue();
+});
+
+test('A cell should see another cell if it\'s limits are inside it\'s vision range', () => {
+    const { sut, target } = makeCellsAt([ 0, 0 ], [ 10, 0 ]);
+
+    sut.setStat(Stat.VISION_RANGE, 5);
+    sut.size = 2.5;
+    target.size = 2.5;
+
+    sut.flushState();
+    target.flushState();
+
+    expect(sut.canSee(target)).toBeTrue();
+});
+
+test('A cell should see all cells returned by .getVisibleEntities() and no other', () => {
+    const WORLD_SIZE = Vector.of(10, 10);
+    const world = new World(WORLD_SIZE);
+    const sut = new Cell();
+
+    sut.pos = Vector.of(5, 5)
+    sut.size = 0.5;
+    sut.setStat(Stat.VISION_RANGE, 3);
+    sut.flushState();
+    world.add(sut);
+
+    const others = [];
+
+    for (const vector of Vector.iterate(Vector.ZERO, WORLD_SIZE)) {
+        const cell = new Cell();
+
+        cell.pos = vector;
+        cell.size = 0.5;
+        cell.flushState();
+
+        others.push(cell);
+        world.add(cell);
+    }
+
+    const visible = sut.getVisibleEntities(world);
+
+    for (const cell of others) {
+        if (sut.canSee(cell)) {
+            expect(visible).toContain(cell);
+        } else {
+            expect(visible).not.toContain(cell);
+        }
+    }
 });
 
 function makeCellsSize(sutSize, targetSize) {

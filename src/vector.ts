@@ -118,7 +118,11 @@ export default class Vector {
     }
 
     toJSON() {
-        return { x: this.x, y: this.y };
+        return {
+            $type: 'vector',
+            x: this.x,
+            y: this.y
+        };
     }
 
 }

@@ -96,6 +96,7 @@ test('Hunter doesn\'t eat prey even if close by', () => {
     hunter.setStat(Stat.FRICTION, 0);
     hunter.setStat(Stat.MAX_RADIUS, 100);
     hunter.setStat(Stat.VISION_RANGE, 1);
+    hunter.setStat(Stat.HUNT_ACCELERATION, 1);
     hunter.flushState();
     prey.flushState();
 
