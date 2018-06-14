@@ -5,6 +5,7 @@ import GameInteraction from './interaction';
 import GameRenderer from './renderer';
 import GameState, { EntitiesState } from './state';
 import GameTicker, { GameTickerParams } from './ticker';
+import { IWorldEntity, EntityState } from '../world';
 
 export default class Game {
 
@@ -13,6 +14,7 @@ export default class Game {
     private renderer: GameRenderer;
     private state: GameState;
     private ticker: GameTicker;
+    private onTick: (params: GameOnTickParams) => void;
 
     get world() {
         return this.entities.world;
@@ -21,8 +23,12 @@ export default class Game {
     constructor(
         private canvas: HTMLCanvasElement,
         mapSize: Vector,
-        { maxHistory = 100 }: GameOptions = {},
+        {
+            maxHistory = 100,
+            onTick,
+        }: GameOptions = {},
     ) {
+        this.onTick = onTick;
         this.entities = new GameEntities(this, mapSize);
         this.renderer = new GameRenderer(this, canvas);
         this.state = new GameState(this, { maxHistory });
@@ -40,12 +46,13 @@ export default class Game {
         this.render();
     }
 
-    tick({ turn }: GameTickerParams) {
+    tick({ turn: tick }: GameTickerParams) {
         const entities = this.getEntitiesAlive();
-        console.log(turn, entities.length);
 
-        this.state.tick(turn);
+        this.state.tick(tick);
         this.updateView();
+
+        this.onTick({ tick, entities });
     }
 
     updateView() {
@@ -155,4 +162,10 @@ export default class Game {
 
 export interface GameOptions {
     maxHistory?: number;
+    onTick?(params: GameOnTickParams): void;
+}
+
+export interface GameOnTickParams {
+    tick: number;
+    entities: IWorldEntity<EntityState>[];
 }

@@ -1,6 +1,6 @@
-import Game from '../src/game/index';
+import Game, { GameOnTickParams } from '../src/game/index';
 import Vector from '../src/vector';
-import { random } from '../src/math';
+import { random, round } from '../src/math';
 import Cell from '../src/cell';
 import state from './persisted-state';
 
@@ -9,16 +9,22 @@ main();
 async function main() {
     await domLoaded();
 
+    const $fps = document.querySelector('#fps');
+    const $entities = document.querySelector('#entities');
+    const $tick = document.querySelector('#tick');
+
     const width = window.innerWidth;
     const height = window.innerHeight - 4;
 
     console.log({ width, height });
 
+    let prev = Date.now();
     const query = parseQuery();
     const entities = query.get('cells') || 10;
     const canvas = document.querySelector('canvas#world') as HTMLCanvasElement;
     const game = new Game(canvas, Vector.of(width, height), {
         maxHistory: query.get('history'),
+        onTick,
     });
 
     canvas.width = width;
@@ -48,6 +54,16 @@ async function main() {
             game.render();
         },
     });
+
+    function onTick({ tick, entities }: GameOnTickParams) {
+        const now = Date.now();
+        const delta = now - prev;
+
+        prev = now;
+        $tick.innerHTML = String(tick);
+        $entities.innerHTML = String(entities.length);
+        $fps.innerHTML = String(round(1000 / delta, 0));
+    }
 }
 
 function domLoaded() {
