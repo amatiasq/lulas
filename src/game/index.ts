@@ -52,7 +52,9 @@ export default class Game {
         this.state.tick(tick);
         this.updateView();
 
-        this.onTick({ tick, entities });
+        if (typeof this.onTick === 'function') {
+            this.onTick({ tick, entities });
+        }
     }
 
     updateView() {
