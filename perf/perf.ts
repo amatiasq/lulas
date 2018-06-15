@@ -17,6 +17,16 @@ for (let entities = 1; entities <= 1024; entities *= 2) {
         `ready-${entities}`,
     );
     performance.measure(
+        `execution-${entities}`,
+        `frame-start-${entities}-0`,
+        `frame-end-${entities}-2`,
+    );
+    performance.measure(
+        `total-${entities}`,
+        `start-${entities}`,
+        `frame-end-${entities}-2`,
+    );
+    performance.measure(
         `frame-${entities}-0`,
         `frame-start-${entities}-0`,
         `frame-end-${entities}-0`,
@@ -29,11 +39,6 @@ for (let entities = 1; entities <= 1024; entities *= 2) {
     performance.measure(
         `frame-${entities}-2`,
         `frame-start-${entities}-2`,
-        `frame-end-${entities}-2`,
-    );
-    performance.measure(
-        `frames-${entities}`,
-        `frame-start-${entities}-0`,
         `frame-end-${entities}-2`,
     );
 }

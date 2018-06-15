@@ -22,11 +22,27 @@ const PORT = 8642;
 })();
 
 async function testPage(page) {
+    page.on('console', msg => {
+        console.dir(msg);
+        process.exit(1);
+    });
+
     await page.goto(`http://localhost:${PORT}`);
     await page.waitFor(1000);
 
     const json = await page.evaluate(getPerformanceResults);
-    return JSON.parse(json);
+    const result = JSON.parse(json);
+
+    return result.map(({ name, duration }) => {
+        const [ key, entities, frame ] = name.split('-');
+
+        return {
+            name: key,
+            entities: parseInt(entities),
+            frame: frame ? parseInt(frame) : undefined,
+            duration,
+        };
+    });
 }
 
 function save(results) {
