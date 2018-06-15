@@ -24,6 +24,7 @@
   "scripts": {
     "start": "parcel -t browser demo/index.html",
     "build": "parcel build -t browser --public-url '.' demo/index.html",
+    "compile": "tsc -p .",
     "test": "jest",
     "test:watch": "jest --watch",
     "coverage:run": "jest --coverage",

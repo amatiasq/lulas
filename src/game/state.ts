@@ -1,6 +1,8 @@
 import Game from './index';
 import { min, max } from '../math';
 import Cell from '../cell';
+import { IStateScreenshot } from '../cell/state';
+import { IWorldEntity } from '../world';
 
 export default class GameState {
 
@@ -62,7 +64,7 @@ export default class GameState {
     }
 
     saveInitialStep() {
-        const entities = this.game.tickEntities();
+        const entities = this.game.tickEntities() as IWorldEntity<IStateScreenshot>[];
         const state: EntitiesState = {};
 
         for (const entity of entities) {
@@ -90,12 +92,13 @@ export default class GameState {
 
         for (const id of ids) {
             const cell = this.game.reviveCell(id);
+
             cell.setState(state[id]);
         }
     }
 
     private processStep() {
-        const entities = this.game.tickEntities();
+        const entities = this.game.tickEntities() as IWorldEntity<IStateScreenshot>[];
         const newState: EntitiesState = {};
 
         for (const entity of entities) {
@@ -123,5 +126,5 @@ export interface GameStateOptions {
 }
 
 export interface EntitiesState {
-    [id: number]: object;
+    [id: number]: IStateScreenshot;
 }
