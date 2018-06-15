@@ -17,12 +17,12 @@ export default class Cell {
 
     private behavior = new CellBehavior(this);
     private diet = new CellDiet(this);
-    private relations = new CellRelations(this);
     private renderer = new CellRenderer(this);
     private senses = new CellSenses(this);
     private state = new CellState(this);
     private body = new CellBody(this, this.state);
     private physic = new CellPhysic(this, this.state);
+    private relations = new CellRelations(this, this.state);
     private emitter = new Emitter();
 
     constructor(

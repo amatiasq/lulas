@@ -3,40 +3,52 @@ import CellState from './state';
 
 export default class CellRelations {
 
-    private parents = new Set<Cell>();
+    get parent() {
+        return this.state.parent;
+    }
+    set parent(id: number) {
+        this.state.parent = id;
+    }
 
     constructor(
         private cell: Cell,
+        private state: CellState,
     ) {}
 
     setParent(target: Cell) {
-        this.parents.add(target);
+        if (this.parent != null) {
+            throw new Error('Only one parent per cell!');
+        }
+
+        this.parent = target.id;
     }
 
     isFamily(target: Cell) {
+        const { parent, cell } = this;
+        const targetParent = this.getOthersParent(target);
+
         return (
-            this.isChildOf(target) ||
-            this.isParentOf(target) ||
-            this.isSibling(target)
+            parent === target.id ||
+            targetParent === cell.id ||
+            parent === targetParent
         );
     }
 
     isParentOf(target: Cell) {
-        return target.isChildOf(this.cell);
+        return this.getOthersParent(target) === this.cell.id;
     }
 
     isChildOf(target: Cell) {
-        return this.parents.has(target);
+        return this.parent === target.id;
     }
 
     isSibling(target: Cell) {
-        for (const parent of this.parents) {
-            if (target.isChildOf(parent)) {
-                return true;
-            }
-        }
+        return this.parent === this.getOthersParent(target);
+    }
 
-        return false;
+    private getOthersParent(other: Cell) {
+        // Accessing private property of another instance of the same class
+        return (other as any).relations.parent as number
     }
 
 }

@@ -20,6 +20,9 @@ export default class CellState {
     @bufferProp
     velocity: Vector;
 
+    @bufferProp
+    parent: number;
+
     constructor(
         private cell: Cell,
     ) {}
