@@ -22,6 +22,9 @@
     }
 
     .info {
+      position: absolute;
+      top: 0;
+      left: 0;
       font-family: monospace;
       font-size: 0.7em;
     }
@@ -29,6 +32,8 @@
 </head>
 
 <body>
+  <canvas id="world"></canvas>
+
   <div class="info">
     <div>
       <label>Entities:</label>
@@ -43,8 +48,6 @@
       <span id="fps"></span>
     </div>
   </div>
-
-  <canvas id="world"></canvas>
 
   <a href="https://github.com/amatiasq/lulas">
     <img style="position: absolute; top: 0; right: 0; border: 0;" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"
