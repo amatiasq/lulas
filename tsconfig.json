@@ -7,7 +7,7 @@
     "experimentalDecorators": true,
     "outDir": "out",
 
-    "module": "none",
+    "module": "commonjs",
     "target": "es2018",
     "lib": [
       "dom",
