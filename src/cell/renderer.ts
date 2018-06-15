@@ -1,16 +1,21 @@
 import { random, TAU } from '../math';
 import Cell from './index';
-
-const colorCache = new Map<number, string>();
+import CellState from './state';
 
 export default class CellRenderer {
 
-    private color: string;
+    private get color() {
+        return this.state.color;
+    }
+    private set color(value: string) {
+        this.state.color = value;
+    }
 
     constructor(
         private cell: Cell,
+        private state: CellState,
     ) {
-        this.color = getColorFor(this.cell.id);
+        this.color = generateColor();
     }
 
     render(context: CanvasRenderingContext2D) {
@@ -42,19 +47,6 @@ export default class CellRenderer {
         context.restore();
     }
 
-}
-
-function getColorFor(id: number) {
-    const cached = colorCache.get(id);
-
-    if (cached) {
-        return cached;
-    }
-
-    const newColor = generateColor();
-    colorCache.set(id, newColor);
-
-    return newColor;
 }
 
 function generateColor() {

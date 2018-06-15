@@ -1,5 +1,6 @@
 exports.buffer = function buffer(Class) {
     const bufferProps = Class._bufferProps = Class._bufferProps || [];
+    const staticProps = Class._staticProps = Class._staticProps || [];
 
     Class._isDoubleBuffer = true;
 
@@ -12,6 +13,10 @@ exports.buffer = function buffer(Class) {
                 prev[prop] = this[state];
             }
 
+            for (const key of staticProps) {
+                prev[key] = this[key];
+            }
+
             return prev;
         },
 
@@ -21,6 +26,10 @@ exports.buffer = function buffer(Class) {
             for (const { prop, state, next } of bufferProps) {
                 this[state] = newState[prop];
                 this[next] = newState[prop];
+            }
+
+            for (const key of staticProps) {
+                this[key] = newState[key];
             }
         },
 
@@ -64,3 +73,10 @@ exports.bufferProp = function bufferProp(prototype, key) {
 
     });
 }
+
+exports.staticProp = function staticProp(prototype, key) {
+    const Class = prototype.constructor;
+    const staticProps = Class._staticProps = Class._staticProps || [];
+
+    staticProps.push(key);
+};

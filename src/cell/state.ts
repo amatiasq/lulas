@@ -1,12 +1,18 @@
 import Stat from '../stat';
 import Vector from '../vector';
 import Cell from './index';
-import { buffer, bufferProp } from './state-decorators';
+import { buffer, bufferProp, staticProp } from './state-decorators';
 
 @buffer
 export default class CellState {
 
     private stats = new Map<Stat, number>();
+
+    @staticProp
+    parent: number;
+
+    @staticProp
+    color: string;
 
     @bufferProp
     isAlive: boolean;
@@ -19,9 +25,6 @@ export default class CellState {
 
     @bufferProp
     velocity: Vector;
-
-    @bufferProp
-    parent: number;
 
     constructor(
         private cell: Cell,
