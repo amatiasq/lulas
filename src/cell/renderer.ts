@@ -1,15 +1,17 @@
-import { PI, random, TAU } from '../math';
+import { random, TAU } from '../math';
 import Cell from './index';
+
+const colorCache = new Map<number, string>();
 
 export default class CellRenderer {
 
-    color = '#' + random(0, 0xFFFFFF)
-        .toString(16)
-        .padStart(6, '0');
+    private color: string;
 
     constructor(
         private cell: Cell,
-    ) {}
+    ) {
+        this.color = getColorFor(this.cell.id);
+    }
 
     render(context: CanvasRenderingContext2D) {
         const {
@@ -40,4 +42,24 @@ export default class CellRenderer {
         context.restore();
     }
 
+}
+
+function getColorFor(id: number) {
+    const cached = colorCache.get(id);
+
+    if (cached) {
+        return cached;
+    }
+
+    const newColor = generateColor();
+    colorCache.set(id, newColor);
+
+    return newColor;
+}
+
+function generateColor() {
+    const value = random(0, 0xFFFFFF);
+    const hex = value.toString(16).padStart(6, '0');
+
+    return `#${hex}`;
 }

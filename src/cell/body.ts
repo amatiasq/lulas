@@ -21,10 +21,10 @@ export default class CellBody {
     }
 
     get energy() {
-        return pow(this.state.size, 2) * Math.PI;
+        return pow(this.size, 2) * Math.PI;
     }
     set energy(value) {
-        this.state.size = sqrt(value / Math.PI);
+        this.size = sqrt(value / Math.PI);
     }
 
     constructor(

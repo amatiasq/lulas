@@ -22,6 +22,20 @@ export default class GameEntities {
         cell.size = 4 + random(2);
         cell.pos = position;
 
+        this.setUpCell(cell);
+
+        return cell;
+    }
+
+    reviveCell(id: number) {
+        const cell = new Cell(id);
+
+        this.setUpCell(cell);
+
+        return cell;
+    }
+
+    private setUpCell(cell: Cell) {
         cell.setStat(Stat.ESCAPE_ACCELERATION, 1);
         cell.setStat(Stat.FRICTION, 0.3);
         cell.setStat(Stat.HUNT_ACCELERATION, 1);
@@ -34,8 +48,6 @@ export default class GameEntities {
         cell.flushState();
 
         this.world.add(cell);
-
-        return cell;
     }
 
     getEntitiesAlive() {
@@ -47,7 +59,7 @@ export default class GameEntities {
         const entities = this.getEntitiesAlive();
 
         for (const entity of entities) {
-            if (entity instanceof Cell && !entity.isAlive) {
+            if (entity instanceof Cell && !(entity as Cell).isAlive) {
                 world.remove(entity);
                 continue;
             }
