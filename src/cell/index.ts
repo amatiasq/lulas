@@ -12,7 +12,6 @@ import CellSenses from './senses';
 import CellState, { IStateScreenshot } from './state';
 
 let lastId = 0;
-const cells: Cell[] = (window as any).cells = [];
 
 export default class Cell {
 
@@ -29,7 +28,6 @@ export default class Cell {
     constructor(
         public id = lastId++,
     ) {
-        cells[this.id] = this;
         this.flushState();
     }
 
