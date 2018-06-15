@@ -1,332 +1,365 @@
 [
   {
-    "name": "init-1",
-    "entryType": "measure",
-    "startTime": 855.600000009872,
+    "name": "init",
+    "entities": 1,
+    "duration": 5.000000004656613
+  },
+  {
+    "name": "total",
+    "entities": 1,
     "duration": 6.599999993341044
   },
   {
-    "name": "frame-1-0",
-    "entryType": "measure",
-    "startTime": 862.3000000079628,
-    "duration": 0.29999998514540493
+    "name": "execution",
+    "entities": 1,
+    "duration": 1.4999999839346856
   },
   {
-    "name": "frames-1",
-    "entryType": "measure",
-    "startTime": 862.3000000079628,
-    "duration": 1.0999999940395355
+    "name": "frame",
+    "entities": 1,
+    "frame": 0,
+    "duration": 0.7999999797903001
   },
   {
-    "name": "frame-1-1",
-    "entryType": "measure",
-    "startTime": 862.5999999931082,
-    "duration": 0.7000000041443855
-  },
-  {
-    "name": "frame-1-2",
-    "entryType": "measure",
-    "startTime": 863.2999999972526,
-    "duration": 0.10000000474974513
-  },
-  {
-    "name": "init-2",
-    "entryType": "measure",
-    "startTime": 863.6000000115018,
-    "duration": 0.4999999946448952
-  },
-  {
-    "name": "frame-2-0",
-    "entryType": "measure",
-    "startTime": 864.1000000061467,
-    "duration": 0.20000000949949026
-  },
-  {
-    "name": "frames-2",
-    "entryType": "measure",
-    "startTime": 864.1000000061467,
-    "duration": 0.39999998989515007
-  },
-  {
-    "name": "frame-2-1",
-    "entryType": "measure",
-    "startTime": 864.3000000156462,
-    "duration": 0
-  },
-  {
-    "name": "frame-2-2",
-    "entryType": "measure",
-    "startTime": 864.3000000156462,
-    "duration": 0.1999999803956598
-  },
-  {
-    "name": "init-4",
-    "entryType": "measure",
-    "startTime": 864.4999999960419,
-    "duration": 1.0999999940395355
-  },
-  {
-    "name": "frame-4-0",
-    "entryType": "measure",
-    "startTime": 865.5999999900814,
-    "duration": 0.10000000474974513
-  },
-  {
-    "name": "frames-4",
-    "entryType": "measure",
-    "startTime": 865.5999999900814,
-    "duration": 0.8000000088941306
-  },
-  {
-    "name": "frame-4-1",
-    "entryType": "measure",
-    "startTime": 865.6999999948312,
-    "duration": 0.3000000142492354
-  },
-  {
-    "name": "frame-4-2",
-    "entryType": "measure",
-    "startTime": 866.0000000090804,
-    "duration": 0.39999998989515007
-  },
-  {
-    "name": "init-8",
-    "entryType": "measure",
-    "startTime": 866.5000000037253,
-    "duration": 1.1999999987892807
-  },
-  {
-    "name": "frame-8-0",
-    "entryType": "measure",
-    "startTime": 867.7000000025146,
-    "duration": 0.3000000142492354
-  },
-  {
-    "name": "frames-8",
-    "entryType": "measure",
-    "startTime": 867.7000000025146,
-    "duration": 1.5999999886844307
-  },
-  {
-    "name": "frame-8-1",
-    "entryType": "measure",
-    "startTime": 868.0000000167638,
-    "duration": 0.699999975040555
-  },
-  {
-    "name": "frame-8-2",
-    "entryType": "measure",
-    "startTime": 868.6999999918044,
+    "name": "frame",
+    "entities": 1,
+    "frame": 1,
     "duration": 0.5999999993946403
   },
   {
-    "name": "init-16",
-    "entryType": "measure",
-    "startTime": 869.3999999959487,
-    "duration": 3.300000011222437
+    "name": "frame",
+    "entities": 1,
+    "frame": 2,
+    "duration": 0.10000000474974513
   },
   {
-    "name": "frame-16-0",
-    "entryType": "measure",
-    "startTime": 872.7000000071712,
+    "name": "init",
+    "entities": 2,
     "duration": 0.4999999946448952
   },
   {
-    "name": "frames-16",
-    "entryType": "measure",
-    "startTime": 872.7000000071712,
-    "duration": 5.899999989196658
+    "name": "total",
+    "entities": 2,
+    "duration": 0.7000000041443855
   },
   {
-    "name": "frame-16-1",
-    "entryType": "measure",
-    "startTime": 873.2000000018161,
-    "duration": 3.499999991618097
+    "name": "execution",
+    "entities": 2,
+    "duration": 0.20000000949949026
   },
   {
-    "name": "frame-16-2",
-    "entryType": "measure",
-    "startTime": 876.6999999934342,
-    "duration": 1.900000002933666
+    "name": "frame",
+    "entities": 2,
+    "frame": 0,
+    "duration": 0.10000000474974513
   },
   {
-    "name": "init-32",
-    "entryType": "measure",
-    "startTime": 878.7000000011176,
-    "duration": 10.700000013457611
+    "name": "frame",
+    "entities": 2,
+    "frame": 1,
+    "duration": 0.10000000474974513
   },
   {
-    "name": "frame-32-0",
-    "entryType": "measure",
-    "startTime": 889.4000000145752,
-    "duration": 1.2999999744351953
+    "name": "frame",
+    "entities": 2,
+    "frame": 2,
+    "duration": 0
   },
   {
-    "name": "frames-32",
-    "entryType": "measure",
-    "startTime": 889.4000000145752,
-    "duration": 19.899999984772876
+    "name": "init",
+    "entities": 4,
+    "duration": 3.200000006472692
   },
   {
-    "name": "frame-32-1",
-    "entryType": "measure",
-    "startTime": 890.6999999890104,
-    "duration": 9.000000020023435
+    "name": "total",
+    "entities": 4,
+    "duration": 4.899999999906868
   },
   {
-    "name": "frame-32-2",
-    "entryType": "measure",
-    "startTime": 899.8000000137836,
-    "duration": 9.4999999855645
+    "name": "execution",
+    "entities": 4,
+    "duration": 1.6999999934341758
   },
   {
-    "name": "init-64",
-    "entryType": "measure",
-    "startTime": 909.2999999993481,
-    "duration": 13.500000000931323
+    "name": "frame",
+    "entities": 4,
+    "frame": 0,
+    "duration": 0.20000000949949026
   },
   {
-    "name": "frame-64-0",
-    "entryType": "measure",
-    "startTime": 922.8000000002794,
-    "duration": 7.899999996880069
+    "name": "frame",
+    "entities": 4,
+    "frame": 1,
+    "duration": 0.7000000041443855
   },
   {
-    "name": "frames-64",
-    "entryType": "measure",
-    "startTime": 922.8000000002794,
-    "duration": 31.199999997625127
+    "name": "frame",
+    "entities": 4,
+    "frame": 2,
+    "duration": 0.7000000041443855
   },
   {
-    "name": "frame-64-1",
-    "entryType": "measure",
-    "startTime": 930.6999999971595,
-    "duration": 18.00000001094304
+    "name": "init",
+    "entities": 8,
+    "duration": 1.6999999934341758
   },
   {
-    "name": "frame-64-2",
-    "entryType": "measure",
-    "startTime": 948.7000000081025,
-    "duration": 5.299999989802018
+    "name": "total",
+    "entities": 8,
+    "duration": 6.4999999885912985
   },
   {
-    "name": "init-128",
-    "entryType": "measure",
-    "startTime": 954.1000000026543,
-    "duration": 87.90000001317821
+    "name": "execution",
+    "entities": 8,
+    "duration": 4.799999995157123
   },
   {
-    "name": "frame-128-0",
-    "entryType": "measure",
-    "startTime": 1042.0000000158325,
-    "duration": 1.2999999744351953
+    "name": "frame",
+    "entities": 8,
+    "frame": 0,
+    "duration": 0.10000000474974513
   },
   {
-    "name": "frames-128",
-    "entryType": "measure",
-    "startTime": 1042.0000000158325,
-    "duration": 56.29999999655411
+    "name": "frame",
+    "entities": 8,
+    "frame": 1,
+    "duration": 0.7000000041443855
   },
   {
-    "name": "frame-128-1",
-    "entryType": "measure",
-    "startTime": 1043.2999999902677,
-    "duration": 18.900000024586916
-  },
-  {
-    "name": "frame-128-2",
-    "entryType": "measure",
-    "startTime": 1062.2000000148546,
-    "duration": 36.099999997531995
-  },
-  {
-    "name": "init-256",
-    "entryType": "measure",
-    "startTime": 1098.599999997532,
-    "duration": 43.49999999976717
-  },
-  {
-    "name": "frame-256-0",
-    "entryType": "measure",
-    "startTime": 1142.0999999972992,
-    "duration": 4.700000019511208
-  },
-  {
-    "name": "frames-256",
-    "entryType": "measure",
-    "startTime": 1142.0999999972992,
-    "duration": 45.70000001695007
-  },
-  {
-    "name": "frame-256-1",
-    "entryType": "measure",
-    "startTime": 1146.8000000168104,
-    "duration": 15.899999998509884
-  },
-  {
-    "name": "frame-256-2",
-    "entryType": "measure",
-    "startTime": 1162.7000000153203,
-    "duration": 25.09999999892898
-  },
-  {
-    "name": "init-512",
-    "entryType": "measure",
-    "startTime": 1187.8999999898952,
-    "duration": 75.70000001578592
-  },
-  {
-    "name": "frame-512-0",
-    "entryType": "measure",
-    "startTime": 1263.600000005681,
+    "name": "frame",
+    "entities": 8,
+    "frame": 2,
     "duration": 3.999999986262992
   },
   {
-    "name": "frames-512",
-    "entryType": "measure",
-    "startTime": 1263.600000005681,
-    "duration": 99.59999998682179
+    "name": "init",
+    "entities": 16,
+    "duration": 6.300000008195639
   },
   {
-    "name": "frame-512-1",
-    "entryType": "measure",
-    "startTime": 1267.599999991944,
-    "duration": 49.59999999846332
+    "name": "total",
+    "entities": 16,
+    "duration": 13.200000015785918
   },
   {
-    "name": "frame-512-2",
-    "entryType": "measure",
-    "startTime": 1317.1999999904074,
-    "duration": 46.000000002095476
+    "name": "execution",
+    "entities": 16,
+    "duration": 6.900000007590279
   },
   {
-    "name": "init-1024",
-    "entryType": "measure",
-    "startTime": 1363.2999999972526,
-    "duration": 232.90000000270084
+    "name": "frame",
+    "entities": 16,
+    "frame": 0,
+    "duration": 0.39999998989515007
   },
   {
-    "name": "frame-1024-0",
-    "entryType": "measure",
-    "startTime": 1596.1999999999534,
-    "duration": 7.70000001648441
+    "name": "frame",
+    "entities": 16,
+    "frame": 1,
+    "duration": 4.0000000153668225
   },
   {
-    "name": "frames-1024",
-    "entryType": "measure",
-    "startTime": 1596.1999999999534,
-    "duration": 383.0000000016298
+    "name": "frame",
+    "entities": 16,
+    "frame": 2,
+    "duration": 2.5000000023283064
   },
   {
-    "name": "frame-1024-1",
-    "entryType": "measure",
-    "startTime": 1603.9000000164378,
-    "duration": 182.7999999804888
+    "name": "init",
+    "entities": 32,
+    "duration": 11.300000012852252
   },
   {
-    "name": "frame-1024-2",
-    "entryType": "measure",
-    "startTime": 1786.6999999969266,
-    "duration": 192.5000000046566
+    "name": "total",
+    "entities": 32,
+    "duration": 27.49999999650754
+  },
+  {
+    "name": "execution",
+    "entities": 32,
+    "duration": 16.19999998365529
+  },
+  {
+    "name": "frame",
+    "entities": 32,
+    "frame": 0,
+    "duration": 0.39999998989515007
+  },
+  {
+    "name": "frame",
+    "entities": 32,
+    "frame": 1,
+    "duration": 7.899999996880069
+  },
+  {
+    "name": "frame",
+    "entities": 32,
+    "frame": 2,
+    "duration": 7.899999996880069
+  },
+  {
+    "name": "init",
+    "entities": 64,
+    "duration": 12.699999992037192
+  },
+  {
+    "name": "total",
+    "entities": 64,
+    "duration": 25.09999999892898
+  },
+  {
+    "name": "execution",
+    "entities": 64,
+    "duration": 12.400000006891787
+  },
+  {
+    "name": "frame",
+    "entities": 64,
+    "frame": 0,
+    "duration": 1.0000000183936208
+  },
+  {
+    "name": "frame",
+    "entities": 64,
+    "frame": 1,
+    "duration": 7.199999992735684
+  },
+  {
+    "name": "frame",
+    "entities": 64,
+    "frame": 2,
+    "duration": 4.199999995762482
+  },
+  {
+    "name": "init",
+    "entities": 128,
+    "duration": 38.49999999511056
+  },
+  {
+    "name": "total",
+    "entities": 128,
+    "duration": 107.69999999320135
+  },
+  {
+    "name": "execution",
+    "entities": 128,
+    "duration": 69.19999999809079
+  },
+  {
+    "name": "frame",
+    "entities": 128,
+    "frame": 0,
+    "duration": 1.1999999987892807
+  },
+  {
+    "name": "frame",
+    "entities": 128,
+    "frame": 1,
+    "duration": 19.500000023981556
+  },
+  {
+    "name": "frame",
+    "entities": 128,
+    "frame": 2,
+    "duration": 48.49999997531995
+  },
+  {
+    "name": "init",
+    "entities": 256,
+    "duration": 64.29999999818392
+  },
+  {
+    "name": "total",
+    "entities": 256,
+    "duration": 105.19999999087304
+  },
+  {
+    "name": "execution",
+    "entities": 256,
+    "duration": 40.89999999268912
+  },
+  {
+    "name": "frame",
+    "entities": 256,
+    "frame": 0,
+    "duration": 2.9999999969732016
+  },
+  {
+    "name": "frame",
+    "entities": 256,
+    "frame": 1,
+    "duration": 19.00000000023283
+  },
+  {
+    "name": "frame",
+    "entities": 256,
+    "frame": 2,
+    "duration": 18.899999995483086
+  },
+  {
+    "name": "init",
+    "entities": 512,
+    "duration": 71.90000000991859
+  },
+  {
+    "name": "total",
+    "entities": 512,
+    "duration": 189.89999999757856
+  },
+  {
+    "name": "execution",
+    "entities": 512,
+    "duration": 117.99999998765998
+  },
+  {
+    "name": "frame",
+    "entities": 512,
+    "frame": 0,
+    "duration": 3.9000000106170774
+  },
+  {
+    "name": "frame",
+    "entities": 512,
+    "frame": 1,
+    "duration": 53.59999998472631
+  },
+  {
+    "name": "frame",
+    "entities": 512,
+    "frame": 2,
+    "duration": 60.49999999231659
+  },
+  {
+    "name": "init",
+    "entities": 1024,
+    "duration": 255.700000008801
+  },
+  {
+    "name": "total",
+    "entities": 1024,
+    "duration": 633.800000010524
+  },
+  {
+    "name": "execution",
+    "entities": 1024,
+    "duration": 377.9999999969732
+  },
+  {
+    "name": "frame",
+    "entities": 1024,
+    "frame": 0,
+    "duration": 6.800000002840534
+  },
+  {
+    "name": "frame",
+    "entities": 1024,
+    "frame": 1,
+    "duration": 190.7000000064727
+  },
+  {
+    "name": "frame",
+    "entities": 1024,
+    "frame": 2,
+    "duration": 180.49999998765998
   }
 ]
