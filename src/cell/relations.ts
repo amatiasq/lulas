@@ -1,4 +1,5 @@
 import Cell from './index';
+import CellState from './state';
 
 export default class CellRelations {
 

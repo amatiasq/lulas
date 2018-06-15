@@ -11,7 +11,7 @@ import CellRenderer from './renderer';
 import CellSenses from './senses';
 import CellState, { IStateScreenshot } from './state';
 
-let id = 0;
+let lastId = 0;
 const cells: Cell[] = (window as any).cells = [];
 
 export default class Cell {
@@ -25,11 +25,10 @@ export default class Cell {
     private body = new CellBody(this, this.state);
     private physic = new CellPhysic(this, this.state);
     private emitter = new Emitter();
-    id: number;
 
-    constructor() {
-        this.id = id++;
-
+    constructor(
+        public id = lastId++,
+    ) {
         cells[this.id] = this;
         this.flushState();
     }
@@ -109,6 +108,10 @@ export default class Cell {
 
     mitos() {
         return this.body.mitos();
+    }
+
+    die() {
+        return this.body.die();
     }
 
     //

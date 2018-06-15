@@ -1,4 +1,4 @@
-import Game, { GameOnTickParams } from '../src/game/index';
+import Game, { GameOnTickParams } from '../src/game';
 import Vector from '../src/vector';
 import { random, round } from '../src/math';
 import Cell from '../src/cell';

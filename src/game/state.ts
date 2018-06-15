@@ -1,5 +1,6 @@
 import Game from './index';
 import { min, max } from '../math';
+import Cell from '../cell';
 
 export default class GameState {
 
@@ -73,12 +74,23 @@ export default class GameState {
     }
 
     setState(state: EntitiesState) {
-        // TODO: Get all entities
         const entities = this.game.getEntitiesAlive();
+        const ids = new Set(Object.keys(state).map(Number));
 
         for (const entity of entities) {
-            // TODO: revive dead entities
-            entity.setState(state[entity.id]);
+            const entityState = state[entity.id];
+            ids.delete(entity.id);
+
+            if (entityState) {
+                entity.setState(state[entity.id]);
+            } else if (entity instanceof Cell) {
+                entity.die();
+            }
+        }
+
+        for (const id of ids) {
+            const cell = this.game.reviveCell(id);
+            cell.setState(state[id]);
         }
     }
 

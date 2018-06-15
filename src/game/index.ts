@@ -122,6 +122,10 @@ export default class Game {
         return this.entities.addCell(position);
     }
 
+    reviveCell(id: number) {
+        return this.entities.reviveCell(id);
+    }
+
     tickEntities() {
         return this.entities.tickEntities();
     }
