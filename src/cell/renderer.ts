@@ -26,16 +26,16 @@ export default class CellRenderer {
 
         context.save();
         context.translate(pos.x, pos.y);
-        context.rotate(velocity.radians - TAU / 4);
+        context.rotate(velocity.radians);
 
         context.fillStyle = this.color;
 
         context.beginPath();
         context.arc(0, 0, radius, 0, TAU);
         context.fill();
-        context.moveTo(radius, padding);
-        context.lineTo(0, radius * 1.5 + padding);
-        context.lineTo(-radius, padding);
+        context.moveTo(padding, radius);
+        context.lineTo(radius * 1.5 + padding, 0);
+        context.lineTo(padding, -radius);
         context.closePath();
         context.fill();
 
