@@ -1,68 +1,79 @@
 const fs = require('fs');
 const path = require('path');
-const puppeteer = require('puppeteer');
-const Parcel = require('parcel-bundler');
+const chalk = require('chalk');
+const getResults = require('./chrome');
+const serve = require('./parcel');
+const previous = require('../performance.json');
 
 const PORT = 8642;
 
 (async () => {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    const server = await serve();
+    const server = await serve(PORT);
+    const results = await getResults(`http://localhost:${PORT}`);
 
-    try {
-        const results = await testPage(page);
-        save(results);
-    } catch (error) {
-        console.error(error);
-    }
-
-    await browser.close();
     server.close();
+
+    const average = compareResults(results, previous);
+
+    save(results);
 })();
-
-async function testPage(page) {
-    page.on('console', msg => {
-        console.dir(msg);
-        process.exit(1);
-    });
-
-    await page.goto(`http://localhost:${PORT}`);
-    await page.waitFor(1000);
-
-    const json = await page.evaluate(getPerformanceResults);
-    const result = JSON.parse(json);
-
-    return result.map(({ name, duration }) => {
-        const [ key, entities, frame ] = name.split('-');
-
-        return {
-            name: key,
-            entities: parseInt(entities),
-            frame: frame ? parseInt(frame) : undefined,
-            duration,
-        };
-    });
-}
 
 function save(results) {
     const route = path.join(__dirname, '../performance.json');
     fs.writeFileSync(route, JSON.stringify(results, null, 2));
 }
 
-async function serve() {
-    const url = path.join(__dirname, 'runner.html');
+function compareResults(results, previous) {
+    const difference = [];
 
-    const bundler = new Parcel(url, {
-        watch: false,
-        target: 'browser',
-        sourceMaps: false,
-    });
+    for (const entry of results) {
+        for (const prev of previous) {
+            if (
+                entry.name === prev.name &&
+                entry.entities === prev.entities &&
+                entry.frame === prev.frame
+            ) {
+                const diff = compare(entry.duration, prev.duration);
 
-    return bundler.serve(PORT);
+                if (entry.frame == null) {
+                    console.log(`${entry.name}-${entry.entities} takes now: ${print(diff)} as before`);
+                }
+
+                difference.push(diff);
+            }
+        }
+    }
+
+    const sum = difference.reduce((a, b) => a + b);
+    const average = sum / difference.length;
+
+    console.log(`Average: ${print(average)}`)
+
+    return average;
 }
 
-function getPerformanceResults() {
-    const results = window.performance.getEntriesByType('measure');
-    return JSON.stringify(results);
+function compare(current, old) {
+    if (old === 0) {
+        return 0;
+    }
+
+    return current / old;
+}
+
+function print(value) {
+    const percent = Math.round(value * 10000) / 100;
+
+    return `${paint(percent)}%`;
+}
+
+function paint(value) {
+    if (value < 100) {
+        return chalk.green(value);
+    }
+
+    if (value > 100) {
+        return chalk.red(value);
+    }
+
+    return value;
 }
