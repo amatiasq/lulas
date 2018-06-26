@@ -3,7 +3,7 @@ const path = require('path');
 const chalk = require('chalk');
 const getResults = require('./chrome');
 const serve = require('./parcel');
-const previous = require('../performance.json');
+const previous = getPrevious();
 
 const PORT = 8642;
 
@@ -13,10 +13,20 @@ const PORT = 8642;
 
     server.close();
 
-    const average = compareResults(results, previous);
+    if (previous) {
+        compareResults(results, previous);
+    }
 
     save(results);
 })();
+
+function getPrevious() {
+    try {
+        return require('../performance.json');
+    } catch (error) {
+        return null;
+    }
+}
 
 function save(results) {
     const route = path.join(__dirname, '../performance.json');
