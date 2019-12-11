@@ -8,72 +8,76 @@ const previous = require('../performance.json');
 const PORT = 8642;
 
 (async () => {
-    const server = await serve(PORT);
-    const results = await getResults(`http://localhost:${PORT}`);
+  const server = await serve(PORT);
+  const results = await getResults(`http://localhost:${PORT}`);
 
-    server.close();
+  server.close();
 
-    const average = compareResults(results, previous);
+  const average = compareResults(results, previous);
 
-    save(results);
+  save(results);
 })();
 
 function save(results) {
-    const route = path.join(__dirname, '../performance.json');
-    fs.writeFileSync(route, JSON.stringify(results, null, 2));
+  const route = path.join(__dirname, '../performance.json');
+  fs.writeFileSync(route, JSON.stringify(results, null, 2));
 }
 
 function compareResults(results, previous) {
-    const difference = [];
+  const difference = [];
 
-    for (const entry of results) {
-        for (const prev of previous) {
-            if (
-                entry.name === prev.name &&
-                entry.entities === prev.entities &&
-                entry.frame === prev.frame
-            ) {
-                const diff = compare(entry.duration, prev.duration);
+  for (const entry of results) {
+    for (const prev of previous) {
+      if (
+        entry.name === prev.name &&
+        entry.entities === prev.entities &&
+        entry.frame === prev.frame
+      ) {
+        const diff = compare(entry.duration, prev.duration);
 
-                if (entry.frame == null) {
-                    console.log(`${entry.name}-${entry.entities} takes now: ${print(diff)} as before`);
-                }
-
-                difference.push(diff);
-            }
+        if (entry.frame == null) {
+          console.log(
+            `${entry.name}-${entry.entities} takes now: ${print(
+              diff,
+            )} as before`,
+          );
         }
+
+        difference.push(diff);
+      }
     }
+  }
 
-    const sum = difference.reduce((a, b) => a + b);
-    const average = sum / difference.length;
+  const sum = difference.reduce((a, b) => a + b);
+  const average = sum / difference.length;
 
-    console.log(`Average: ${print(average)}`)
+  console.log(`Average: ${print(average)}`);
 
-    return average;
+  return average;
 }
 
 function compare(current, old) {
-    if (old === 0) {
-        return 0;
-    }
+  if (old === 0) {
+    return 0;
+  }
 
-    return current / old;
+  return current / old;
 }
 
 function print(value) {
-    const percent = Math.round(value * 10000) / 100;
+  const percent = Math.round(value * 10000) / 100;
 
-    return `${paint(percent)}%`;
+  return `${paint(percent)}%`;
 }
 
 function paint(value) {
-    if (value < 100) {
-        return chalk.green(value);
-    }
+  if (value < 100) {
+    return chalk.green(value);
+  }
 
-    if (value > 100) {
-        return chalk.red(value);
-    }
+  if (value > 100) {
+    return chalk.red(value);
+  }
 
-    return value;
+  return value;
 }

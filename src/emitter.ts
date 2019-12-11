@@ -1,27 +1,25 @@
-export default class Emitter {
+export class Emitter {
+  private readonly listeners = new Map<string, Listener[]>();
 
-    private listeners = new Map<string, Listener[]>();
-
-    on(signal: string, listener: Listener) {
-        if (!this.listeners.has(signal)) {
-            this.listeners.set(signal, []);
-        }
-
-        this.listeners.get(signal).push(listener);
+  on(signal: string, listener: Listener) {
+    if (!this.listeners.has(signal)) {
+      this.listeners.set(signal, []);
     }
 
-    emit(signal: string, argument: any) {
-        const listeners = this.listeners.get(signal);
+    this.listeners.get(signal).push(listener);
+  }
 
-        if (!listeners) {
-            return;
-        }
+  emit(signal: string, argument: any) {
+    const listeners = this.listeners.get(signal);
 
-        for (const listener of listeners) {
-            listener(argument);
-        }
+    if (!listeners) {
+      return;
     }
 
+    for (const listener of listeners) {
+      listener(argument);
+    }
+  }
 }
 
 export type Listener = (event: any) => void;
