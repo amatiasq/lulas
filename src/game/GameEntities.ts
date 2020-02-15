@@ -1,5 +1,6 @@
 import { Cell } from '../Cell';
 import { random } from '../math';
+import { Stat } from '../Stat';
 import { Vector } from '../Vector';
 import { World } from '../World';
 import { Game } from './Game';
