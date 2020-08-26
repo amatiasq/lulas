@@ -24,27 +24,6 @@ test(
 );
 
 test(
-  "A cell with velocity should update it's position when stepCell() is invoked",
-  [
-    [10, 10, 1, 1, 11, 11],
-    [10, 10, 2, 2, 12, 12],
-    [14, 14, 1, 1, 15, 15],
-    [14, 14, 2, 2, 16, 16],
-  ],
-  (posx, posy, velx, vely, expx, expy) => {
-    const cell = createCell({
-      position: { x: posx, y: posy },
-      velocity: { x: velx, y: vely },
-    });
-
-    stepCell(cell);
-
-    assertEqual(cell.position.x, expx);
-    assertEqual(cell.position.y, expy);
-  },
-);
-
-test(
   'The game will execute a cell step',
   [
     [10, 10, 1, 1, 11, 11],

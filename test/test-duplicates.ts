@@ -5,6 +5,7 @@ export function createTestLulas(config: Partial<LulasConfig> = {}) {
   return lulas({
     canvas: document.createElement('canvas'),
     cells: [createCell()],
+    worldSize: { x: 100, y: 100 },
     ...config,
   });
 }

@@ -17,9 +17,9 @@ export function createCell(partial?: Partial<Cell>): Cell {
   };
 }
 
-export function stepCell(cell: Cell) {
+export function stepCell(mapSize: Point, cell: Cell) {
   move(cell);
-  roundMap(cell);
+  roundMap(mapSize, cell);
   return cell;
 }
 
@@ -28,12 +28,20 @@ function move(cell: Cell) {
   cell.position.y += cell.velocity.y;
 }
 
-function roundMap(cell: Cell) {
+function roundMap(mapSize: Point, cell: Cell) {
   if (cell.position.x - cell.radius < 0) {
     cell.position.x = cell.radius;
   }
   if (cell.position.y - cell.radius < 0) {
     cell.position.y = cell.radius;
+  }
+
+  if (cell.position.x + cell.radius > mapSize.x) {
+    cell.position.x = mapSize.x - cell.radius;
+  }
+
+  if (cell.position.y + cell.radius > mapSize.y) {
+    cell.position.y = mapSize.y - cell.radius;
   }
 }
 

@@ -15,3 +15,17 @@ test('A cell in (0,0) will be adjusted to fit the screen', () => {
   equal(cell.position.x, 5);
   equal(cell.position.y, 5);
 });
+
+test('A cell outside of the window will be adjusted to fit the screen', () => {
+  const size = 200;
+  const cell = createCell({ position: { x: size, y: size }, radius: 5 });
+  const sut = createTestLulas({
+    cells: [cell],
+    worldSize: { x: size, y: size },
+  });
+
+  sut.step();
+
+  equal(cell.position.x, 195);
+  equal(cell.position.y, 195);
+});
