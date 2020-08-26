@@ -1,12 +1,12 @@
 import * as assert from 'assert';
 import { test } from './test';
+import lulas from '../src/lulas';
 
 test('Should render something', () => {
   const canvas = document.createElement('canvas');
 
-  // TODO:
-
-  assert(isCanvasBlank(canvas));
+  lulas(canvas);
+  assert(!isCanvasBlank(canvas));
 
   function isCanvasBlank(canvas: HTMLCanvasElement) {
     return !canvas
