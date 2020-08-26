@@ -31,17 +31,21 @@ function move(cell: Cell) {
 function roundMap(mapSize: Point, cell: Cell) {
   if (cell.position.x - cell.radius < 0) {
     cell.position.x = cell.radius;
+    cell.velocity.x = Math.abs(cell.velocity.x);
   }
   if (cell.position.y - cell.radius < 0) {
     cell.position.y = cell.radius;
+    cell.velocity.y = Math.abs(cell.velocity.y);
   }
 
   if (cell.position.x + cell.radius > mapSize.x) {
     cell.position.x = mapSize.x - cell.radius;
+    cell.velocity.x = -Math.abs(cell.velocity.x);
   }
 
   if (cell.position.y + cell.radius > mapSize.y) {
     cell.position.y = mapSize.y - cell.radius;
+    cell.velocity.y = -Math.abs(cell.velocity.y);
   }
 }
 

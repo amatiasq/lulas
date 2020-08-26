@@ -21,8 +21,8 @@ function start() {
     canvas,
     cells: [
       createCell({
-        position: { x: 100, y: 100 },
-        velocity: { x: 1, y: 1 },
+        position: { x: canvas.width / 2, y: canvas.height / 2 },
+        velocity: { x: Math.random() * 6 - 3, y: Math.random() * 6 - 3 },
         radius: 10,
       }),
     ],
