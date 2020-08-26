@@ -1,8 +1,12 @@
 import '../user-stories';
 import { runTests } from '../user-stories/test';
 
-setStyles();
-runTests();
+(() => {
+  setStyles();
+  runTests({
+    background: 'black',
+  });
+})();
 
 function setStyles() {
   const fullscreen = {
