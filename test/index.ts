@@ -1,12 +1,14 @@
 type TestRun<T extends any[]> = (...args: T) => Promise<any> | void;
 
 interface UnitTest_Basic {
+  file: string;
   message: string;
   table: null;
   run: TestRun<[]>;
 }
 
 interface UnitTest_Table<T extends any[] = []> {
+  file: string;
   message: string;
   table: T[];
   run: TestRun<T>;
@@ -17,6 +19,8 @@ type UnitTest<T extends any[]> = UnitTest_Basic | UnitTest_Table<T>;
 // -----
 
 const tests: UnitTest<any>[] = [];
+const documentTitle = document.title;
+let file = '';
 
 export function test(message: string, run: TestRun<[]>): void;
 export function test<T extends any[]>(
@@ -32,7 +36,7 @@ export function test<T extends any[]>(
 ): void {
   const table = Array.isArray(first) ? first : null;
   const run = table ? second : (first as TestRun<T>);
-  tests.push({ message, table, run } as UnitTest<T>);
+  tests.push({ file, message, table, run } as UnitTest<T>);
 }
 
 export async function runTests({ background }: { background: string }) {
@@ -42,40 +46,47 @@ export async function runTests({ background }: { background: string }) {
     executeTest(unit);
   }
 
+  document.title = documentTitle;
   setSuccessState(background);
 }
 
+export function setFilename(dirname: string, filename: string) {
+  file = filename.replace(`${dirname}/`, '').replace(/\.ts$/, '');
+}
+
 async function executeTest<T extends any[]>({
+  file,
   message,
   table,
   run,
 }: UnitTest<T>) {
   if (!table) {
-    await runTest(message, run as TestRun<[]>);
+    await runTest(file, message, run as TestRun<[]>);
     return;
   }
 
   for (let i = 0; i < table.length; i++) {
-    await runTest(`${message} [${i}]`, () => run(...table[i]));
+    await runTest(file, `${message} [${i}]`, () => run(...table[i]));
   }
 }
 
-async function runTest(message: string, run: TestRun<[]>) {
+async function runTest(file: string, message: string, run: TestRun<[]>) {
   try {
     await run();
   } catch (error) {
-    printError(error, message);
+    printError(file, error, message);
     setFailState();
     throw error;
   }
 }
 
-function printError(error: Error, message: string) {
+function printError(file: string, error: Error, message: string) {
   console.error(`${message} failed`);
   console.error(error);
   document.write(`
     <div style="display: flex; align-items:center; justify-content: center; height: 100%">
     <span>
+      <h1>${file}</h1>
       <h2>${message}</h2>
       <pre>${error.stack?.replace('\n', '<br>')}}</pre>
     </span>

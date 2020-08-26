@@ -1,6 +1,8 @@
-import { test } from './test';
+import { test, setFilename } from '../test';
 
 let isTestRunning = false;
+
+setFilename(__dirname, __filename);
 
 test('Should render something', () => {
   isTestRunning = true;

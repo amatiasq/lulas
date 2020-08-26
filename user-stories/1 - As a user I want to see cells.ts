@@ -1,12 +1,16 @@
 import * as assert from 'assert';
-import { test } from './test';
-import lulas from '../src/lulas';
+
 import { createCell } from '../src/cell';
+import { test, setFilename } from '../test';
+import { createTestLulas } from '../test/test-duplicates';
+
+setFilename(__dirname, __filename);
 
 test('Should render something', () => {
   const canvas = document.createElement('canvas');
+  const lulas = createTestLulas({ canvas });
 
-  lulas(canvas);
+  lulas.render();
   assert(!isCanvasBlank(canvas));
 
   function isCanvasBlank(canvas: HTMLCanvasElement) {
