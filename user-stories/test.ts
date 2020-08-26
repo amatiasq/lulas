@@ -18,6 +18,7 @@ export async function runTests() {
       console.error(`${unit.message} failed`);
       console.error(error);
       document.write(`${unit.message} failed`);
+      throw error;
     }
   }
 
