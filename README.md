@@ -1,20 +1,48 @@
-# Excalibur TypeScript & Webpack Example
+## Lulas
 
-This is a bare bones excalibur example in typescript & webpack
+Done with TDD
 
-Other larger samples:
-* [Platformer](https://github.com/excaliburjs/sample-platformer)
-* [Shootem Up](https://github.com/excaliburjs/sample-shootemup)
+### Quiero ver ESTO SON LOS TEST! ZAPALLO!
 
-## Running locally
+- Células que puedan comerse entre ellas
+  - Grande se come a pequeña y punto
+- Empezamos con 100 Células
+- Y que hagan flocking
+  - Alineamiento
+  - Cohesión
+  - Separación
 
-* Using [nodejs](https://nodejs.org/en/) and [npm](https://www.npmjs.com/)
-* Run the `npm install` to install dependencies
-* Run the `npm run dev` to run the development server to test out changes
-   * [Webpack](https://webpack.js.org/) will build the [typescript](https://www.typescriptlang.org/) into javascript
-   * [Webpack dev server](https://webpack.js.org/configuration/dev-server/) will host the script in a little server on http://localhost:8082/
+### UI
 
-## Building bundles
+- Space pausa/play
+- Click atrae
+- Click derecho genera obstáculo
 
-* Run `npm run build:dev` to produce javascript bundles for debugging in the `dist/` folder
-* Run `npm run build:prod` to produce javascript bundles for production (minified) in the `dist/` folder
+#### Level 2
+
+- Hover sobre una célula muestra:
+  - Vector de velocidad
+  - Radio de visión
+  - Imprime en la consola
+
+## UserSories
+
+- As a user I want to see cells
+  - First unit test
+- As a user I want to watch them move
+  - Unit test for Game Loop
+- As a user I want them to bounce on the corners
+  - Easy
+- As a user I want to watch them follow flocking behaviour
+  - Unit tests for Alignement
+  - Unit tests for Cohesion
+  - Unit tests for Separation
+- As a user I want to be able to attract them to a point
+  - Test fake mouse interaction
+- As a user I want to be able to reject them from a point
+- As a user I want to see detailed cell information
+
+### Tech
+
+- Generate random initial state in `.json` and stick with it?
+- We need
