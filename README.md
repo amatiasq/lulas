@@ -41,6 +41,7 @@ Done with TDD
   - Test fake mouse interaction
 - As a user I want to be able to reject them from a point
 - As a user I want to see detailed cell information
+- As a user I want the cells to use all space when I resize the window
 
 ### Tech
 
