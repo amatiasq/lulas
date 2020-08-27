@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  deploy:
+  test-and-deploy:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
@@ -25,6 +25,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - run: npm ci
+      - run: npm test
       - run: npm run build
 
       - name: Deploy
