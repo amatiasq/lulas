@@ -1,6 +1,7 @@
 import {
-  alignementBehaviour,
-  cohesionBehaviour,
+  alignementBehavior,
+  cohesionBehavior,
+  separationBehavior,
 } from './../src/behaviors/flocking';
 
 import { createCell } from '../src/cell';
@@ -43,7 +44,7 @@ test(
   ],
   (targetVel, neighborVel) => {
     const lulas = createTestLulas({
-      behaviors: [alignementBehaviour],
+      behaviors: [alignementBehavior],
       cells: [
         createCell({ position: point(10, 10), velocity: { ...targetVel } }),
         createCell({ position: point(20, 20), velocity: { ...neighborVel } }),
@@ -66,7 +67,7 @@ test(
 
 test('A boid should get closer to nearby neighbors', () => {
   const lulas = createTestLulas({
-    behaviors: [cohesionBehaviour],
+    behaviors: [cohesionBehavior],
     cells: [
       createCell({ position: point(10, 10), velocity: point(0, 0) }),
       createCell({ position: point(20, 20), velocity: point(0, 0) }),
@@ -77,6 +78,21 @@ test('A boid should get closer to nearby neighbors', () => {
   const sut = lulas.cells[0];
 
   pointAxis((axis) => assertBetween(sut.velocity[axis], 0, 1, axis));
+});
+
+test('A boid should maintain distance from closer neighbors', () => {
+  const lulas = createTestLulas({
+    behaviors: [separationBehavior],
+    cells: [
+      createCell({ position: point(10, 10), velocity: point(0, 0) }),
+      createCell({ position: point(20, 20), velocity: point(0, 0) }),
+    ],
+  });
+
+  lulas.step();
+  const sut = lulas.cells[0];
+
+  pointAxis((axis) => assertBetween(sut.velocity[axis], 0, -1, axis));
 });
 
 // TODO: tests for Separation

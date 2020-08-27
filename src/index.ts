@@ -26,12 +26,12 @@ function start() {
     createCell({
       position: { ...center },
       velocity: point(random(10), random(10)),
-      radius: random(i, i * 10),
+      radius: random(5, 20),
     });
 
   const game = lulas({
     canvas,
-    cells: array(3, createRandomCell),
+    cells: array(10, createRandomCell),
     behaviors: [flocking, move, roundMap],
   });
 
@@ -57,7 +57,7 @@ function random(first: number, second = -first) {
 }
 
 function array<T>(size: number, operator: (pos: number) => T): T[] {
-  return Array(3)
+  return Array(size)
     .fill(null)
     .map((_, i) => i + 1)
     .map(operator);

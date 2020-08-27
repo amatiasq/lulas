@@ -1,5 +1,5 @@
 import { World, Behavior } from './../lulas';
-import { Cell } from '../cell';
+import { Cell, cellDistance } from '../cell';
 import {
   sumPoints,
   Point,
@@ -10,11 +10,13 @@ import {
 import {
   FLOCKING_ALIGMENENT_FACTOR,
   FLOCKING_COHESION_FACTOR,
+  FLOCKING_SEPARATION_FACTOR,
 } from '../CONFIGURATION';
 
 export const flocking = requireNeighbors(flockingCore);
-export const alignementBehaviour = requireNeighbors(alignement);
-export const cohesionBehaviour = requireNeighbors(cohesion);
+export const alignementBehavior = requireNeighbors(alignement);
+export const cohesionBehavior = requireNeighbors(cohesion);
+export const separationBehavior = requireNeighbors(separation);
 
 function flockingCore(cell: Cell, neighbors: Cell[]) {
   if (!neighbors.length) {
@@ -22,11 +24,13 @@ function flockingCore(cell: Cell, neighbors: Cell[]) {
   }
 
   alignement(cell, neighbors);
+  cohesion(cell, neighbors);
+  separation(cell, neighbors);
 }
 
 function alignement(cell: Cell, neighbors: Cell[]) {
   if (!neighbors.length) {
-    return point(0, 0);
+    return;
   }
 
   const sum = neighbors.map((x) => x.velocity).reduce(sumPoints, point(0, 0));
@@ -40,7 +44,7 @@ function alignement(cell: Cell, neighbors: Cell[]) {
 
 function cohesion(cell: Cell, neighbors: Cell[]) {
   if (!neighbors.length) {
-    return point(0, 0);
+    return;
   }
 
   const sum = neighbors.map((x) => x.position).reduce(sumPoints, point(0, 0));
@@ -52,8 +56,25 @@ function cohesion(cell: Cell, neighbors: Cell[]) {
   cell.velocity.y += cohece.y;
 }
 
+function separation(cell: Cell, neighbors: Cell[]) {
+  neighbors = neighbors.filter((x) => cellDistance(cell, x) < cell.vision / 3);
+
+  if (!neighbors.length) {
+    return;
+  }
+
+  const sum = neighbors.map((x) => x.position).reduce(sumPoints, point(0, 0));
+
+  const average = multiplyPoint(sum, 1 / neighbors.length);
+  const relative = subtractPoints(average, cell.position);
+  const separation = multiplyPoint(relative, FLOCKING_SEPARATION_FACTOR);
+
+  cell.velocity.x -= separation.x;
+  cell.velocity.y -= separation.y;
+}
+
 function requireNeighbors(
   fn: (cell: Cell, neighbors: Cell[]) => void,
 ): Behavior {
-  return (cell: Cell, { look }: World) => fn(cell, look(cell.radius * 10));
+  return (cell: Cell, { look }: World) => fn(cell, look(cell.vision));
 }

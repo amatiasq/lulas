@@ -1,5 +1,5 @@
 import { Point } from './point';
-import { Cell, renderCell } from './cell';
+import { Cell, cellDistance, renderCell } from './cell';
 
 export interface World {
   size: Point;
@@ -53,7 +53,9 @@ export function lulas({
   };
 
   function look(target: Cell, radius: number): Cell[] {
-    return cells.filter((x) => x !== target);
+    return cells.filter(
+      (x) => x !== target && cellDistance(target, x) < radius,
+    );
   }
 }
 
