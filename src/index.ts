@@ -32,7 +32,7 @@ function start() {
 
   const game = lulas({
     canvas,
-    cells: array(10, createRandomCell),
+    cells: array(50, createRandomCell),
     behaviors: [flocking, move, solidBody, bounceOnCorners],
   });
 
