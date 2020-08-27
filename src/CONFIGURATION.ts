@@ -1,20 +1,9 @@
-// Features
-
-// export const IS_FLOCKING_ALIGNEMENT_ENABLED = true;
-// export const IS_FLOCKING_COHESION_ENABLED = true;
-// export const IS_FLOCKING_SEPARATION_ENABLED = true;
-
-// export const IS_FLOCKING_ENABLED =
-//   IS_FLOCKING_ALIGNEMENT_ENABLED &&
-//   IS_FLOCKING_COHESION_ENABLED &&
-//   IS_FLOCKING_SEPARATION_ENABLED &&
-//   true;
-
-// Tweaks
+// Friction when two cells collide
+export const COLLISION_FRICTION = 0.0;
 
 export const FLOCKING_ALIGMENENT_FACTOR = 0.05;
 export const FLOCKING_COHESION_FACTOR = 0.001;
-export const FLOCKING_SEPARATION_FACTOR = 0.002;
+export const FLOCKING_SEPARATION_FACTOR = 0.005;
 
 // Fraction of vision
-export const FLOCKING_SEPARATION_LIMIT = 0.3;
+export const FLOCKING_SEPARATION_LIMIT = 0.4;

@@ -15,13 +15,13 @@ export function pointMagnitude({ x, y }: Point) {
   return Math.sqrt(x ** 2 + y ** 2);
 }
 
-export function normalizePoint(point: Point) {
+export function normalizePoint(point: Point, targetMagnitude = 1) {
   if (isPointZero(point)) {
     return { ...point };
   }
 
   const magnitude = pointMagnitude(point);
-  return pointAxis((axis) => point[axis] / magnitude);
+  return pointAxis((axis) => (point[axis] * targetMagnitude) / magnitude);
 }
 
 export function sumPoints(left: Point, right: Point): Point {
