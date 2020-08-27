@@ -22,6 +22,10 @@ const tests: UnitTest<any>[] = [];
 const documentTitle = document.title;
 let file = '';
 
+export const isJestTesting = Boolean(
+  typeof global !== 'undefined' && (global as any).test,
+);
+
 export function test(message: string, run: TestRun<[]>): void;
 export function test<T extends any[]>(
   message: string,
@@ -36,22 +40,29 @@ export function test<T extends any[]>(
 ): void {
   const table = Array.isArray(first) ? first : null;
   const run = table ? second : (first as TestRun<T>);
-  tests.push({ file, message, table, run } as UnitTest<T>);
+  const unit = { file, message, table, run } as UnitTest<T>;
+
+  if (isJestTesting) {
+    executeTest(unit);
+  } else {
+    tests.push(unit);
+  }
 }
 
-export async function runTests({ background }: { background: string }) {
+export async function runTests({ background }: { background?: string } = {}) {
   setInitialState();
 
   for (const unit of tests) {
     executeTest(unit);
   }
 
+  tests.length = 0;
   document.title = documentTitle;
   setSuccessState(background);
 }
 
 export function setFilename(dirname: string, filename: string) {
-  file = filename.replace(`${dirname}/`, '').replace(/\.ts$/, '');
+  file = filename.replace(`${dirname}/`, '').replace(/(\.test)?\.ts$/, '');
 }
 
 async function executeTest<T extends any[]>({
@@ -71,6 +82,11 @@ async function executeTest<T extends any[]>({
 }
 
 async function runTest(file: string, message: string, run: TestRun<[]>) {
+  if (isJestTesting) {
+    (global as any).test(`${file} => ${message}`, run);
+    return;
+  }
+
   try {
     await run();
   } catch (error) {

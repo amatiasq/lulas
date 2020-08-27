@@ -1,4 +1,4 @@
-import { Point } from './Point';
+import { Point, point } from './Point';
 
 export interface Cell {
   color: string;
@@ -10,8 +10,8 @@ export interface Cell {
 export function createCell(partial?: Partial<Cell>): Cell {
   return {
     color: 'white',
-    position: { x: 0, y: 0 },
-    velocity: { x: 0, y: 0 },
+    position: point(0, 0),
+    velocity: point(0, 0),
     radius: 5,
     ...partial,
   };
@@ -52,7 +52,6 @@ function roundMap(mapSize: Point, cell: Cell) {
 export function renderCell(context: CanvasRenderingContext2D, cell: Cell) {
   context.beginPath();
   context.arc(cell.position.x, cell.position.y, cell.radius, 0, Math.PI * 2);
-  context.closePath();
   context.strokeStyle = cell.color;
   context.stroke();
 }

@@ -1,6 +1,6 @@
 import { equal as assertEqual } from 'assert';
 
-import { createCell, stepCell } from '../src/cell';
+import { createCell } from '../src/cell';
 import { test, setFilename } from '../test';
 import { createTestLulas } from '../test/test-duplicates';
 
