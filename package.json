@@ -6,8 +6,7 @@
   "scripts": {
     "test": "jest",
     "start": "npm run webpack-dev-server",
-    "build:dev": "npm run webpack -- --env.mode development",
-    "build:prod": "npm run webpack -- --env.mode production",
+    "build": "npm run webpack -- --env.mode production",
     "webpack": "webpack",
     "webpack-dev-server": "webpack-dev-server --env.mode development --open",
     "postinstall": "node patch-node_modules.js",
