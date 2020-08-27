@@ -81,14 +81,14 @@ function executeTest<T extends any[]>({
   }
 }
 
-async function runTest(file: string, message: string, run: TestRun<[]>) {
+function runTest(file: string, message: string, run: TestRun<[]>) {
   if (isJestTesting) {
     (global as any).test(message, run);
     return;
   }
 
   try {
-    await run();
+    run();
   } catch (error) {
     printError(file, error, message);
     setFailState();

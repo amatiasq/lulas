@@ -1,7 +1,11 @@
 import './user-stories';
-import { runTests } from '../test';
+import { runTests } from '../test/index';
 import lulas from './lulas';
-import { createCell } from './cell';
+import { createCell, logCell } from './cell';
+import { point } from './point';
+import { flocking } from './behaviors/flocking';
+import { move } from './behaviors/move';
+import { roundMap } from './behaviors/roundMap';
 
 (async () => {
   setStyles();
@@ -17,16 +21,22 @@ function start() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
+  const center = point(canvas.width / 2, canvas.height / 2);
+  const createRandomCell = (i: number) =>
+    createCell({
+      position: { ...center },
+      velocity: point(random(10), random(10)),
+      radius: random(i, i * 10),
+    });
+
   const game = lulas({
     canvas,
-    cells: [
-      createCell({
-        position: { x: canvas.width / 2, y: canvas.height / 2 },
-        velocity: { x: Math.random() * 6 - 3, y: Math.random() * 6 - 3 },
-        radius: 10,
-      }),
-    ],
+    cells: array(3, createRandomCell),
+    behaviors: [flocking, move, roundMap],
   });
+
+  console.log('Initial state');
+  logState();
 
   game.render();
   requestAnimationFrame(function frame() {
@@ -34,6 +44,23 @@ function start() {
     game.render();
     requestAnimationFrame(frame);
   });
+
+  function logState() {
+    console.log(game.cells.map(logCell).join('\n'));
+  }
+}
+
+function random(first: number, second = -first) {
+  const min = Math.min(first, second);
+  const max = Math.max(first, second);
+  return Math.round(Math.random() * (max - min) + min);
+}
+
+function array<T>(size: number, operator: (pos: number) => T): T[] {
+  return Array(3)
+    .fill(null)
+    .map((_, i) => i + 1)
+    .map(operator);
 }
 
 function setStyles() {
