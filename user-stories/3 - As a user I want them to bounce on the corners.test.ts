@@ -1,7 +1,7 @@
 import { equal } from 'assert';
 
 import { createCell } from '../src/cell';
-import { test, setFilename } from '../test';
+import { test, setFilename } from '../test/index';
 import { createTestLulas } from '../test/test-duplicates';
 
 setFilename(__dirname, __filename);

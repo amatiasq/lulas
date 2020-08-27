@@ -1,4 +1,4 @@
-import { test, setFilename } from '../test';
+import { isJestTesting, test, setFilename } from '../test/index';
 
 let isTestRunning = false;
 
@@ -6,7 +6,10 @@ setFilename(__dirname, __filename);
 
 test('Should render something', () => {
   isTestRunning = true;
-  console.log('Tests running...');
+
+  if (!isJestTesting) {
+    console.log('Tests running...');
+  }
 });
 
 setTimeout(testTester, 0);

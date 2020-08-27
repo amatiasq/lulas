@@ -49,7 +49,7 @@ export function test<T extends any[]>(
   }
 }
 
-export async function runTests({ background }: { background?: string } = {}) {
+export function runTests({ background }: { background?: string } = {}) {
   setInitialState();
 
   for (const unit of tests) {
@@ -65,25 +65,25 @@ export function setFilename(dirname: string, filename: string) {
   file = filename.replace(`${dirname}/`, '').replace(/(\.test)?\.ts$/, '');
 }
 
-async function executeTest<T extends any[]>({
+function executeTest<T extends any[]>({
   file,
   message,
   table,
   run,
 }: UnitTest<T>) {
   if (!table) {
-    await runTest(file, message, run as TestRun<[]>);
+    runTest(file, message, run as TestRun<[]>);
     return;
   }
 
   for (let i = 0; i < table.length; i++) {
-    await runTest(file, `${message} [${i}]`, () => run(...table[i]));
+    runTest(file, `${message} [${i}]`, () => run(...table[i]));
   }
 }
 
 async function runTest(file: string, message: string, run: TestRun<[]>) {
   if (isJestTesting) {
-    (global as any).test(`${file} => ${message}`, run);
+    (global as any).test(message, run);
     return;
   }
 

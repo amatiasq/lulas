@@ -2,7 +2,7 @@ import * as assert from 'assert';
 
 import { CanvasRenderingContext2DEvent } from '../node_modules/jest-canvas-mock/types/index.d';
 import { createCell } from '../src/cell';
-import { isJestTesting, setFilename, test } from '../test';
+import { isJestTesting, setFilename, test } from '../test/index';
 import { createTestLulas } from '../test/test-duplicates';
 
 setFilename(__dirname, __filename);
