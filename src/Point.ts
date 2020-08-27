@@ -7,6 +7,23 @@ export function point(x: number, y: number): Point {
   return { x, y };
 }
 
+export function isPointZero({ x, y }: Point) {
+  return x === 0 && y === 0;
+}
+
+export function pointMagnitude({ x, y }: Point) {
+  return Math.sqrt(x ** 2 + y ** 2);
+}
+
+export function normalizePoint(point: Point) {
+  if (isPointZero(point)) {
+    return { ...point };
+  }
+
+  const magnitude = pointMagnitude(point);
+  return pointAxis((axis) => point[axis] / magnitude);
+}
+
 export function sumPoints(left: Point, right: Point): Point {
   return pointAxis((axis) => left[axis] + right[axis]);
 }

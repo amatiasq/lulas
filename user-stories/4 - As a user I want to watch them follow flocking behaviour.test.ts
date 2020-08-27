@@ -1,4 +1,7 @@
-import { alignementBehaviour } from './../src/behaviors/flocking';
+import {
+  alignementBehaviour,
+  cohesionBehaviour,
+} from './../src/behaviors/flocking';
 
 import { createCell } from '../src/cell';
 import { point, pointAxis } from '../src/point';
@@ -11,10 +14,6 @@ import { move } from '../src/behaviors/move';
 // GLOSSARY: Boid = Cell
 
 setFilename(__dirname, __filename);
-
-// - Unit tests for Alignement
-// - Unit tests for Cohesion
-// - Unit tests for Separation
 
 test('Each boid velocity should be independent', () => {
   const lulas = createTestLulas({
@@ -64,3 +63,20 @@ test(
     );
   },
 );
+
+test('A boid should get closer to nearby neighbors', () => {
+  const lulas = createTestLulas({
+    behaviors: [cohesionBehaviour],
+    cells: [
+      createCell({ position: point(10, 10), velocity: point(0, 0) }),
+      createCell({ position: point(20, 20), velocity: point(0, 0) }),
+    ],
+  });
+
+  lulas.step();
+  const sut = lulas.cells[0];
+
+  pointAxis((axis) => assertBetween(sut.velocity[axis], 0, 1, axis));
+});
+
+// TODO: tests for Separation

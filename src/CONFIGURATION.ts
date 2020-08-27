@@ -13,3 +13,4 @@
 // Tweaks
 
 export const FLOCKING_ALIGMENENT_FACTOR = 0.02;
+export const FLOCKING_COHESION_FACTOR = 0.02;

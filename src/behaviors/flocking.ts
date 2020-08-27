@@ -7,16 +7,16 @@ import {
   multiplyPoint,
   subtractPoints,
 } from '../point';
-import { FLOCKING_ALIGMENENT_FACTOR } from '../CONFIGURATION';
+import {
+  FLOCKING_ALIGMENENT_FACTOR,
+  FLOCKING_COHESION_FACTOR,
+} from '../CONFIGURATION';
 
 export const flocking = requireNeighbors(flockingCore);
-export const alignementBehaviour: Behavior = requireNeighbors(alignement);
+export const alignementBehaviour = requireNeighbors(alignement);
+export const cohesionBehaviour = requireNeighbors(cohesion);
 
-function requireNeighbors(fn: (cell: Cell, neighbors: Cell[]) => void) {
-  return (cell: Cell, { look }: World) => fn(cell, look(cell.radius * 10));
-}
-
-export function flockingCore(cell: Cell, neighbors: Cell[]) {
+function flockingCore(cell: Cell, neighbors: Cell[]) {
   if (!neighbors.length) {
     return;
   }
@@ -29,15 +29,31 @@ function alignement(cell: Cell, neighbors: Cell[]) {
     return point(0, 0);
   }
 
-  const sum = neighbors.reduce(
-    (direction: Point, neighbor: Cell) =>
-      sumPoints(direction, subtractPoints(neighbor.velocity, cell.velocity)),
-    point(0, 0),
-  );
-
+  const sum = neighbors.map((x) => x.velocity).reduce(sumPoints, point(0, 0));
   const average = multiplyPoint(sum, 1 / neighbors.length);
-  const align = multiplyPoint(average, FLOCKING_ALIGMENENT_FACTOR);
+  const relative = subtractPoints(average, cell.velocity);
+  const align = multiplyPoint(relative, FLOCKING_ALIGMENENT_FACTOR);
 
   cell.velocity.x += align.x;
   cell.velocity.y += align.y;
+}
+
+function cohesion(cell: Cell, neighbors: Cell[]) {
+  if (!neighbors.length) {
+    return point(0, 0);
+  }
+
+  const sum = neighbors.map((x) => x.position).reduce(sumPoints, point(0, 0));
+  const average = multiplyPoint(sum, 1 / neighbors.length);
+  const relative = subtractPoints(average, cell.position);
+  const cohece = multiplyPoint(relative, FLOCKING_COHESION_FACTOR);
+
+  cell.velocity.x += cohece.x;
+  cell.velocity.y += cohece.y;
+}
+
+function requireNeighbors(
+  fn: (cell: Cell, neighbors: Cell[]) => void,
+): Behavior {
+  return (cell: Cell, { look }: World) => fn(cell, look(cell.radius * 10));
 }
