@@ -1,7 +1,7 @@
 import { World } from './../lulas';
 import { Cell } from '../cell';
 
-export function roundMap(cell: Cell, { size }: World) {
+export function bounceOnCorners(cell: Cell, { size }: World) {
   if (cell.position.x - cell.radius < 0) {
     cell.position.x = cell.radius;
     cell.velocity.x = Math.abs(cell.velocity.x);

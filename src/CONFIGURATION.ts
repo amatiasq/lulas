@@ -15,3 +15,6 @@
 export const FLOCKING_ALIGMENENT_FACTOR = 0.05;
 export const FLOCKING_COHESION_FACTOR = 0.001;
 export const FLOCKING_SEPARATION_FACTOR = 0.002;
+
+// Fraction of vision
+export const FLOCKING_SEPARATION_LIMIT = 0.3;

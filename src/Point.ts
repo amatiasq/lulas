@@ -3,7 +3,7 @@ export interface Point {
   y: number;
 }
 
-export function point(x: number, y: number): Point {
+export function point(x: number, y = x): Point {
   return { x, y };
 }
 

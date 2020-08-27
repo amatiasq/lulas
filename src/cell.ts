@@ -28,8 +28,8 @@ export function createCell(partial?: Partial<Cell>): Cell {
   return {
     id: getNextId(),
     color: 'white',
-    position: point(0, 0),
-    velocity: point(0, 0),
+    position: point(0),
+    velocity: point(0),
     radius: defaultRadius,
     vision: (partial && partial.radius ? partial.radius : defaultRadius) * 10,
     ...partial,

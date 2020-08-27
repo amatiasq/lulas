@@ -10,7 +10,7 @@ setFilename(__dirname, __filename);
 
 test(
   'I should be able to create a cell with predefined parameters',
-  [[point(0, 0)], [point(1, 1)], [point(2, 2)]],
+  [[point(0)], [point(1)], [point(2)]],
   (pos) => {
     const cell = createCell({
       position: { ...pos },
@@ -23,10 +23,10 @@ test(
 test(
   'The game will execute a cell step',
   [
-    [point(10, 10), point(1, 1), point(11, 11)],
-    [point(10, 10), point(2, 2), point(12, 12)],
-    [point(14, 14), point(1, 1), point(15, 15)],
-    [point(14, 14), point(2, 2), point(16, 16)],
+    [point(0), point(1), point(1)],
+    [point(0), point(2), point(2)],
+    [point(4), point(1), point(5)],
+    [point(4), point(2), point(6)],
   ],
   (pos, vel, exp) => {
     const cell = createCell({

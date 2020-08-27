@@ -51,9 +51,20 @@ export function test<T extends any[]>(
 
 export function runTests({ background }: { background?: string } = {}) {
   setInitialState();
+  let lastFile = '';
 
   for (const unit of tests) {
+    if (!isJestTesting && unit.file !== lastFile) {
+      console.groupEnd();
+      lastFile = unit.file;
+      console.groupCollapsed(unit.file);
+    }
+
     executeTest(unit);
+  }
+
+  if (!isJestTesting) {
+    console.groupEnd();
   }
 
   tests.length = 0;
@@ -76,8 +87,16 @@ function executeTest<T extends any[]>({
     return;
   }
 
+  if (!isJestTesting) {
+    console.groupCollapsed(message);
+  }
+
   for (let i = 0; i < table.length; i++) {
     runTest(file, `${message} [${i}]`, () => run(...table[i]));
+  }
+
+  if (!isJestTesting) {
+    console.groupEnd();
   }
 }
 
@@ -89,6 +108,7 @@ function runTest(file: string, message: string, run: TestRun<[]>) {
 
   try {
     run();
+    console.log(`${message} 🟢`);
   } catch (error) {
     printError(file, error, message);
     setFailState();
@@ -97,7 +117,7 @@ function runTest(file: string, message: string, run: TestRun<[]>) {
 }
 
 function printError(file: string, error: Error, message: string) {
-  console.error(`${message} failed`);
+  console.log(`${message} 🔴`);
   console.error(error);
   document.write(`
     <div style="display: flex; align-items:center; justify-content: center; height: 100%">

@@ -3,15 +3,15 @@ import { equal } from 'assert';
 import { createCell } from '../src/cell';
 import { test, setFilename } from '../test/index';
 import { createTestLulas } from '../test/test-duplicates';
-import { pointAxis } from '../src/point';
-import { roundMap } from '../src/behaviors/roundMap';
+import { pointAxis, point } from '../src/point';
+import { bounceOnCorners } from '../src/behaviors/bounceOnCorners';
 
 setFilename(__dirname, __filename);
 
 test('A cell in (0,0) will have position adjusted to fit the screen', () => {
-  const cell = createCell({ position: { x: 0, y: 0 }, radius: 5 });
+  const cell = createCell({ radius: 5 });
   const sut = createTestLulas({
-    behaviors: [roundMap],
+    behaviors: [bounceOnCorners],
     cells: [cell],
   });
 
@@ -21,12 +21,9 @@ test('A cell in (0,0) will have position adjusted to fit the screen', () => {
 });
 
 test('A cell in (0,0) will have velocity adjusted to bounce on screen', () => {
-  const cell = createCell({
-    position: { x: 0, y: 0 },
-    velocity: { x: -1, y: -1 },
-  });
+  const cell = createCell({ velocity: point(-1) });
   const sut = createTestLulas({
-    behaviors: [roundMap],
+    behaviors: [bounceOnCorners],
     cells: [cell],
   });
 
@@ -37,11 +34,11 @@ test('A cell in (0,0) will have velocity adjusted to bounce on screen', () => {
 
 test('A cell outside of the window will have position adjusted to fit the screen', () => {
   const size = 200;
-  const cell = createCell({ position: { x: size, y: size }, radius: 5 });
+  const cell = createCell({ position: point(size), radius: 5 });
   const sut = createTestLulas({
-    behaviors: [roundMap],
+    behaviors: [bounceOnCorners],
     cells: [cell],
-    worldSize: { x: size, y: size },
+    worldSize: point(size),
   });
 
   sut.step();
@@ -52,13 +49,13 @@ test('A cell outside of the window will have position adjusted to fit the screen
 test('A cell outside of the window will have velocity adjusted to bounce on screen', () => {
   const size = 200;
   const cell = createCell({
-    position: { x: size, y: size },
-    velocity: { x: 1, y: 1 },
+    position: point(size),
+    velocity: point(1),
   });
   const sut = createTestLulas({
-    behaviors: [roundMap],
+    behaviors: [bounceOnCorners],
     cells: [cell],
-    worldSize: { x: size, y: size },
+    worldSize: point(size),
   });
 
   sut.step();

@@ -11,6 +11,7 @@ import {
   FLOCKING_ALIGMENENT_FACTOR,
   FLOCKING_COHESION_FACTOR,
   FLOCKING_SEPARATION_FACTOR,
+  FLOCKING_SEPARATION_LIMIT,
 } from '../CONFIGURATION';
 
 export const flocking = requireNeighbors(flockingCore);
@@ -33,7 +34,7 @@ function alignement(cell: Cell, neighbors: Cell[]) {
     return;
   }
 
-  const sum = neighbors.map((x) => x.velocity).reduce(sumPoints, point(0, 0));
+  const sum = neighbors.map((x) => x.velocity).reduce(sumPoints, point(0));
   const average = multiplyPoint(sum, 1 / neighbors.length);
   const relative = subtractPoints(average, cell.velocity);
   const align = multiplyPoint(relative, FLOCKING_ALIGMENENT_FACTOR);
@@ -47,7 +48,7 @@ function cohesion(cell: Cell, neighbors: Cell[]) {
     return;
   }
 
-  const sum = neighbors.map((x) => x.position).reduce(sumPoints, point(0, 0));
+  const sum = neighbors.map((x) => x.position).reduce(sumPoints, point(0));
   const average = multiplyPoint(sum, 1 / neighbors.length);
   const relative = subtractPoints(average, cell.position);
   const cohece = multiplyPoint(relative, FLOCKING_COHESION_FACTOR);
@@ -57,14 +58,14 @@ function cohesion(cell: Cell, neighbors: Cell[]) {
 }
 
 function separation(cell: Cell, neighbors: Cell[]) {
-  neighbors = neighbors.filter((x) => cellDistance(cell, x) < cell.vision / 3);
+  const limit = cell.vision * FLOCKING_SEPARATION_LIMIT;
+  neighbors = neighbors.filter((x) => cellDistance(cell, x) < limit);
 
   if (!neighbors.length) {
     return;
   }
 
-  const sum = neighbors.map((x) => x.position).reduce(sumPoints, point(0, 0));
-
+  const sum = neighbors.map((x) => x.position).reduce(sumPoints, point(0));
   const average = multiplyPoint(sum, 1 / neighbors.length);
   const relative = subtractPoints(average, cell.position);
   const separation = multiplyPoint(relative, FLOCKING_SEPARATION_FACTOR);
