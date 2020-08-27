@@ -1,12 +1,6 @@
 import { World, Behavior } from './../lulas';
 import { Cell, cellDistance } from '../cell';
-import {
-  sumPoints,
-  Point,
-  point,
-  multiplyPoint,
-  subtractPoints,
-} from '../point';
+import { sumPoints, point, multiplyPoint, subtractPoints } from '../point';
 import {
   FLOCKING_ALIGMENENT_FACTOR,
   FLOCKING_COHESION_FACTOR,

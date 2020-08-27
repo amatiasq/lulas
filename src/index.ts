@@ -1,4 +1,4 @@
-import './user-stories';
+import '../test/user-stories';
 import { runTests } from '../test/index';
 import lulas from './lulas';
 import { createCell, logCell } from './cell';
