@@ -24,6 +24,14 @@ export function normalize(point: Vector, targetMagnitude = 1) {
   return vectorAxis((axis) => (point[axis] * targetMagnitude) / mag);
 }
 
+export function radians({ x, y }: Vector) {
+  return Math.atan2(y, x);
+}
+
+export function getAngle(vector: Vector) {
+  return (radians(vector) * 180) / Math.PI;
+}
+
 export function limitVector(point: Vector, limit: number) {
   const mag = magnitude(point);
   return mag > limit ? normalize(point, limit) : point;
@@ -31,6 +39,12 @@ export function limitVector(point: Vector, limit: number) {
 
 export function sumVectors(left: Vector, right: Vector): Vector {
   return vectorAxis((axis) => left[axis] + right[axis]);
+}
+
+export function sumVectorList(vectors: Vector[]): Vector {
+  return vectorAxis((axis) =>
+    vectors.map((v) => v[axis]).reduce((a, b) => a + b),
+  );
 }
 
 export function subtractVectors(left: Vector, right: Vector) {

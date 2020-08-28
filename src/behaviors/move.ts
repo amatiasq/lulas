@@ -1,10 +1,14 @@
-import { MAX_SPEED } from './../CONFIGURATION';
+import { MAX_SPEED, MAX_FORCE } from './../CONFIGURATION';
 import { Cell } from '../cell';
 import { sumVectors, limitVector, vector } from '../point';
 
 export function move(cell: Cell) {
-  cell.velocity = sumVectors(cell.velocity, cell.acceleration);
-  // limitPoint(a, MAX_SPEED);
+  cell.velocity = sumVectors(
+    cell.velocity,
+    limitVector(cell.acceleration, MAX_FORCE),
+  );
+
+  // limitVector(a, MAX_SPEED);
 
   cell.acceleration = vector(0);
 

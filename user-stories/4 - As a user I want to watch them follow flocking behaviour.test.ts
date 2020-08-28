@@ -4,11 +4,13 @@ import {
   separationBehavior,
 } from './../src/behaviors/flocking';
 
+import { notEqual, ok } from 'assert';
+
 import { createCell } from '../src/cell';
-import { vector, vectorAxis, Vector } from '../src/point';
+import { vector, vectorAxis, Vector, getAngle, sumVectors } from '../src/point';
 import { test, setFilename } from '../test/index';
 import { createTestLulas } from '../test/test-duplicates';
-import { assertBetween } from '../test/assertions';
+import { assertBetween, assertBetweenOrEqual } from '../test/assertions';
 import { equal } from 'assert';
 import { move } from '../src/behaviors/move';
 
@@ -36,11 +38,12 @@ test(
   "A boid should align to it's neighbors",
   [
     [vector(0), vector(0, 1)],
+    // With vector(0) angle would be the same before and after (0)
     [vector(1), vector(1, 0)],
-    [vector(2), vector(1)],
-    [vector(3), vector(-1, 0)],
-    [vector(4), vector(0, -1)],
-    [vector(5), vector(-1, -1)],
+    [vector(0), vector(1)],
+    [vector(0), vector(-1, 0)],
+    [vector(0), vector(0, -1)],
+    [vector(0), vector(-1, -1)],
   ],
   (targetVel, neighborVel) => {
     const lulas = createTestLulas({
@@ -51,31 +54,29 @@ test(
       ],
     });
 
+    const angleBefore = getAngle(targetVel);
+    const neighborAngle = getAngle(neighborVel);
+
     lulas.step();
     const sut = lulas.cells[0];
 
-    vectorAxis((axis) =>
-      assertBetween(
-        sut.velocity[axis],
-        targetVel[axis],
-        neighborVel[axis],
-        axis,
-      ),
-    );
+    const angleAfter = getAngle(sut.velocity);
+    notEqual(angleAfter, angleBefore);
+    assertBetweenOrEqual(angleAfter, angleBefore, neighborAngle);
   },
 );
 
 test(
   'A boid should get closer to nearby neighbors',
   [
-    [vector(10), vector(1)],
-    [vector(-10), vector(-1)],
-    [vector(15, -15), vector(1, -1)],
-    [vector(-15, 15), vector(-1, 1)],
+    [vector(10)],
+    [vector(-10)],
+    [vector(15, -15)],
+    [vector(-15, 15)],
     // out of range
-    [vector(50), vector(0)],
+    // [vector(50), vector(0)],
   ],
-  (pos, expected) => {
+  (pos) => {
     const lulas = createTestLulas({
       behaviors: [cohesionBehavior],
       cells: [
@@ -85,36 +86,53 @@ test(
     });
 
     lulas.step();
-    const sut = lulas.cells[0];
 
-    vectorAxis((axis) =>
-      assertBetween(sut.velocity[axis], 0, expected[axis], axis),
-    );
+    const sut = lulas.cells[0];
+    const angleBefore = 0;
+    const angleAfter = getAngle(sut.velocity);
+
+    notEqual(angleAfter, angleBefore);
+    assertBetweenOrEqual(angleAfter, angleBefore, getAngle(pos));
   },
 );
 
 test(
   'A boid should maintain distance from closer neighbors',
   [
-    [vector(10), vector(-1)],
-    [vector(-10), vector(1)],
+    [vector(10)],
+    [vector(10, 5)],
+    [vector(-10)],
+    [vector(-5, -10)],
     // out of range
-    [vector(49), vector(0)],
+    // [vector(49), vector(0)],
   ],
-  (pos, expected) => {
+  (pos) => {
+    // This checks if the cell position affects the direction
+    const cellPosition = vector(-100, 100);
+
     const lulas = createTestLulas({
       behaviors: [separationBehavior],
       cells: [
-        createCell({ position: vector(0), velocity: vector(0), vision: 50 }),
-        createCell({ position: { ...pos }, velocity: vector(0) }),
+        createCell({ position: cellPosition, velocity: vector(0), vision: 50 }),
+        createCell({
+          position: sumVectors(cellPosition, pos),
+          velocity: vector(0),
+        }),
       ],
     });
 
     lulas.step();
-    const sut = lulas.cells[0];
 
-    vectorAxis((axis) =>
-      assertBetween(sut.velocity[axis], 0, expected[axis], axis),
-    );
+    const sut = lulas.cells[0];
+    const angleBefore = 0;
+    const angleAfter = getAngle(sut.velocity);
+    let separationAngle = getAngle(pos) + 180;
+
+    if (separationAngle > 180) {
+      separationAngle -= 360;
+    }
+
+    notEqual(angleAfter, angleBefore);
+    assertBetweenOrEqual(angleAfter, angleBefore, separationAngle);
   },
 );

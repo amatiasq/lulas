@@ -16,6 +16,10 @@ import { solidBody } from './behaviors/solidBody';
   start();
 })();
 
+setTimeout(() => {
+  document.body.style.backgroundColor = 'black';
+});
+
 function start() {
   const canvas = document.createElement('canvas');
   document.body.appendChild(canvas);
