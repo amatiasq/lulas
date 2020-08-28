@@ -5,6 +5,7 @@ import {
   pointMagnitude,
   subtractPoints,
 } from './point';
+import { DEFAULT_VISION_FACTOR, DEFAULT_RADIUS } from './CONFIGURATION';
 
 export type CellId = '[number CellId]';
 let lastId = 0;
@@ -18,20 +19,22 @@ export interface Cell {
   color: string;
   position: Point;
   velocity: Point;
+  acceleration: Point;
   radius: number;
   vision: number;
 }
 
 export function createCell(partial?: Partial<Cell>): Cell {
-  const defaultRadius = 5;
-
   return {
     id: getNextId(),
     color: 'white',
     position: point(0),
     velocity: point(0),
-    radius: defaultRadius,
-    vision: (partial && partial.radius ? partial.radius : defaultRadius) * 10,
+    acceleration: point(0),
+    radius: DEFAULT_RADIUS,
+    vision:
+      (partial && partial.radius ? partial.radius : DEFAULT_RADIUS) *
+      DEFAULT_VISION_FACTOR,
     ...partial,
   };
 }

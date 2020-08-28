@@ -99,7 +99,7 @@ test(
     [point(10), point(-1)],
     [point(-10), point(1)],
     // out of range
-    [point(20), point(0)],
+    [point(49), point(0)],
   ],
   (pos, expected) => {
     const lulas = createTestLulas({

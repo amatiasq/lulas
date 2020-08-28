@@ -30,8 +30,8 @@ test(
   ],
   (pos, vel, exp) => {
     const cell = createCell({
-      position: { x: pos.x, y: pos.y },
-      velocity: { x: vel.x, y: vel.y },
+      position: { ...pos },
+      velocity: { ...vel },
     });
     const sut = createTestLulas({
       cells: [cell],
@@ -40,6 +40,6 @@ test(
 
     sut.step();
 
-    pointAxis((axis) => assertEqual(cell.position[axis], exp[axis], axis));
+    pointAxis((axis) => assertEqual(cell.position[axis], exp[axis]));
   },
 );

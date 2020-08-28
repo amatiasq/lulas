@@ -24,6 +24,11 @@ export function normalizePoint(point: Point, targetMagnitude = 1) {
   return pointAxis((axis) => (point[axis] * targetMagnitude) / magnitude);
 }
 
+export function limitPoint(point: Point, limit: number) {
+  const magnitude = pointMagnitude(point);
+  return magnitude > limit ? normalizePoint(point, limit) : point;
+}
+
 export function sumPoints(left: Point, right: Point): Point {
   return pointAxis((axis) => left[axis] + right[axis]);
 }

@@ -5,7 +5,7 @@ import {
   FLOCKING_ALIGMENENT_FACTOR,
   FLOCKING_COHESION_FACTOR,
   FLOCKING_SEPARATION_FACTOR,
-  FLOCKING_SEPARATION_LIMIT,
+  FLOCKING_SEPARATION_VISION_LIMIT,
 } from '../CONFIGURATION';
 
 export const flocking = requireNeighbors(flockingCore);
@@ -52,7 +52,7 @@ function cohesion(cell: Cell, neighbors: Cell[]) {
 }
 
 function separation(cell: Cell, neighbors: Cell[]) {
-  const limit = cell.vision * FLOCKING_SEPARATION_LIMIT;
+  const limit = cell.vision * FLOCKING_SEPARATION_VISION_LIMIT;
   neighbors = neighbors.filter((x) => cellDistance(cell, x) < limit);
 
   if (!neighbors.length) {
