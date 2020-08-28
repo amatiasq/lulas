@@ -2,7 +2,7 @@ import '../test/user-stories';
 import { runTests } from '../test/index';
 import lulas from './lulas';
 import { createCell, logCell } from './cell';
-import { point } from './point';
+import { vector } from './point';
 import { flocking } from './behaviors/flocking';
 import { move } from './behaviors/move';
 import { bounceOnCorners } from './behaviors/bounceOnCorners';
@@ -22,11 +22,11 @@ function start() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const center = point(canvas.width / 2, canvas.height / 2);
+  const center = vector(canvas.width / 2, canvas.height / 2);
   const createRandomCell = (i: number) =>
     createCell({
       position: { ...center },
-      velocity: point(random(10), random(10)),
+      velocity: vector(random(10), random(10)),
       radius: random(5, 20),
     });
 

@@ -1,7 +1,7 @@
 import { Cell, cellDistance } from '../cell';
 import { World } from '../lulas';
 import { getSign } from '../math';
-import { normalizePoint, Point, multiplyPoint } from '../point';
+import { normalize, Vector, multiplyVectors } from '../point';
 import { COLLISION_FRICTION } from '../CONFIGURATION';
 
 export function solidBody(cell: Cell, { look }: World) {
@@ -19,7 +19,7 @@ export function solidBody(cell: Cell, { look }: World) {
 }
 
 function collide(a: Cell, b: Cell, correction: number) {
-  const adjustment = normalizePoint(
+  const adjustment = normalize(
     {
       x: a.position.x - b.position.x,
       y: a.position.y - b.position.y,
@@ -35,14 +35,14 @@ function collide(a: Cell, b: Cell, correction: number) {
   collisionBrake_bounce(a, b, adjustment);
 }
 
-function collisionBrake_bounce(a: Cell, b: Cell, adjustment: Point) {
+function collisionBrake_bounce(a: Cell, b: Cell, adjustment: Vector) {
   const factor = 1 - COLLISION_FRICTION;
   const vel = a.velocity;
-  a.velocity = multiplyPoint(b.velocity, factor);
-  b.velocity = multiplyPoint(vel, factor);
+  a.velocity = multiplyVectors(b.velocity, factor);
+  b.velocity = multiplyVectors(vel, factor);
 }
 
-function collisionBrake_reflect(a: Cell, b: Cell, adjustment: Point) {
+function collisionBrake_reflect(a: Cell, b: Cell, adjustment: Vector) {
   const signX = getSign(adjustment.x);
   const signY = getSign(adjustment.y);
 

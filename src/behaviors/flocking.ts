@@ -1,6 +1,6 @@
 import { World, Behavior } from './../lulas';
 import { Cell, cellDistance } from '../cell';
-import { sumPoints, point, multiplyPoint, subtractPoints } from '../point';
+import { sumVectors, vector, multiplyVectors, subtractVectors } from '../point';
 import {
   FLOCKING_ALIGMENENT_FACTOR,
   FLOCKING_COHESION_FACTOR,
@@ -28,10 +28,10 @@ function alignement(cell: Cell, neighbors: Cell[]) {
     return;
   }
 
-  const sum = neighbors.map((x) => x.velocity).reduce(sumPoints, point(0));
-  const average = multiplyPoint(sum, 1 / neighbors.length);
-  const relative = subtractPoints(average, cell.velocity);
-  const align = multiplyPoint(relative, FLOCKING_ALIGMENENT_FACTOR);
+  const sum = neighbors.map((x) => x.velocity).reduce(sumVectors, vector(0));
+  const average = multiplyVectors(sum, 1 / neighbors.length);
+  const relative = subtractVectors(average, cell.velocity);
+  const align = multiplyVectors(relative, FLOCKING_ALIGMENENT_FACTOR);
 
   cell.velocity.x += align.x;
   cell.velocity.y += align.y;
@@ -42,10 +42,10 @@ function cohesion(cell: Cell, neighbors: Cell[]) {
     return;
   }
 
-  const sum = neighbors.map((x) => x.position).reduce(sumPoints, point(0));
-  const average = multiplyPoint(sum, 1 / neighbors.length);
-  const relative = subtractPoints(average, cell.position);
-  const cohece = multiplyPoint(relative, FLOCKING_COHESION_FACTOR);
+  const sum = neighbors.map((x) => x.position).reduce(sumVectors, vector(0));
+  const average = multiplyVectors(sum, 1 / neighbors.length);
+  const relative = subtractVectors(average, cell.position);
+  const cohece = multiplyVectors(relative, FLOCKING_COHESION_FACTOR);
 
   cell.velocity.x += cohece.x;
   cell.velocity.y += cohece.y;
@@ -59,10 +59,10 @@ function separation(cell: Cell, neighbors: Cell[]) {
     return;
   }
 
-  const sum = neighbors.map((x) => x.position).reduce(sumPoints, point(0));
-  const average = multiplyPoint(sum, 1 / neighbors.length);
-  const relative = subtractPoints(average, cell.position);
-  const separation = multiplyPoint(relative, FLOCKING_SEPARATION_FACTOR);
+  const sum = neighbors.map((x) => x.position).reduce(sumVectors, vector(0));
+  const average = multiplyVectors(sum, 1 / neighbors.length);
+  const relative = subtractVectors(average, cell.position);
+  const separation = multiplyVectors(relative, FLOCKING_SEPARATION_FACTOR);
 
   cell.velocity.x -= separation.x;
   cell.velocity.y -= separation.y;

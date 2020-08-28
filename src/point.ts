@@ -1,51 +1,51 @@
-export interface Point {
+export interface Vector {
   x: number;
   y: number;
 }
 
-export function point(x: number, y = x): Point {
+export function vector(x: number, y = x): Vector {
   return { x, y };
 }
 
-export function isPointZero({ x, y }: Point) {
+export function isZero({ x, y }: Vector) {
   return x === 0 && y === 0;
 }
 
-export function pointMagnitude({ x, y }: Point) {
+export function magnitude({ x, y }: Vector) {
   return Math.sqrt(x ** 2 + y ** 2);
 }
 
-export function normalizePoint(point: Point, targetMagnitude = 1) {
-  if (isPointZero(point)) {
+export function normalize(point: Vector, targetMagnitude = 1) {
+  if (isZero(point)) {
     return { ...point };
   }
 
-  const magnitude = pointMagnitude(point);
-  return pointAxis((axis) => (point[axis] * targetMagnitude) / magnitude);
+  const mag = magnitude(point);
+  return vectorAxis((axis) => (point[axis] * targetMagnitude) / mag);
 }
 
-export function limitPoint(point: Point, limit: number) {
-  const magnitude = pointMagnitude(point);
-  return magnitude > limit ? normalizePoint(point, limit) : point;
+export function limitVector(point: Vector, limit: number) {
+  const mag = magnitude(point);
+  return mag > limit ? normalize(point, limit) : point;
 }
 
-export function sumPoints(left: Point, right: Point): Point {
-  return pointAxis((axis) => left[axis] + right[axis]);
+export function sumVectors(left: Vector, right: Vector): Vector {
+  return vectorAxis((axis) => left[axis] + right[axis]);
 }
 
-export function subtractPoints(left: Point, right: Point) {
-  return pointAxis((axis) => left[axis] - right[axis]);
+export function subtractVectors(left: Vector, right: Vector) {
+  return vectorAxis((axis) => left[axis] - right[axis]);
 }
 
-export function multiplyPoint(point: Point, value: number) {
-  return pointAxis((axis) => point[axis] * value);
+export function multiplyVectors(point: Vector, value: number) {
+  return vectorAxis((axis) => point[axis] * value);
 }
 
-export function pointAxis(operate: (key: 'x' | 'y') => number): Point;
-export function pointAxis(operate: (key: 'x' | 'y') => void): void;
-export function pointAxis(
+export function vectorAxis(operate: (key: 'x' | 'y') => number): Vector;
+export function vectorAxis(operate: (key: 'x' | 'y') => void): void;
+export function vectorAxis(
   operate: (key: 'x' | 'y') => number | void,
-): Point | void {
+): Vector | void {
   const x = operate('x');
   const y = operate('y');
 
@@ -54,6 +54,6 @@ export function pointAxis(
   }
 }
 
-export function logPoint(point: Point) {
+export function logVector(point: Vector) {
   return `(${point.x},${point.y})`;
 }

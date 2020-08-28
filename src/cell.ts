@@ -1,10 +1,4 @@
-import {
-  Point,
-  point,
-  logPoint,
-  pointMagnitude,
-  subtractPoints,
-} from './point';
+import { Vector, vector, logVector, magnitude, subtractVectors } from './point';
 import { DEFAULT_VISION_FACTOR, DEFAULT_RADIUS } from './CONFIGURATION';
 
 export type CellId = '[number CellId]';
@@ -17,9 +11,9 @@ function getNextId() {
 export interface Cell {
   id: CellId;
   color: string;
-  position: Point;
-  velocity: Point;
-  acceleration: Point;
+  position: Vector;
+  velocity: Vector;
+  acceleration: Vector;
   radius: number;
   vision: number;
 }
@@ -28,9 +22,9 @@ export function createCell(partial?: Partial<Cell>): Cell {
   return {
     id: getNextId(),
     color: 'white',
-    position: point(0),
-    velocity: point(0),
-    acceleration: point(0),
+    position: vector(0),
+    velocity: vector(0),
+    acceleration: vector(0),
     radius: DEFAULT_RADIUS,
     vision:
       (partial && partial.radius ? partial.radius : DEFAULT_RADIUS) *
@@ -40,7 +34,7 @@ export function createCell(partial?: Partial<Cell>): Cell {
 }
 
 export function cellDistance(left: Cell, right: Cell) {
-  return pointMagnitude(subtractPoints(left.position, right.position));
+  return magnitude(subtractVectors(left.position, right.position));
 }
 
 export function renderCell(context: CanvasRenderingContext2D, cell: Cell) {
@@ -56,7 +50,7 @@ export function renderCell(context: CanvasRenderingContext2D, cell: Cell) {
 }
 
 export function logCell(cell: Cell) {
-  return `Cell(${cell.id}) ${cell.radius} { pos: ${logPoint(
+  return `Cell(${cell.id}) ${cell.radius} { pos: ${logVector(
     cell.position,
-  )}, vel: ${logPoint(cell.velocity)} }`;
+  )}, vel: ${logVector(cell.velocity)} }`;
 }

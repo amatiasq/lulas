@@ -1,8 +1,8 @@
-import { Point } from './point';
+import { Vector } from './point';
 import { Cell, cellDistance, renderCell } from './cell';
 
 export interface World {
-  size: Point;
+  size: Vector;
   look: (radius: number) => Cell[];
 }
 
@@ -12,7 +12,7 @@ export interface LulasConfig {
   canvas: HTMLCanvasElement;
   cells: Cell[];
   behaviors: Behavior[];
-  worldSize?: Point;
+  worldSize?: Vector;
 }
 
 export function lulas({
