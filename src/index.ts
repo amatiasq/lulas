@@ -7,6 +7,8 @@ import { flocking } from './behaviors/flocking';
 import { move } from './behaviors/move';
 import { bounceOnCorners } from './behaviors/bounceOnCorners';
 import { solidBody } from './behaviors/solidBody';
+import { random } from './math';
+import { randomColor } from './color';
 
 (async () => {
   setStyles();
@@ -32,6 +34,7 @@ function start() {
       position: { ...center },
       velocity: vector(random(10), random(10)),
       radius: random(5, 20),
+      color: randomColor(),
     });
 
   const game = lulas({
@@ -53,12 +56,6 @@ function start() {
   function logState() {
     console.log(game.cells.map(logCell).join('\n'));
   }
-}
-
-function random(first: number, second = -first) {
-  const min = Math.min(first, second);
-  const max = Math.max(first, second);
-  return Math.round(Math.random() * (max - min) + min);
 }
 
 function array<T>(size: number, operator: (pos: number) => T): T[] {

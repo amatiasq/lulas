@@ -1,5 +1,13 @@
-import { Vector, vector, logVector, magnitude, subtractVectors } from './point';
+import {
+  Vector,
+  vector,
+  logVector,
+  magnitude,
+  subtractVectors,
+  radians,
+} from './point';
 import { DEFAULT_VISION_FACTOR, DEFAULT_RADIUS } from './CONFIGURATION';
+import { bajarColor, Color } from './color';
 
 export type CellId = '[number CellId]';
 let lastId = 0;
@@ -10,7 +18,7 @@ function getNextId() {
 
 export interface Cell {
   id: CellId;
-  color: string;
+  color: Color;
   position: Vector;
   velocity: Vector;
   acceleration: Vector;
@@ -21,7 +29,7 @@ export interface Cell {
 export function createCell(partial?: Partial<Cell>): Cell {
   return {
     id: getNextId(),
-    color: 'white',
+    color: '#ffffff' as Color,
     position: vector(0),
     velocity: vector(0),
     acceleration: vector(0),
@@ -38,10 +46,26 @@ export function cellDistance(left: Cell, right: Cell) {
 }
 
 export function renderCell(context: CanvasRenderingContext2D, cell: Cell) {
+  const angleCorrection = Math.PI / 4;
+
+  context.save();
+
+  context.translate(cell.position.x, cell.position.y);
+  context.rotate(radians(cell.velocity) + angleCorrection);
   context.beginPath();
-  context.arc(cell.position.x, cell.position.y, cell.radius, 0, Math.PI * 2);
+  context.arc(0, 0, cell.radius, 0, Math.PI * 1.5);
+  context.lineTo(cell.radius, -cell.radius);
+  // context.lineTo(cell.radius, 0);
+  context.closePath();
+  context.lineWidth = 5;
   context.strokeStyle = cell.color;
+  context.fillStyle = bajarColor(cell.color, 0.5);
   context.stroke();
+  context.fill();
+
+  console.log(bajarColor(cell.color, 0.3));
+
+  context.restore();
 
   // context.beginPath();
   // context.arc(cell.position.x, cell.position.y, cell.vision, 0, Math.PI * 2);
