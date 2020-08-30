@@ -2,7 +2,7 @@ import '../test/user-stories';
 import { runTests } from '../test/index';
 import lulas from './lulas';
 import { createCell, logCell } from './cell';
-import { vector } from './point';
+import { vector } from './vector';
 import { flocking } from './behaviors/flocking';
 import { move } from './behaviors/move';
 import { bounceOnCorners } from './behaviors/bounceOnCorners';

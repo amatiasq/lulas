@@ -1,6 +1,11 @@
 import { World, Behavior } from './../lulas';
 import { Cell, cellDistance } from '../cell';
-import { sumVectors, vector, multiplyVectors, subtractVectors } from '../point';
+import {
+  sumVectors,
+  vector,
+  multiplyVectors,
+  subtractVectors,
+} from '../vector';
 import {
   FLOCKING_ALIGMENENT_FACTOR,
   FLOCKING_COHESION_FACTOR,

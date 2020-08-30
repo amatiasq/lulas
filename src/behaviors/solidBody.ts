@@ -1,7 +1,7 @@
 import { Cell, cellDistance } from '../cell';
 import { World } from '../lulas';
 import { getSign } from '../math';
-import { normalize, Vector, multiplyVectors } from '../point';
+import { normalize, Vector, multiplyVectors } from '../vector';
 import { COLLISION_FRICTION } from '../CONFIGURATION';
 
 export function solidBody(cell: Cell, { look }: World) {

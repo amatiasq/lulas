@@ -1,6 +1,6 @@
 // Built with https://www.youtube.com/watch?v=mhjuuHl6qHM
 
-import { Vector, sumVectorList } from './../point';
+import { Vector, sumVectorList } from './../vector';
 import { World, Behavior } from './../lulas';
 import { Cell, cellDistance } from '../cell';
 import {
@@ -9,7 +9,7 @@ import {
   multiplyVectors,
   subtractVectors,
   normalize,
-} from '../point';
+} from '../vector';
 import {
   FLOCKING_ALIGMENENT_FACTOR,
   FLOCKING_COHESION_FACTOR,

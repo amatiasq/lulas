@@ -3,7 +3,7 @@ import { equal as assertEqual } from 'assert';
 import { createCell } from '../src/cell';
 import { test, setFilename } from '../test/index';
 import { createTestLulas } from '../test/test-duplicates';
-import { vector, vectorAxis } from '../src/point';
+import { vector, vectorAxis } from '../src/vector';
 import { move } from '../src/behaviors/move';
 
 setFilename(__dirname, __filename);

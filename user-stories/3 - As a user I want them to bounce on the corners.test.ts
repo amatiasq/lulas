@@ -3,7 +3,7 @@ import { equal } from 'assert';
 import { createCell } from '../src/cell';
 import { test, setFilename } from '../test/index';
 import { createTestLulas } from '../test/test-duplicates';
-import { vectorAxis, vector } from '../src/point';
+import { vectorAxis, vector } from '../src/vector';
 import { bounceOnCorners } from '../src/behaviors/bounceOnCorners';
 
 setFilename(__dirname, __filename);

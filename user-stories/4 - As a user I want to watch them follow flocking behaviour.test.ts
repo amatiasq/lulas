@@ -7,7 +7,13 @@ import {
 import { notEqual, ok } from 'assert';
 
 import { createCell } from '../src/cell';
-import { vector, vectorAxis, Vector, getAngle, sumVectors } from '../src/point';
+import {
+  vector,
+  vectorAxis,
+  Vector,
+  getAngle,
+  sumVectors,
+} from '../src/vector';
 import { test, setFilename } from '../test/index';
 import { createTestLulas } from '../test/test-duplicates';
 import { assertBetween, assertBetweenOrEqual } from '../test/assertions';

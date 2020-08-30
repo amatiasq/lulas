@@ -2,7 +2,7 @@ import * as assert from 'assert';
 
 import { solidBody } from '../src/behaviors/solidBody';
 import { createCell } from '../src/cell';
-import { vector, vectorAxis } from '../src/point';
+import { vector, vectorAxis } from '../src/vector';
 import { setFilename, test } from '../test/index';
 import { createTestLulas } from '../test/test-duplicates';
 

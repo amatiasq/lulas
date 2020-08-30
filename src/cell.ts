@@ -5,7 +5,7 @@ import {
   magnitude,
   subtractVectors,
   radians,
-} from './point';
+} from './vector';
 import { DEFAULT_VISION_FACTOR, DEFAULT_RADIUS } from './CONFIGURATION';
 import { bajarColor, Color } from './color';
 

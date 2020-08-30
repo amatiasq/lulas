@@ -1,4 +1,4 @@
-import { Vector } from './point';
+import { Vector } from './vector';
 import { Cell, cellDistance, renderCell } from './cell';
 
 export interface World {
