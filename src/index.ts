@@ -9,6 +9,7 @@ import { bounceOnCorners } from './behaviors/bounceOnCorners';
 import { solidBody } from './behaviors/solidBody';
 import { random } from './math';
 import { randomColor } from './color';
+import { roundMap } from './behaviors/roundMap';
 
 (async () => {
   setStyles();
@@ -40,7 +41,7 @@ function start() {
   const game = lulas({
     canvas,
     cells: array(50, createRandomCell),
-    behaviors: [flocking, move, solidBody, bounceOnCorners],
+    behaviors: [flocking, move, solidBody, roundMap],
   });
 
   console.log('Initial state');

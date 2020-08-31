@@ -1,3 +1,4 @@
+import { World } from './lulas';
 import {
   Vector,
   vector,
@@ -8,6 +9,8 @@ import {
 } from './vector';
 import { DEFAULT_VISION_FACTOR, DEFAULT_RADIUS } from './CONFIGURATION';
 import { bajarColor, Color } from './color';
+
+const ANGLE_CORRECTION = Math.PI / 4;
 
 export type CellId = '[number CellId]';
 let lastId = 0;
@@ -45,13 +48,40 @@ export function cellDistance(left: Cell, right: Cell) {
   return magnitude(subtractVectors(left.position, right.position));
 }
 
-export function renderCell(context: CanvasRenderingContext2D, cell: Cell) {
-  const angleCorrection = Math.PI / 4;
+export function renderCell(
+  context: CanvasRenderingContext2D,
+  { size }: World,
+  cell: Cell,
+) {
+  const renderRadius = cell.radius + 10;
+  const { position: pos } = cell;
 
+  renderAt(context, cell);
+
+  if (pos.x - renderRadius < 0) {
+    renderAt(context, cell, { x: pos.x + size.x, y: pos.y });
+  }
+  if (pos.x + renderRadius > size.x) {
+    renderAt(context, cell, { x: pos.x - size.x, y: pos.y });
+  }
+
+  if (pos.y - renderRadius < 0) {
+    renderAt(context, cell, { x: pos.x, y: pos.y + size.y });
+  }
+  if (pos.y + renderRadius > size.y) {
+    renderAt(context, cell, { x: pos.x, y: pos.y - size.y });
+  }
+}
+
+function renderAt(
+  context: CanvasRenderingContext2D,
+  cell: Cell,
+  pos = cell.position,
+) {
   context.save();
+  context.translate(pos.x, pos.y);
 
-  context.translate(cell.position.x, cell.position.y);
-  context.rotate(radians(cell.velocity) + angleCorrection);
+  context.rotate(radians(cell.velocity) + ANGLE_CORRECTION);
   context.beginPath();
   context.arc(0, 0, cell.radius, 0, Math.PI * 1.5);
   context.lineTo(cell.radius, -cell.radius);
@@ -63,14 +93,7 @@ export function renderCell(context: CanvasRenderingContext2D, cell: Cell) {
   context.stroke();
   context.fill();
 
-  console.log(bajarColor(cell.color, 0.3));
-
   context.restore();
-
-  // context.beginPath();
-  // context.arc(cell.position.x, cell.position.y, cell.vision, 0, Math.PI * 2);
-  // context.strokeStyle = 'red';
-  // context.stroke();
 }
 
 export function logCell(cell: Cell) {

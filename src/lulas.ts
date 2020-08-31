@@ -21,9 +21,6 @@ export function lulas({
   behaviors,
   worldSize = { x: canvas.width, y: canvas.height },
 }: LulasConfig) {
-  const context = canvas.getContext('2d')!;
-  const renderCellToContext = renderCell.bind(null, context);
-
   let currentCell: Cell | null = null;
   const world = {
     size: worldSize,
@@ -31,6 +28,9 @@ export function lulas({
       return look(currentCell!, radius);
     },
   };
+
+  const context = canvas.getContext('2d')!;
+  const renderCellToContext = renderCell.bind(null, context, world);
 
   return {
     get cells() {

@@ -6,6 +6,7 @@ export function bounceOnCorners(cell: Cell, { size }: World) {
     cell.position.x = cell.radius;
     cell.velocity.x = Math.abs(cell.velocity.x);
   }
+
   if (cell.position.y - cell.radius < 0) {
     cell.position.y = cell.radius;
     cell.velocity.y = Math.abs(cell.velocity.y);
