@@ -44,6 +44,11 @@ export function createCell(partial?: Partial<Cell>): Cell {
   };
 }
 
+export function applyForce(cell: Cell, force: Vector) {
+  cell.velocity.x += force.x;
+  cell.velocity.y += force.y;
+}
+
 export function cellDistance(left: Cell, right: Cell) {
   return magnitude(subtractVectors(left.position, right.position));
 }

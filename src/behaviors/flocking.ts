@@ -1,10 +1,12 @@
 import { World, Behavior } from './../lulas';
-import { Cell, cellDistance } from '../cell';
+import { Cell, cellDistance, applyForce } from '../cell';
 import {
   sumVectors,
   vector,
   multiplyVectors,
   subtractVectors,
+  sumVectorList,
+  Vector,
 } from '../vector';
 import {
   FLOCKING_ALIGMENENT_FACTOR,
@@ -19,62 +21,52 @@ export const cohesionBehavior = requireNeighbors(cohesion);
 export const separationBehavior = requireNeighbors(separation);
 
 function flockingCore(cell: Cell, neighbors: Cell[]) {
-  if (!neighbors.length) {
-    return;
-  }
-
-  alignement(cell, neighbors);
-  cohesion(cell, neighbors);
-  separation(cell, neighbors);
+  return sumVectorList([
+    alignement(cell, neighbors),
+    cohesion(cell, neighbors),
+    separation(cell, neighbors),
+  ]);
 }
 
 function alignement(cell: Cell, neighbors: Cell[]) {
-  if (!neighbors.length) {
-    return;
-  }
-
   const sum = neighbors.map((x) => x.velocity).reduce(sumVectors, vector(0));
   const average = multiplyVectors(sum, 1 / neighbors.length);
   const relative = subtractVectors(average, cell.velocity);
-  const align = multiplyVectors(relative, FLOCKING_ALIGMENENT_FACTOR);
-
-  cell.velocity.x += align.x;
-  cell.velocity.y += align.y;
+  return multiplyVectors(relative, FLOCKING_ALIGMENENT_FACTOR);
 }
 
 function cohesion(cell: Cell, neighbors: Cell[]) {
-  if (!neighbors.length) {
-    return;
-  }
-
   const sum = neighbors.map((x) => x.position).reduce(sumVectors, vector(0));
   const average = multiplyVectors(sum, 1 / neighbors.length);
   const relative = subtractVectors(average, cell.position);
-  const cohece = multiplyVectors(relative, FLOCKING_COHESION_FACTOR);
-
-  cell.velocity.x += cohece.x;
-  cell.velocity.y += cohece.y;
+  return multiplyVectors(relative, FLOCKING_COHESION_FACTOR);
 }
 
 function separation(cell: Cell, neighbors: Cell[]) {
   const limit = cell.vision * FLOCKING_SEPARATION_VISION_LIMIT;
-  neighbors = neighbors.filter((x) => cellDistance(cell, x) < limit);
+  const closer = neighbors.filter((x) => cellDistance(cell, x) < limit);
 
-  if (!neighbors.length) {
-    return;
+  if (!closer.length) {
+    return vector(0);
   }
 
-  const sum = neighbors.map((x) => x.position).reduce(sumVectors, vector(0));
-  const average = multiplyVectors(sum, 1 / neighbors.length);
+  const sum = closer.map((x) => x.position).reduce(sumVectors, vector(0));
+  const average = multiplyVectors(sum, 1 / closer.length);
   const relative = subtractVectors(average, cell.position);
-  const separation = multiplyVectors(relative, FLOCKING_SEPARATION_FACTOR);
-
-  cell.velocity.x -= separation.x;
-  cell.velocity.y -= separation.y;
+  return multiplyVectors(relative, FLOCKING_SEPARATION_FACTOR * -1);
 }
 
 function requireNeighbors(
-  fn: (cell: Cell, neighbors: Cell[]) => void,
+  fn: (cell: Cell, neighbors: Cell[]) => Vector,
 ): Behavior {
-  return (cell: Cell, { look }: World) => fn(cell, look(cell.vision));
+  return (cell: Cell, { look }: World) => {
+    const neighbors = look(cell.vision);
+
+    if (!neighbors.length) {
+      return;
+    }
+
+    const force = fn(cell, neighbors);
+    applyForce(cell, force);
+  };
 }
