@@ -5,6 +5,8 @@
   "description": "stuff",
   "scripts": {
     "test": "jest",
+    "test-with-coverage": "jest --coverage",
+    "coverage": "npm run test-with-coverage",
     "start": "npm run webpack-dev-server",
     "build": "npm run webpack -- --env.mode production",
     "webpack": "webpack",

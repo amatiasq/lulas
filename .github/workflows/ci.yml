@@ -25,11 +25,19 @@ jobs:
             ${{ runner.os }}-node-
 
       - run: npm ci
-      - run: npm test
+      - run: npm run test-with-coverage
       - run: npm run build
+      - run: cp -r ./coverage/lcov-report dist/coverage
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+
+      - name: Deploy coverage
+        uses: codecov/codecov-action@v1
+        with:
+          # token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
+          file: ./coverage/clover.xml # optional
+          name: lulas # optional
