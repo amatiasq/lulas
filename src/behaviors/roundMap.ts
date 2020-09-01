@@ -1,5 +1,5 @@
-import { World } from './../lulas';
 import { Cell } from '../cell';
+import { World } from '../lulas';
 
 export function roundMap(cell: Cell, { size }: World) {
   if (cell.position.x < 0) {

@@ -1,14 +1,14 @@
+import { bajarColor, Color } from './color';
+import { DEFAULT_RADIUS, DEFAULT_VISION_FACTOR } from './CONFIGURATION';
 import { World } from './lulas';
 import {
-  Vector,
-  vector,
   logVector,
   magnitude,
-  subtractVectors,
   radians,
+  subtractVectors,
+  Vector,
+  vector,
 } from './vector';
-import { DEFAULT_VISION_FACTOR, DEFAULT_RADIUS } from './CONFIGURATION';
-import { bajarColor, Color } from './color';
 
 const ANGLE_CORRECTION = Math.PI / 4;
 

@@ -1,24 +1,22 @@
+import { equal, notEqual, ok } from 'assert';
+
 import {
   alignementBehavior,
   cohesionBehavior,
   separationBehavior,
-} from './../src/behaviors/flocking';
-
-import { notEqual, ok } from 'assert';
-
+} from '../src/behaviors/flocking';
+import { move } from '../src/behaviors/move';
 import { createCell } from '../src/cell';
 import {
+  getAngle,
+  isZero,
+  sumVectors,
   vector,
   vectorAxis,
-  Vector,
-  getAngle,
-  sumVectors,
 } from '../src/vector';
-import { test, setFilename } from '../test/index';
+import { assertBetweenOrEqual } from '../test/assertions';
+import { setFilename, test } from '../test/index';
 import { createTestLulas } from '../test/test-duplicates';
-import { assertBetween, assertBetweenOrEqual } from '../test/assertions';
-import { equal } from 'assert';
-import { move } from '../src/behaviors/move';
 
 // GLOSSARY: Boid = Cell
 

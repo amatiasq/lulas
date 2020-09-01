@@ -1,8 +1,7 @@
 import { Cell, cellDistance } from '../cell';
-import { World } from '../lulas';
-import { getSign } from '../math';
-import { normalize, Vector, multiplyVectors } from '../vector';
 import { COLLISION_FRICTION } from '../CONFIGURATION';
+import { World } from '../lulas';
+import { multiplyVectors, normalize, Vector } from '../vector';
 
 export function solidBody(cell: Cell, { look }: World) {
   const collision = look(cell.radius * 2);
@@ -42,23 +41,23 @@ function collisionBrake_bounce(a: Cell, b: Cell, adjustment: Vector) {
   b.velocity = multiplyVectors(vel, factor);
 }
 
-function collisionBrake_reflect(a: Cell, b: Cell, adjustment: Vector) {
-  const signX = getSign(adjustment.x);
-  const signY = getSign(adjustment.y);
+// function collisionBrake_reflect(a: Cell, b: Cell, adjustment: Vector) {
+//   const signX = getSign(adjustment.x);
+//   const signY = getSign(adjustment.y);
 
-  if (getSign(a.velocity.x) === -signX) {
-    a.velocity.x = -a.velocity.x * (1 - COLLISION_FRICTION);
-  }
+//   if (getSign(a.velocity.x) === -signX) {
+//     a.velocity.x = -a.velocity.x * (1 - COLLISION_FRICTION);
+//   }
 
-  if (getSign(a.velocity.y) === -signY) {
-    a.velocity.y = -a.velocity.y * (1 - COLLISION_FRICTION);
-  }
+//   if (getSign(a.velocity.y) === -signY) {
+//     a.velocity.y = -a.velocity.y * (1 - COLLISION_FRICTION);
+//   }
 
-  if (getSign(b.velocity.x) === signX) {
-    b.velocity.x = -b.velocity.x * (1 - COLLISION_FRICTION);
-  }
+//   if (getSign(b.velocity.x) === signX) {
+//     b.velocity.x = -b.velocity.x * (1 - COLLISION_FRICTION);
+//   }
 
-  if (getSign(b.velocity.y) === signY) {
-    b.velocity.y = -b.velocity.y * (1 - COLLISION_FRICTION);
-  }
-}
+//   if (getSign(b.velocity.y) === signY) {
+//     b.velocity.y = -b.velocity.y * (1 - COLLISION_FRICTION);
+//   }
+// }

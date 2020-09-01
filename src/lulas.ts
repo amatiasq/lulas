@@ -1,5 +1,5 @@
-import { Vector } from './vector';
 import { Cell, cellDistance, renderCell } from './cell';
+import { Vector } from './vector';
 
 export interface World {
   size: Vector;

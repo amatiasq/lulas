@@ -1,9 +1,10 @@
-import { test, setFilename } from '../test/index';
-import { vector, vectorAxis } from '../src/vector';
-import { createCell } from '../src/cell';
-import { createTestLulas } from '../test/test-duplicates';
 import { equal } from 'assert';
+
 import { roundMap } from '../src/behaviors/roundMap';
+import { createCell } from '../src/cell';
+import { vector, vectorAxis } from '../src/vector';
+import { setFilename, test } from '../test/index';
+import { createTestLulas } from '../test/test-duplicates';
 
 setFilename(__dirname, __filename);
 

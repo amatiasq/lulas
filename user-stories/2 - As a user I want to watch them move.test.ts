@@ -1,10 +1,10 @@
 import { equal as assertEqual } from 'assert';
 
-import { createCell } from '../src/cell';
-import { test, setFilename } from '../test/index';
-import { createTestLulas } from '../test/test-duplicates';
-import { vector, vectorAxis } from '../src/vector';
 import { move } from '../src/behaviors/move';
+import { createCell } from '../src/cell';
+import { vector, vectorAxis } from '../src/vector';
+import { setFilename, test } from '../test/index';
+import { createTestLulas } from '../test/test-duplicates';
 
 setFilename(__dirname, __filename);
 

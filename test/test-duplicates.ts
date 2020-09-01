@@ -1,5 +1,5 @@
-import lulas, { LulasConfig } from '../src/lulas';
 import { createCell } from '../src/cell';
+import lulas, { LulasConfig } from '../src/lulas';
 
 export function createTestLulas(config: Partial<LulasConfig> = {}) {
   return lulas({

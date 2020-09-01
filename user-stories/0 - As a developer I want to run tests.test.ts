@@ -1,4 +1,4 @@
-import { isJestTesting, test, setFilename } from '../test/index';
+import { isJestTesting, setFilename, test } from '../test/index';
 
 let isTestRunning = false;
 

@@ -1,15 +1,15 @@
 import '../test/user-stories';
+
 import { runTests } from '../test/index';
-import lulas from './lulas';
-import { createCell, logCell } from './cell';
-import { vector } from './vector';
 import { flocking } from './behaviors/flocking';
 import { move } from './behaviors/move';
-import { bounceOnCorners } from './behaviors/bounceOnCorners';
-import { solidBody } from './behaviors/solidBody';
-import { random } from './math';
-import { randomColor } from './color';
 import { roundMap } from './behaviors/roundMap';
+import { solidBody } from './behaviors/solidBody';
+import { createCell, logCell } from './cell';
+import { randomColor } from './color';
+import lulas from './lulas';
+import { random } from './math';
+import { vector } from './vector';
 
 (async () => {
   setStyles();

@@ -1,19 +1,19 @@
-import { World, Behavior } from './../lulas';
-import { Cell, cellDistance, applyForce } from '../cell';
-import {
-  sumVectors,
-  vector,
-  multiplyVectors,
-  subtractVectors,
-  sumVectorList,
-  Vector,
-} from '../vector';
+import { applyForce, Cell, cellDistance } from '../cell';
 import {
   FLOCKING_ALIGMENENT_FACTOR,
   FLOCKING_COHESION_FACTOR,
   FLOCKING_SEPARATION_FACTOR,
   FLOCKING_SEPARATION_VISION_LIMIT,
 } from '../CONFIGURATION';
+import { Behavior, World } from '../lulas';
+import {
+  multiplyVectors,
+  subtractVectors,
+  sumVectorList,
+  sumVectors,
+  vector,
+  Vector,
+} from '../vector';
 
 export const flocking = requireNeighbors(flockingCore);
 export const alignementBehavior = requireNeighbors(alignement);

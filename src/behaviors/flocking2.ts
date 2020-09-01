@@ -1,22 +1,23 @@
 // Built with https://www.youtube.com/watch?v=mhjuuHl6qHM
 
-import { Vector, sumVectorList } from './../vector';
-import { World, Behavior } from './../lulas';
 import { Cell, cellDistance } from '../cell';
-import {
-  sumVectors,
-  vector,
-  multiplyVectors,
-  subtractVectors,
-  normalize,
-} from '../vector';
 import {
   FLOCKING_ALIGMENENT_FACTOR,
   FLOCKING_COHESION_FACTOR,
+  FLOCKING_SEPARATION_BORDER_LIMIT,
   FLOCKING_SEPARATION_FACTOR,
   FLOCKING_SEPARATION_VISION_LIMIT,
-  FLOCKING_SEPARATION_BORDER_LIMIT,
 } from '../CONFIGURATION';
+import { Behavior, World } from '../lulas';
+import {
+  multiplyVectors,
+  normalize,
+  subtractVectors,
+  sumVectorList,
+  sumVectors,
+  Vector,
+  vector,
+} from '../vector';
 
 export const flocking = requireNeighbors(flockingCore);
 export const alignementBehavior = requireNeighbors(alignement);
