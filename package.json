@@ -5,7 +5,7 @@
   "description": "stuff",
   "scripts": {
     "test": "jest",
-    "test-with-coverage": "jest --coverage",
+    "test-with-coverage": "jest --coverage --collectCoverageFrom='src/**/*.ts'",
     "coverage": "npm run test-with-coverage",
     "start": "npm run webpack-dev-server",
     "build": "npm run webpack -- --env.mode production",
