@@ -7,6 +7,7 @@ import {
   FLOCKING_SEPARATION_BORDER_LIMIT,
   FLOCKING_SEPARATION_FACTOR,
   FLOCKING_SEPARATION_VISION_LIMIT,
+  MAX_FORCE,
 } from '../CONFIGURATION';
 import { Behavior, World } from '../lulas';
 import {
@@ -95,6 +96,6 @@ function requireNeighbors(
     }
 
     const force = fn(cell, neighbors);
-    applyForce(cell, force);
+    applyForce(cell, normalize(force, MAX_FORCE));
   };
 }

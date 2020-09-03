@@ -1,6 +1,6 @@
 export const DEFAULT_RADIUS = 5;
-export const MAX_SPEED = 2;
-export const MAX_FORCE = 0.5;
+export const MAX_SPEED = 10;
+export const MAX_FORCE = 0.05;
 
 // Multiplier for cell's radius
 export const DEFAULT_VISION_FACTOR = 10;

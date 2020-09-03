@@ -1,3 +1,4 @@
+import { MAX_FORCE } from './../CONFIGURATION';
 import { applyForce, Cell, cellDistance } from '../cell';
 import {
   FLOCKING_ALIGMENENT_FACTOR,
@@ -13,6 +14,7 @@ import {
   sumVectors,
   vector,
   Vector,
+  normalize,
 } from '../vector';
 
 export const flocking = requireNeighbors(flockingCore);
@@ -67,6 +69,6 @@ function requireNeighbors(
     }
 
     const force = fn(cell, neighbors);
-    applyForce(cell, force);
+    applyForce(cell, normalize(force, MAX_FORCE));
   };
 }
