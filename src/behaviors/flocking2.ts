@@ -1,6 +1,6 @@
 // Built with https://www.youtube.com/watch?v=mhjuuHl6qHM
 
-import { Cell, cellDistance } from '../cell';
+import { Cell, cellDistance, applyForce } from '../cell';
 import {
   FLOCKING_ALIGMENENT_FACTOR,
   FLOCKING_COHESION_FACTOR,
@@ -94,9 +94,7 @@ function requireNeighbors(
       return;
     }
 
-    const effect = fn(cell, neighbors);
-
-    cell.velocity.x += effect.x;
-    cell.velocity.y += effect.y;
+    const force = fn(cell, neighbors);
+    applyForce(cell, force);
   };
 }

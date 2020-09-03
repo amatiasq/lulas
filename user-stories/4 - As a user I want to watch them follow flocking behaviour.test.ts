@@ -1,4 +1,4 @@
-import { equal, notEqual } from 'assert';
+import { equal, notEqual, ok } from 'assert';
 
 import {
   alignementBehavior as alignementBehavior1,
@@ -12,7 +12,7 @@ import {
 } from '../src/behaviors/flocking2';
 import { move } from '../src/behaviors/move';
 import { createCell } from '../src/cell';
-import { getAngle, sumVectors, vector, vectorAxis } from '../src/vector';
+import { getAngle, sumVectors, vector, isZero } from '../src/vector';
 import { assertBetweenOrEqual } from '../test/assertions';
 import { setFilename, test } from '../test/index';
 import { createTestLulas } from '../test/test-duplicates';
@@ -23,35 +23,19 @@ setFilename(__dirname, __filename);
 
 [
   {
-    name: 'flocking',
+    name: 'flocking.ts',
     alignementBehavior: alignementBehavior1,
     cohesionBehavior: cohesionBehavior1,
     separationBehavior: separationBehavior1,
   },
   {
-    name: 'flocking2',
+    name: 'flocking2.ts',
     alignementBehavior: alignementBehavior2,
     cohesionBehavior: cohesionBehavior2,
     separationBehavior: separationBehavior2,
   },
 ].forEach(
   ({ name, alignementBehavior, cohesionBehavior, separationBehavior }) => {
-    test(`${name} - Each boid velocity should be independent`, () => {
-      const lulas = createTestLulas({
-        behaviors: [move],
-        cells: [
-          createCell({ position: vector(10), velocity: vector(-1, -1) }),
-          createCell({ position: vector(20), velocity: vector(1) }),
-        ],
-      });
-
-      lulas.step();
-      const [first, second] = lulas.cells;
-
-      vectorAxis((axis) => equal(first.velocity[axis], -1));
-      vectorAxis((axis) => equal(second.velocity[axis], 1));
-    });
-
     test(
       `${name} - A boid should align to it's neighbors`,
       [
@@ -67,8 +51,14 @@ setFilename(__dirname, __filename);
         const lulas = createTestLulas({
           behaviors: [alignementBehavior],
           cells: [
-            createCell({ position: vector(10), velocity: { ...targetVel } }),
-            createCell({ position: vector(20), velocity: { ...neighborVel } }),
+            createCell({
+              position: vector(10),
+              acceleration: { ...targetVel },
+            }),
+            createCell({
+              position: vector(20),
+              velocity: { ...neighborVel },
+            }),
           ],
         });
 
@@ -78,9 +68,12 @@ setFilename(__dirname, __filename);
         lulas.step();
         const sut = lulas.cells[0];
 
-        const angleAfter = getAngle(sut.velocity);
-        notEqual(angleAfter, angleBefore);
-        assertBetweenOrEqual(angleAfter, angleBefore, neighborAngle);
+        ok(!isZero(sut.acceleration));
+        assertBetweenOrEqual(
+          getAngle(sut.acceleration),
+          angleBefore,
+          neighborAngle,
+        );
       },
     );
 
@@ -100,21 +93,18 @@ setFilename(__dirname, __filename);
           cells: [
             createCell({
               position: vector(0),
-              velocity: vector(0),
+              acceleration: vector(0),
               vision: 50,
             }),
-            createCell({ position: { ...pos }, velocity: vector(0) }),
+            createCell({ position: { ...pos }, acceleration: vector(0) }),
           ],
         });
 
         lulas.step();
 
         const sut = lulas.cells[0];
-        const angleBefore = 0;
-        const angleAfter = getAngle(sut.velocity);
-
-        notEqual(angleAfter, angleBefore);
-        assertBetweenOrEqual(angleAfter, angleBefore, getAngle(pos));
+        ok(!isZero(sut.acceleration));
+        assertBetweenOrEqual(getAngle(sut.acceleration), 0, getAngle(pos));
       },
     );
 
@@ -137,12 +127,11 @@ setFilename(__dirname, __filename);
           cells: [
             createCell({
               position: cellPosition,
-              velocity: vector(0),
+              acceleration: vector(0),
               vision: 50,
             }),
             createCell({
               position: sumVectors(cellPosition, pos),
-              velocity: vector(0),
             }),
           ],
         });
@@ -151,7 +140,7 @@ setFilename(__dirname, __filename);
 
         const sut = lulas.cells[0];
         const angleBefore = 0;
-        const angleAfter = getAngle(sut.velocity);
+        const angleAfter = getAngle(sut.acceleration);
         let separationAngle = getAngle(pos) + 180;
 
         if (separationAngle > 180) {

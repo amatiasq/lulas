@@ -8,8 +8,6 @@ export function move(cell: Cell) {
     limitVector(cell.acceleration, MAX_FORCE),
   );
 
-  // limitVector(a, MAX_SPEED);
-
   cell.acceleration = vector(0);
 
   cell.position.x += cell.velocity.x;

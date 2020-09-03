@@ -2,7 +2,7 @@
 
 Done with TDD
 
-### Quiero ver ESTO SON LOS TEST! ZAPALLO!
+### Quiero ver (ESTO SON LOS TEST! ZAPALLO!)
 
 - Células que puedan comerse entre ellas
   - Grande se come a pequeña y punto
