@@ -8,9 +8,9 @@ export const DEFAULT_VISION_FACTOR = 10;
 // Friction when two cells collide
 export const COLLISION_FRICTION = 0.5;
 
-export const FLOCKING_ALIGMENENT_FACTOR = 0.05;
-export const FLOCKING_COHESION_FACTOR = 0.001;
-export const FLOCKING_SEPARATION_FACTOR = 0.005;
+export const FLOCKING_ALIGMENENT_FACTOR = 0.5;
+export const FLOCKING_COHESION_FACTOR = 0.1;
+export const FLOCKING_SEPARATION_FACTOR = 200;
 
 // Multiplier over cell's vision
 export const FLOCKING_SEPARATION_VISION_LIMIT = 0.5;

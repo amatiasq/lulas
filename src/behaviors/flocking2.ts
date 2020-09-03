@@ -1,23 +1,20 @@
-// Built with https://www.youtube.com/watch?v=mhjuuHl6qHM
-
-import { Cell, cellDistance, applyForce } from '../cell';
+import { MAX_FORCE } from './../CONFIGURATION';
+import { applyForce, Cell, cellDistance } from '../cell';
 import {
   FLOCKING_ALIGMENENT_FACTOR,
   FLOCKING_COHESION_FACTOR,
-  FLOCKING_SEPARATION_BORDER_LIMIT,
   FLOCKING_SEPARATION_FACTOR,
   FLOCKING_SEPARATION_VISION_LIMIT,
-  MAX_FORCE,
 } from '../CONFIGURATION';
 import { Behavior, World } from '../lulas';
 import {
   multiplyVectors,
-  normalize,
   subtractVectors,
   sumVectorList,
   sumVectors,
-  Vector,
   vector,
+  Vector,
+  normalize,
 } from '../vector';
 
 export const flocking = requireNeighbors(flockingCore);
@@ -34,55 +31,31 @@ function flockingCore(cell: Cell, neighbors: Cell[]) {
 }
 
 function alignement(cell: Cell, neighbors: Cell[]) {
-  const sum = neighbors.reduce(
-    (sum, x) => sumVectors(sum, x.velocity),
-    vector(0),
-  );
-
+  const sum = neighbors.map((x) => x.velocity).reduce(sumVectors, vector(0));
   const average = multiplyVectors(sum, 1 / neighbors.length);
-  const desired = normalize(average);
-  const steering = subtractVectors(desired, cell.velocity);
-  return multiplyVectors(steering, FLOCKING_ALIGMENENT_FACTOR);
+  const relative = subtractVectors(average, cell.velocity);
+  return multiplyVectors(relative, FLOCKING_ALIGMENENT_FACTOR);
 }
 
 function cohesion(cell: Cell, neighbors: Cell[]) {
-  const sum = neighbors.reduce(
-    (sum, x) => sumVectors(sum, x.position),
-    vector(0),
-  );
-
+  const sum = neighbors.map((x) => x.position).reduce(sumVectors, vector(0));
   const average = multiplyVectors(sum, 1 / neighbors.length);
-  const desired = subtractVectors(average, cell.position);
-  const steering = subtractVectors(desired, cell.velocity);
-  return multiplyVectors(steering, FLOCKING_COHESION_FACTOR);
+  const relative = subtractVectors(average, cell.position);
+  return multiplyVectors(relative, FLOCKING_COHESION_FACTOR);
 }
 
 function separation(cell: Cell, neighbors: Cell[]) {
   const limit = cell.vision * FLOCKING_SEPARATION_VISION_LIMIT;
-  let count = 0;
+  const closer = neighbors.filter((x) => cellDistance(cell, x) < limit);
 
-  const sum = neighbors.reduce((sum, x) => {
-    const distance = cellDistance(cell, x);
-    const borderDistance = distance - cell.radius - x.radius;
-
-    if (distance > limit) {
-      return sum;
-    }
-
-    count++;
-    const diff = subtractVectors(cell.position, x.position);
-    const operator = Math.max(borderDistance, FLOCKING_SEPARATION_BORDER_LIMIT);
-    const desired = multiplyVectors(diff, 1 / operator);
-    return sumVectors(sum, desired);
-  }, vector(0));
-
-  if (count === 0) {
+  if (!closer.length) {
     return vector(0);
   }
 
-  const average = multiplyVectors(sum, 1 / count);
-  const steerign = subtractVectors(average, cell.velocity);
-  return multiplyVectors(steerign, FLOCKING_SEPARATION_FACTOR);
+  const sum = closer.map((x) => x.position).reduce(sumVectors, vector(0));
+  const average = multiplyVectors(sum, 1 / closer.length);
+  const relative = subtractVectors(average, cell.position);
+  return multiplyVectors(relative, FLOCKING_SEPARATION_FACTOR * -1);
 }
 
 function requireNeighbors(
