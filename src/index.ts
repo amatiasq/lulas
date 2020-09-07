@@ -12,6 +12,7 @@ import { randomColor } from './color';
 import lulas from './lulas';
 import { random } from './math';
 import { vector } from './vector';
+import { KeyboardKey, onKeyPress } from './user';
 
 (async () => {
   setStyles();
@@ -43,15 +44,28 @@ function start() {
   const game = lulas({
     canvas,
     cells: array(50, createRandomCell),
-    behaviors: [flocking, move, solidBody, roundMap],
+    behaviors: [
+      // List behaviors
+      // attractor(vector(500)),
+      flocking,
+      move,
+      solidBody,
+      roundMap,
+    ],
   });
 
   console.log('Initial state');
   logState();
 
+  let isPaused = false;
+  onKeyPress(KeyboardKey.SPACE, () => (isPaused = !isPaused));
+
   game.render();
   requestAnimationFrame(function frame() {
-    game.step();
+    if (!isPaused) {
+      game.step();
+    }
+
     game.render();
     requestAnimationFrame(frame);
   });

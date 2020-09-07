@@ -1,7 +1,6 @@
-import { MAX_SPEED } from './../CONFIGURATION';
 import { Cell } from '../cell';
-import { MAX_FORCE } from '../CONFIGURATION';
-import { limitVector, sumVectors, vector, isZero } from '../vector';
+import { MAX_FORCE, MAX_SPEED } from '../CONFIGURATION';
+import { isZero, limitVector, sumVectors, vector } from '../vector';
 
 export function move(cell: Cell) {
   if (!isZero(cell.acceleration)) {
