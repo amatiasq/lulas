@@ -11,7 +11,7 @@ export function randomColor() {
   });
 }
 
-export function bajarColor(color: Color, percent: number) {
+export function lowerColor(color: Color, percent: number) {
   const rgba = toRGBA(color);
   rgba.r *= percent;
   rgba.g *= percent;

@@ -1,5 +1,9 @@
-import { bajarColor, Color } from './color';
-import { DEFAULT_RADIUS, DEFAULT_VISION_FACTOR } from './CONFIGURATION';
+import { lowerColor, Color } from './color';
+import {
+  DEFAULT_RADIUS,
+  DEFAULT_VISION_FACTOR,
+  MAX_FORCE,
+} from './CONFIGURATION';
 import { World } from './lulas';
 import {
   logVector,
@@ -8,6 +12,7 @@ import {
   subtractVectors,
   Vector,
   vector,
+  limitVector,
 } from './vector';
 
 const ANGLE_CORRECTION = Math.PI / 4;
@@ -49,6 +54,11 @@ export function applyForce(cell: Cell, force: Vector) {
   cell.acceleration.y += force.y;
 }
 
+export function steer(cell: Cell, direction: Vector) {
+  const steering = subtractVectors(direction, cell.velocity);
+  applyForce(cell, limitVector(steering, MAX_FORCE));
+}
+
 export function cellDistance(left: Cell, right: Cell) {
   return magnitude(subtractVectors(left.position, right.position));
 }
@@ -83,18 +93,28 @@ function renderAt(
   cell: Cell,
   pos = cell.position,
 ) {
+  const withBeak = false;
+
   context.save();
   context.translate(pos.x, pos.y);
 
   context.rotate(radians(cell.velocity) + ANGLE_CORRECTION);
   context.beginPath();
-  context.arc(0, 0, cell.radius, 0, Math.PI * 1.5);
-  context.lineTo(cell.radius, -cell.radius);
+  context.arc(0, 0, cell.radius, 0, Math.PI * (withBeak ? 1.5 : 2));
+
+  if (withBeak) {
+    context.lineTo(cell.radius, -cell.radius);
+  }
+
   // context.lineTo(cell.radius, 0);
   context.closePath();
   context.lineWidth = 5;
-  context.strokeStyle = cell.color;
-  context.fillStyle = bajarColor(cell.color, 0.5);
+
+  // ESTA LINEA LA PUSO EL FACU
+  context.strokeStyle = lowerColor('#0000ff' as Color, 0.5);
+
+  // context.strokeStyle = lowerColor(cell.color, 0.7);
+  context.fillStyle = lowerColor(cell.color, 0.5);
   context.stroke();
   context.fill();
 
