@@ -1,6 +1,6 @@
-const uniq = (x) => Array.from(new Set(x));
+const uniq = x => Array.from(new Set(x));
 const functions = {
-  bool: (x) => x > 0.5,
+  bool: x => x > 0.5,
   cap: (x, a, b) => {
     const min = a < b ? a : b;
     const max = a < b ? b : a;
@@ -8,32 +8,37 @@ const functions = {
   },
 };
 
-function parse(x) {
-  const lines = x
+function getGenes(dsl) {
+  const match = dsl.match(/\b([A-Z](\d+)?)+\b/g);
+  const list = uniq(match);
+  const withValues = list.map(x => [x, 1]);
+  return Object.fromEntries(withValues);
+}
+
+function parse(dsl) {
+  const lines = dsl
     .split('\n')
-    .map((x) => x.trim())
+    .map(x => x.trim())
     .filter(Boolean);
 
-  const properties = lines.map((line) => {
+  const properties = lines.map(line => {
     const [, prop, value] = line.match(/(\w+)\s*=\s*(.+)/);
     return { prop, value };
   });
 
-  const values = properties.map((x) => x.value).join('\n');
-  const genes = Object.fromEntries(
-    uniq(values.match(/([A-Z](\d+)?)+/g)).map((x) => [x, 1]),
+  return Object.fromEntries(
+    properties.map(x => [x.prop, createFunction(x.value)]),
   );
+}
 
-  return {
-    genes,
-    properties: Object.fromEntries(
-      properties.map((x) => [x.prop, createFunction(x.value)(genes)]),
-    ),
-  };
+function execute(props, genes) {
+  const entries = Object.entries(props);
+  entries.forEach(x => (x[1] = x[1](genes)));
+  return Object.fromEntries(entries);
 }
 
 function createFunction(code) {
-  const helpers = Object.entries(functions).map((x) => `const ${x.join('=')}`);
+  const helpers = Object.entries(functions).map(x => `const ${x.join('=')}`);
 
   const body = `
     ${helpers.join(';')}
@@ -45,10 +50,14 @@ function createFunction(code) {
   return new Function('genes', body);
 }
 
-console.log(
-  parse(`
-    canReproduce = bool(ABC)
-    velocity = A27 ? A27 * 0.2 : B * 0.1
-    turnSpeed = cap(AC, 0, 100)
-`),
-);
+const dsl = `
+  canReproduce = bool(ABC)
+  velocity = A27 ? A27 * 0.2 : B * 0.1
+  turnSpeed = cap(AC, 0, 100)
+`;
+
+const props = parse(dsl);
+const genes = getGenes(dsl);
+const result = execute(props, genes);
+
+console.log({ genes, result });
