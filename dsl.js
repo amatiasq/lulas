@@ -7,6 +7,7 @@ const functions = {
     return x * (max - min) + min;
   },
 };
+const helpers = Object.entries(functions).map(x => `const ${x.join('=')}`);
 
 function getGenes(dsl) {
   const match = dsl.match(/\b([A-Z](\d+)?)+\b/g);
@@ -38,8 +39,6 @@ function execute(props, genes) {
 }
 
 function createFunction(code) {
-  const helpers = Object.entries(functions).map(x => `const ${x.join('=')}`);
-
   const body = `
     ${helpers.join(';')}
     with (genes) {
