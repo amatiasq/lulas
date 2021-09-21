@@ -130,9 +130,7 @@ function generateIndividuals(geneDefinition, number = 1) {
     geneDefinition.forEach(genePool => {
       for (let j = 0; j < 2; j++) {
         const winner = genePool[getRandomInt(0, genePool.length)];
-
-        individual[`g${j + 1}`].genes[winner[1] + winner[2]] = winner;
-        individual[`g${j + 1}`].genesGlobal[winner[1]] = winner;
+        assignGene(individual, `g${j + 1}`, winner);
       }
     });
 
