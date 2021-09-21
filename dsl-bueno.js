@@ -3,30 +3,17 @@ function getRandomInt(min, max) {
 }
 
 const geneDefinition = [
-  [
-    'DA1dsaDF0',
-    'dA2dffds1',
-  ],
-  [
-    'DB1dfdafbv',
-    'dB2dfsaf23',
-    'DB3avbgh44'
-  ],
-  [
-    'DC1dfas456',
-    'dC2fadf963'
-  ],
-  [
-    'dD1fadsfas',
-    'DD2324jk23',
-  ]
+  ['DA1dsaDF0', 'dA2dffds1'],
+  ['DB1dfdafbv', 'dB2dfsaf23', 'DB3avbgh44'],
+  ['DC1dfas456', 'dC2fadf963'],
+  ['dD1fadsfas', 'DD2324jk23'],
 ];
 
 const dslDefinition = {
   canReproduce: 'B A1',
   velocity: 'N 10,100 C D A2 B14',
-  turnSpeed: 'N -10,10 A B2 C1 D'
-}
+  turnSpeed: 'N -10,10 A B2 C1 D',
+};
 
 for (let i = 0; i < 25; i++) {
   const [i1, i2] = generateIndividuals(geneDefinition, 2);
@@ -34,7 +21,6 @@ for (let i = 0; i < 25; i++) {
   const geneticPhoto = getGeneticPhoto(child);
   console.log(computeIndividual(geneticPhoto, dslDefinition));
 }
-
 
 function hashReduce(hash, min, max) {
   let b = 0;
@@ -60,15 +46,13 @@ function getNumberFromString(string, min, max) {
   return hashReduce(hash, min, max);
 }
 
-
-
 function getGeneticPhoto({ g1, g2 }) {
   const res = {
     genesGlobal: {},
-    genes: {}
+    genes: {},
   };
 
-  Object.keys(g1.genesGlobal).forEach((genSlot) => {
+  Object.keys(g1.genesGlobal).forEach(genSlot => {
     const gen1 = g1.genesGlobal[genSlot];
     const gen2 = g2.genesGlobal[genSlot];
 
@@ -88,15 +72,15 @@ function reproduce(i1, i2) {
   const res = {
     g1: {
       genes: {},
-      genesGlobal: {}
+      genesGlobal: {},
     },
     g2: {
       genes: {},
-      genesGlobal: {}
-    }
+      genesGlobal: {},
+    },
   };
 
-  Object.keys(i1.g1.genesGlobal).forEach((geneSlot) => {
+  Object.keys(i1.g1.genesGlobal).forEach(geneSlot => {
     // A
     const winner = pickRandomGene(i1, geneSlot);
     assignGene(res, 'g1', winner);
@@ -126,12 +110,12 @@ function generateIndividuals(geneDefinition, number = 1) {
     const individual = {
       g1: {
         genes: {},
-        genesGlobal: {}
+        genesGlobal: {},
       },
       g2: {
         genes: {},
-        genesGlobal: {}
-      }
+        genesGlobal: {},
+      },
     };
 
     geneDefinition.forEach(genePool => {
@@ -165,14 +149,17 @@ function computeIndividual(genes, dslDefinition) {
       }
 
       case 'N': {
-        const [min, max] = s[1].split(',').map(a => a.trim()).map((a) => {
-          return parseInt(a);
-        });
+        const [min, max] = s[1]
+          .split(',')
+          .map(a => a.trim())
+          .map(a => {
+            return parseInt(a);
+          });
 
         const string = generateString(2, s, genes);
 
         res = getNumberFromString(string, min, max);
-        break
+        break;
       }
     }
 
@@ -197,5 +184,3 @@ function generateString(start, s, g) {
 
   return string;
 }
-
-
