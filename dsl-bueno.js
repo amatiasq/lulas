@@ -2,12 +2,21 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min) + min);
 }
 
-const geneDefinition = [
-  ['DA1dsaDF0', 'dA2dffds1'],
-  ['DB1dfdafbv', 'dB2dfsaf23', 'DB3avbgh44'],
-  ['DC1dfas456', 'dC2fadf963'],
-  ['dD1fadsfas', 'DD2324jk23'],
-];
+// prettier-ignore
+const geneDefinition = [[
+  'DA1dsaDF0',
+  'dA2dffds1'
+], [
+  'DB1dfdafbv',
+  'dB2dfsaf23',
+  'DB3avbgh44'
+], [
+  'DC1dfas456',
+  'dC2fadf963'
+], [
+  'dD1fadsfas',
+  'DD2324jk23'
+]];
 
 const dslDefinition = {
   canReproduce: 'B A1',
@@ -152,9 +161,7 @@ function computeIndividual(genes, dslDefinition) {
         const [min, max] = s[1]
           .split(',')
           .map(a => a.trim())
-          .map(a => {
-            return parseInt(a);
-          });
+          .map(a => parseInt(a));
 
         const string = generateString(2, s, genes);
 
