@@ -1,0 +1,1 @@
+npx ts-node $(dirname $0)/main.ts
