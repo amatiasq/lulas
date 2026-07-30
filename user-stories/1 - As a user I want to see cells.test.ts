@@ -1,4 +1,4 @@
-import * as assert from 'assert';
+import assert from 'assert';
 
 import { CanvasRenderingContext2DEvent } from '../node_modules/jest-canvas-mock/types/index.d';
 import { createCell } from '../src/cell';

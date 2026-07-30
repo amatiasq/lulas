@@ -3,40 +3,33 @@ name: Deploy to Github Pages
 on:
   push:
     branches:
+      - main
       - master
 
 jobs:
   test-and-deploy:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v2.1.0
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: "12.x"
+          bun-version: latest
 
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - run: npm ci
-      - run: npm run test-with-coverage
-      - run: npm run build
-      - run: cp -r ./coverage/lcov-report dist/coverage
+      - run: bun install --frozen-lockfile
+      - run: bun run test-with-coverage
+      - run: bun run build
+      - run: cp -r ./coverage dist/coverage
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
 
       - name: Deploy coverage
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v4
         with:
           # token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
           file: ./coverage/clover.xml # optional

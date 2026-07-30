@@ -1,0 +1,8 @@
+#!/bin/bash -e
+# amq lulas build — typecheck (tsc --noEmit) then produce the Vite bundle in dist/.
+
+case "$1" in
+  -h|--help) echo "Usage: amq lulas build — typecheck + build the production bundle"; exit 0;;
+esac
+
+exec bun run build

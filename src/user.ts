@@ -1,5 +1,4 @@
 import { Vector, vector } from './vector';
-/* istanbul ignore file */
 
 const mouseDownListeners: Listener[] = [];
 const mouseUpListeners: Listener[] = [];

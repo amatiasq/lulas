@@ -89,7 +89,7 @@ function requireNeighbors(
   fn: (cell: Cell, neighbors: Cell[]) => Vector,
 ): Behavior {
   return (cell: Cell, { look }: World) => {
-    const neighbors = look(cell.vision);
+    const neighbors = look(cell, cell.vision);
 
     if (!neighbors.length) {
       return;

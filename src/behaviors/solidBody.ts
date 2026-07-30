@@ -4,7 +4,7 @@ import { World } from '../lulas';
 import { multiplyVectors, normalize, Vector } from '../vector';
 
 export function solidBody(cell: Cell, { look }: World) {
-  const collision = look(cell.radius * 2);
+  const collision = look(cell, cell.radius * 2);
 
   for (let i = 0; i < collision.length; i++) {
     const other = collision[i];

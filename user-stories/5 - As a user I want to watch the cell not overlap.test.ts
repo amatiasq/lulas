@@ -1,4 +1,4 @@
-import * as assert from 'assert';
+import assert from 'assert';
 
 import { solidBody } from '../src/behaviors/solidBody';
 import { createCell } from '../src/cell';

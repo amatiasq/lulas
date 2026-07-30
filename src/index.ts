@@ -1,8 +1,5 @@
 /* istanbul ignore file */
 
-import '../test/user-stories';
-
-import { runTests } from '../test/index';
 import { flocking } from './behaviors/flocking';
 import { move } from './behaviors/move';
 import { roundMap } from './behaviors/roundMap';
@@ -14,13 +11,8 @@ import { random } from './math';
 import { vector } from './vector';
 import { KeyboardKey, onKeyPress } from './user';
 
-(async () => {
-  setStyles();
-  await runTests({
-    background: 'black',
-  });
-  start();
-})();
+setStyles();
+start();
 
 setTimeout(() => {
   document.body.style.backgroundColor = 'black';

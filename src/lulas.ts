@@ -3,7 +3,7 @@ import { Vector } from './vector';
 
 export interface World {
   size: Vector;
-  look: (radius: number) => Cell[];
+  look: (cell: Cell, radius: number) => Cell[];
 }
 
 export type Behavior = (cell: Cell, world: World) => void;
@@ -21,12 +21,9 @@ export function lulas({
   behaviors,
   worldSize = { x: canvas.width, y: canvas.height },
 }: LulasConfig) {
-  let currentCell: Cell | null = null;
-  const world = {
+  const world: World = {
     size: worldSize,
-    look(radius: number) {
-      return look(currentCell!, radius);
-    },
+    look,
   };
 
   const context = canvas.getContext('2d')!;
@@ -39,7 +36,6 @@ export function lulas({
     step() {
       cells = cells.map((x) => {
         const cell = { ...x };
-        currentCell = x;
         behaviors.forEach((b) => b(cell, world));
         return cell;
       });
@@ -53,8 +49,10 @@ export function lulas({
   };
 
   function look(target: Cell, radius: number): Cell[] {
+    // Compare by id: `target` is the mid-step copy, never identity-equal to the
+    // originals still in `cells`.
     return cells.filter(
-      (x) => x !== target && cellDistance(target, x) < radius,
+      (x) => x.id !== target.id && cellDistance(target, x) < radius,
     );
   }
 }
