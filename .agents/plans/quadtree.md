@@ -2,7 +2,7 @@
 
 **Status:** Prerequisites done, lulas integration NOT started (deferred — not
 executing today). The library is imported and live at `mono/npm/quadtree` as
-`@amatiasq/quadtree` (via `npm-libs.md`): it builds, its 66 tests pass. The root
+`@amatiasq/quadtree` (via el decision doc de `npm/`): it builds, its 66 tests pass. The root
 AGENTS.md `npm/` exception is in place. **Steps 1–2 are complete.** Remaining is
 the lulas-side work — Steps 3–5: make lulas consume the package, rewrite
 `look()`, add the `push-to-lulas` mirror rewrite, verify.
@@ -75,12 +75,14 @@ The mirror still works because lulas imports `@amatiasq/quadtree` by name either
 way — only `package.json` differs between the mono checkout and the standalone
 repo, and `push-to-lulas` rewrites it (Step 3).
 
-`workspace:*` is Bun/pnpm/yarn only (not npm). On publish, Bun rewrites a lib's
-own `workspace:*` deps to real versions in the tarball, so a published
-`@amatiasq/quadtree` depending on `@amatiasq/util` installs fine externally.
+`workspace:^` is Bun/pnpm/yarn only (not npm). On publish, Bun rewrites a lib's
+own workspace deps to real ranges in the tarball, so the published
+`@amatiasq/quadtree` — which depends on `@amatiasq/geometry`, not on
+`@amatiasq/util`; that dependency was declared but never imported and has been
+dropped — installs fine externally. Verified by installing the published tarball.
 
 ## Step 1 — `mono/npm/` workspace + quadtree imported ✅ DONE
-Done via [`mono/.agents/plans/npm-libs.md`](../../../.agents/plans/npm-libs.md):
+Done via [`mono/.agents/decisions/2026-07-30 npm-shared-libraries.md`](../../../.agents/decisions/2026-07-30%20npm-shared-libraries.md):
 `npm/` is a Bun workspace, `@amatiasq/quadtree` lives at `mono/npm/quadtree`
 (ESM + `.d.ts`, raw `.ts` via `bun` condition, 66 tests green). See the "library
 exists" section above for the reconstruction notes.
