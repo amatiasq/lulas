@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">92.01% </span>
+                <span class="strong">86.48% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>265/288</span>
+                <span class='fraction'>224/259</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">74.15% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>51/68</span>
+                <span class='fraction'>66/89</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.85% </span>
+                <span class="strong">86.25% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>56/66</span>
+                <span class='fraction'>69/80</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">91.89% </span>
+                <span class="strong">86.88% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>238/259</span>
+                <span class='fraction'>212/244</span>
             </div>
         
             
@@ -54,6 +54,12 @@
         <p class="quiet">
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
     </div>
     <div class='status-line high'></div>
     <div class="pad1">
@@ -74,32 +80,47 @@
 </thead>
 <tbody><tr>
 	<td class="file high" data-value="src"><a href="src/index.html">src</a></td>
-	<td data-value="92" class="pic high">
-	<div class="chart"><div class="cover-fill" style="width: 92%"></div><div class="cover-empty" style="width: 8%"></div></div>
+	<td data-value="89.42" class="pic high">
+	<div class="chart"><div class="cover-fill" style="width: 89%"></div><div class="cover-empty" style="width: 11%"></div></div>
 	</td>
-	<td data-value="92" class="pct high">92%</td>
-	<td data-value="150" class="abs high">138/150</td>
-	<td data-value="73.68" class="pct medium">73.68%</td>
-	<td data-value="38" class="abs medium">28/38</td>
-	<td data-value="80.49" class="pct high">80.49%</td>
-	<td data-value="41" class="abs high">33/41</td>
-	<td data-value="92.37" class="pct high">92.37%</td>
-	<td data-value="131" class="abs high">121/131</td>
+	<td data-value="89.42" class="pct high">89.42%</td>
+	<td data-value="104" class="abs high">93/104</td>
+	<td data-value="76.31" class="pct medium">76.31%</td>
+	<td data-value="38" class="abs medium">29/38</td>
+	<td data-value="82.92" class="pct high">82.92%</td>
+	<td data-value="41" class="abs high">34/41</td>
+	<td data-value="90.72" class="pct high">90.72%</td>
+	<td data-value="97" class="abs high">88/97</td>
 	</tr>
 
 <tr>
 	<td class="file high" data-value="src/behaviors"><a href="src/behaviors/index.html">src/behaviors</a></td>
-	<td data-value="92.03" class="pic high">
-	<div class="chart"><div class="cover-fill" style="width: 92%"></div><div class="cover-empty" style="width: 8%"></div></div>
+	<td data-value="90.67" class="pic high">
+	<div class="chart"><div class="cover-fill" style="width: 90%"></div><div class="cover-empty" style="width: 10%"></div></div>
 	</td>
-	<td data-value="92.03" class="pct high">92.03%</td>
-	<td data-value="138" class="abs high">127/138</td>
-	<td data-value="76.67" class="pct medium">76.67%</td>
+	<td data-value="90.67" class="pct high">90.67%</td>
+	<td data-value="118" class="abs high">107/118</td>
+	<td data-value="76.66" class="pct medium">76.66%</td>
 	<td data-value="30" class="abs medium">23/30</td>
-	<td data-value="92" class="pct high">92%</td>
-	<td data-value="25" class="abs high">23/25</td>
-	<td data-value="91.41" class="pct high">91.41%</td>
-	<td data-value="128" class="abs high">117/128</td>
+	<td data-value="92.59" class="pct high">92.59%</td>
+	<td data-value="27" class="abs high">25/27</td>
+	<td data-value="90.17" class="pct high">90.17%</td>
+	<td data-value="112" class="abs high">101/112</td>
+	</tr>
+
+<tr>
+	<td class="file medium" data-value="test"><a href="test/index.html">test</a></td>
+	<td data-value="64.86" class="pic medium">
+	<div class="chart"><div class="cover-fill" style="width: 64%"></div><div class="cover-empty" style="width: 36%"></div></div>
+	</td>
+	<td data-value="64.86" class="pct medium">64.86%</td>
+	<td data-value="37" class="abs medium">24/37</td>
+	<td data-value="66.66" class="pct medium">66.66%</td>
+	<td data-value="21" class="abs medium">14/21</td>
+	<td data-value="83.33" class="pct high">83.33%</td>
+	<td data-value="12" class="abs high">10/12</td>
+	<td data-value="65.71" class="pct medium">65.71%</td>
+	<td data-value="35" class="abs medium">23/35</td>
 	</tr>
 
 </tbody>
@@ -109,10 +130,9 @@
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
-                <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu Sep 03 2020 23:33:31 GMT+0000 (Coordinated Universal Time)
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-07-30T17:28:16.872Z
             </div>
-        </div>
         <script src="prettify.js"></script>
         <script>
             window.onload = function () {
