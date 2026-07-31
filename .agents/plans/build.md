@@ -150,7 +150,7 @@ Required by the root `AGENTS.md`: a web project with no server state works
 offline. This one is pure code and canvas, so it qualifies with nothing to think
 about.
 
-Copy `sanremo/scripts/build-sw.ts` — it walks `dist/`, precaches everything, and
+Copy `sanremo/amq/amq-sanremo-build-sw` — it walks `dist/`, precaches everything, and
 names the cache from a hash of the file list so a deploy evicts the old one — and
 register it behind `import.meta.env.PROD` like `sanremo/src/main.ts` does. Do not
 reach for VitePWA/Workbox; those are for the projects that sync data.
