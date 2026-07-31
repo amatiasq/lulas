@@ -1,9 +1,0 @@
-#!/bin/bash -e
-# amq lulas test — run the Vitest suite once. Extra args pass through to vitest,
-# e.g. `amq lulas test --watch` or `amq lulas test cell`.
-
-case "$1" in
-  -h|--help) echo "Usage: amq lulas test [vitest args...] — run the test suite"; exit 0;;
-esac
-
-exec bun run test "$@"

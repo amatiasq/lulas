@@ -1,0 +1,24 @@
+{
+  "include": [ "src/**/*.ts" ],
+  "exclude": [ "node_modules" ],
+
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "experimentalDecorators": true,
+    "outDir": "out",
+
+    "module": "commonjs",
+    "target": "es2018",
+    "lib": [
+      "dom",
+      "es5",
+      "es2015",
+      "es2017",
+      "es2018"
+    ],
+
+    "plugins": [
+      { "name": "tslint-language-service" }
+    ]
+  }
+}

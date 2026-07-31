@@ -1,100 +1,203 @@
 # lulas — AGENTS.md
 
-A boids/flocking simulation: cells drift on a canvas, steer by flocking rules,
-collide as solid bodies, and wrap around the edges of a toroidal world. Built
-TDD-first (specs in `user-stories/`, run under Vitest). Read
-[`README.md`](README.md) (Spanish, the original spec) for intent; this file is
-the architecture and the things easy to break.
+Predator/prey ecosystem simulation: plants, herbivores, carnivores, size-based
+eating, mitosis, on a toroidal map. Human-facing spec and the narrative version:
+[`README.md`](README.md). This file is the same rules stated as things you can
+implement and test, plus the traps.
 
-## Architecture
+## Current state
 
-`src/lulas.ts` is the engine. `lulas(config)` returns `{ cells, step, render }`:
+**No implementation yet — but the recovery is done.** Three previous versions
+were found and are archived in [`recover/`](recover/): `js-2014`, `ts-2018`,
+`ts-2020`. Read [`recover/README.md`](recover/README.md) for the rule-by-rule
+scorecard and
+[`.agents/decisions/2026-08-01 recovery-outcome.md`](.agents/decisions/2026-08-01%20recovery-outcome.md)
+for what to do with them.
 
-- **`step()`** advances one tick: `cells.map(x => { cell = {...x}; behaviors
-  .forEach(b => b(cell, world)); return cell })`. Behaviors are pure-ish
-  functions `(cell, world) => void` that mutate the cell (apply forces, move,
-  wrap). They run **in array order per cell** — order matters (see invariants).
-- **`world.look(cell, radius)`** returns cells within `radius` of `cell`,
-  excluding it (by `id` — see invariant 1). Reads the previous-frame `cells`
-  array. O(n²); see [`.agents/plans/quadtree.md`](.agents/plans/quadtree.md).
-- **`render()`** draws each cell as a rotated arc, re-drawing near-edge cells on
-  the opposite side so the wrap looks seamless.
+The short version: **the ecosystem and the engine survived in different
+versions.** `js-2014` is the only one that is actually this simulation (plants,
+herbivores, carnivores, toroidal vision, correct mitosis) and it is the worst
+code. The TypeScript versions are far better structured but have no species at
+all — `setDietType()` is never called, so `canEat()` is always false and nothing
+ever eats anything.
 
-A **Cell** (`src/cell.ts`) is `{ id, color, position, velocity, acceleration,
-radius, vision }`. Forces accumulate in `acceleration`; `move` integrates it
-into `velocity` (capped at `MAX_SPEED`) then `position`, and zeroes it. `vision`
-= `radius * DEFAULT_VISION_FACTOR` — the flocking/collision look radius.
+So: **build fresh at this folder's root**, port the rules from `js-2014` and the
+architecture from `ts-2020`, and copy the toolchain from
+[`../flocking/`](../flocking/) (Bun + Vite + Vitest, TDD-first with specs in
+`user-stories/`) — same codebase's descendant, and already current.
 
-All the tuning knobs live in `src/CONFIGURATION.ts` (speeds, forces, flocking
-weights, collision friction). Vector math is in `src/vector.ts`; everything
-routes through `vectorAxis` (apply an op to both `x` and `y`).
+`recover/` is a **closed archive**: verbatim trees kept as evidence. Do not lint,
+format or upgrade them, and do not build on top of them in place.
 
-### Behaviors (`src/behaviors/`)
+## History, so the names make sense
 
-| behavior | effect |
+There have been several versions of this simulation, going back to 2014 (plain
+JS, Grunt/Karma), migrated to TypeScript around 2017. At some point the author
+restarted from scratch to make flocking behaviour easier to implement, and *that*
+rewrite kept the `lulas` name while the predator/prey code was left behind on
+branches.
+
+In 2026 the rewrite was renamed [`flocking/`](../flocking/) — what it actually
+is — and `lulas` returned to this, the original simulation. So:
+
+- **`flocking/`** — boids. Alignment, cohesion, separation. Live code.
+- **`lulas/`** — this. Plants, herbivores, carnivores, eating, mitosis. To recover.
+
+The standalone repo `amatiasq/lulas` still holds the old predator/prey code in
+its history. See the recovery plan for exact refs.
+
+## The invariants
+
+These are the things that are easy to get subtly wrong and expensive to debug,
+because none of them crash — they just make the simulation quietly wrong.
+
+### 1. Distance is toroidal, everywhere
+
+The map wraps on both axes. Every distance, every "is it in my vision", every
+"which is the nearest herbivore" must use the **shortest wrapped distance**, not
+`hypot(dx, dy)`.
+
+```
+dx = abs(a.x - b.x); if (dx > width  / 2) dx = width  - dx
+dy = abs(a.y - b.y); if (dy > height / 2) dy = height - dy
+```
+
+The direction vector has to wrap too, or a cell will chase the *long way round*
+toward prey that is actually just over the edge, and flee in the wrong direction.
+A cell 2px from the right edge must see across to the left edge. This is the
+single most likely thing to be missing in recovered code — check it first.
+
+### 2. Eating needs the right type *and* a bigger size
+
+Two predicates, both required. Do not collapse them into one.
+
+**Type — is it on my menu at all?**
+
+| eater | can eat |
 | --- | --- |
-| `flocking` | alignment + cohesion + separation, summed and applied as one force |
-| `move` | integrate acceleration → velocity → position; the mover |
-| `solidBody` | push overlapping cells apart + swap velocities (collision) |
-| `roundMap` | wrap position around world edges (toroidal) |
-| `bounceOnCorners` | reflect velocity at edges (alternative to `roundMap`) |
-| `attractor(point)` | steer toward a point (exists + tested; commented out in `index.ts`) |
-| `flocking2` | alternate flocking implementation (not wired in) |
+| herbivore | plants |
+| carnivore | herbivores; other carnivores (only when no herbivore is in range) |
 
-`src/index.ts` wires the live sim: `[flocking, move, solidBody, roundMap]`.
-Space pauses. It runs the test suite first via `runTests()`.
+Herbivores never eat herbivores. Carnivores never eat plants.
 
-## Easy to break
+**Size — strictly bigger.** Among cells, `a` eats `b` only if `a.size > b.size`.
+**Equal sizes do not eat.** Two identical cells may overlap, touch and separate
+with nothing happening. Any `>=` here becomes a coin-flip decided by iteration
+order, and the population dynamics change completely.
 
-1. **`step()` shallow-copies cells (`{...x}`), so nested vectors are shared.**
-   `position`/`velocity`/`acceleration` are the *same objects* on the old and
-   new cell. Behaviors that mutate a vector in place (`applyForce` does
-   `acceleration.x += …`; `solidBody` writes both cells' positions) therefore
-   also mutate the previous frame's cell. Known bug, fix planned —
-   [`.agents/plans/import-fixes.md`](.agents/plans/import-fixes.md) #1 (move to
-   a real double-buffer). Don't deep-copy piecemeal before reading that.
+**Fear is the same predicate, inverted.** A cell flees `x` exactly when `x` could
+eat it — `x`'s diet includes my type **and** `x.size > my.size`. Express it that
+way, as one function used by both the threat scan and the eat resolution, or the
+two will drift apart and cells will run from things that cannot touch them.
 
-2. **Behavior order is the physics.** Force-appliers (`flocking`, `attractor`,
-   `solidBody`) must run before `move` (which consumes acceleration), and
-   `roundMap`/`bounceOnCorners` must run after `move` (they correct the new
-   position). Reordering silently changes behaviour.
+That single rule produces all four cases, and it is worth checking a recovered
+implementation against each one:
 
-3. **`solidBody` double-counts collisions.** Runs per-cell but mutates both
-   members of a pair, so each pair resolves twice and non-deterministically.
-   Fix planned — `import-fixes.md` #3.
+- herbivore vs bigger herbivore → **no flee** (not on its menu)
+- herbivore vs bigger carnivore → **flee**
+- carnivore vs bigger herbivore → **no flee** (not on its menu)
+- carnivore vs bigger carnivore → **flee**
 
-## The test harness (`test/index.ts`)
+A size-only threat check passes the two "flee" cases and silently fails the two
+"no flee" ones: herbivores stampede from each other and carnivores dodge their
+own prey. It looks like bad tuning, not a bug.
 
-Specs live in `user-stories/*.test.ts` and import `test` from `test/index.ts`,
-**not** from Vitest. That wrapper is a thin shim over Vitest's global `test`,
-kept only for the **table-driven** signature `test(msg, rows[], run)` (Vitest
-has no native equivalent). `setFilename()` is a no-op kept so specs don't need
-editing; `isJestTesting` is a constant `true`.
+### 3. Herbivore priority: flee first
 
-Historically the same harness also ran the specs *in the browser* on page load
-(painting the body green/red) — the "the app is the test suite" gimmick. That
-was removed: Vitest is the only runner now, and `src/index.ts` just starts the
-sim. Don't reintroduce browser-side test running.
+A herbivore with both a plant in vision and a threat in vision goes for
+survival. This is a priority, not a blend — if you sum "toward plant" and "away
+from carnivore" as equal forces, a herbivore starves itself standing still
+between the two, or worse, drifts into the predator. Fleeing dominates while a
+threat is in range; foraging resumes when it is not.
 
-## Toolchain — landmines from the webpack→Vite migration
+### 4. Carnivore fallback order: herbivore, then carnivore
 
-Runs on **Bun + Vite 8 + Vitest 4 + TypeScript 7** (`bun.lock`; never npm).
-`amq lulas dev|test|build|check` (`check` mirrors `.github/workflows/ci.yml`).
+Nearest herbivore in `CARNIVORE_VISION_RANGE` wins. Only when there is none does
+a carnivore consider another carnivore — and then invariant 2 still applies, so
+it only goes for a *smaller* one.
 
-- **`assert` is a local shim** (`test/assert.ts`), aliased in `vite.config.ts`.
-  Do **not** re-add the npm `assert` package — its polyfill pulls in `process`,
-  which is undefined in the browser bundle and crashes every test on load.
-- **`__dirname`/`__filename`** come from Vite `define` (empty strings) +
-  `env.d.ts` ambient decls — a webpack `node`-shim relic the harness uses only
-  to derive a spec's display label. Empty is fine.
-- **`jest-canvas-mock`** wants a `jest` global; `test/setup.ts` aliases it to
-  `vi` before importing it. Vitest env is `jsdom`.
-- `build` is `tsc --noEmit && vite build` — typecheck then bundle.
+### 5. Eating is a transfer over time, and area is conserved
 
-## Deployment & the monorepo mirror
+Eating moves **area**, not radius. A 10 px² plant makes the eater 10 px² bigger.
+Convert through area (`area = π r²`), never add radii.
 
-lulas lives in the mono but mirrors to standalone **`amatiasq/lulas`**: the
-`push-to-lulas` workflow (mono `.github/workflows/`) replicates `lulas/` on every
-push via `amq mono push-subtree`. `lulas/.github/workflows/ci.yml` runs **only
-in the downstream repo** (GitHub Actions ignores non-root workflow dirs) —
-it builds and deploys to GitHub Pages. Changes here don't affect mono CI.
+It drains over several ticks (~5 for a big plant), so:
+- the prey shrinks as the predator grows, in the same step;
+- the transfer must survive the prey being finished off — clamp at zero and
+  remove;
+- something must handle the eater dying or splitting mid-meal.
+
+### 6. Mitosis halves the radius, which quarters the area
+
+At max size a cell splits. Each child gets **half the parent's radius**.
+
+That means the two children together hold **half** the parent's area, not all of
+it: `2 × π(r/2)² = πr²/2`. The loss is intentional — it is the energy sink that
+balances plants feeding the system. Do not "fix" it to conserve area; that
+removes the only brake on population growth and the sim runs away.
+
+Children leave in opposite directions. Any axis, but opposed, and far enough
+apart not to immediately re-collide.
+
+### 7. Movement costs area, and speed makes it cost more
+
+Every cell loses a little area on every tick it moves, scaled by how fast it is
+going (`movement energy factor`). It is small per tick and never stops.
+
+This is not decoration — it is the mechanism that makes the sim an ecosystem:
+
+- **no plants ⇒ herbivores shrink to nothing.** That is a testable property, and
+  a good first integration test: run with plant growth at zero and assert the
+  herbivore population reaches zero.
+- a carnivore that never catches anything starves the same way;
+- chasing is expensive, so a long hunt can cost more than the prey is worth.
+
+Whether the cost is linear or quadratic in speed changes the strategy space a
+lot (quadratic punishes sprinting and rewards patient predators). Pick one, put
+it behind the constant, and write down which you chose.
+
+Watch the interaction with **eating**: a cell losing area while draining a plant
+is fine, but the two must not fight over the same field in the same tick in a way
+that lets area go negative. Clamp at zero and remove the cell.
+
+### 8. Energy budget
+
+**One source: plants. Two sinks: mitosis and movement.** The entire behaviour of
+the simulation is the ratio between them, so if you add a third term of either
+kind (decay, starvation timers, spontaneous generation, a cost for being eaten)
+say so **here** — an undocumented term turns every tuning session into a guess.
+
+## Naming
+
+Use `HERBIVORE_*`, not `HERVIVORE_*`. The Spanish *herbívoro* leaks the wrong
+spelling into English identifiers, and old versions of this code have it as
+`hervivore` in filenames and constants. Normalise on the way in, and grep for
+both spellings when searching history.
+
+## The constants file
+
+**One file. Constants and nothing else.** No logic, no helper functions, no
+values computed from other modules — a flat list of named numbers, readable at a
+glance. `flocking/src/CONFIGURATION.ts` is the shape to copy.
+
+The tuning loop is "change a number, watch, change it again", dozens of times in
+a sitting. Anything else living in that file makes that loop worse, and a
+constant computed elsewhere means the value you read is not the value that runs.
+
+Required knobs:
+
+| constant | controls |
+| --- | --- |
+| `HERBIVORE_VISION_RANGE` | how far a herbivore sees plants and threats |
+| `CARNIVORE_VISION_RANGE` | how far a carnivore sees prey |
+| plant growth rate | the only energy input |
+| mitosis threshold | the size at which a cell splits |
+| movement energy factor | how much area speed costs per tick |
+| eat duration / max bite | ticks to drain a plant or a cell |
+
+## Deployment
+
+None yet. Nothing is mirrored out of this folder — the standalone repo
+`amatiasq/lulas` currently receives the *flocking* project's mirror history and
+is the source for recovery. Read `.agents/plans/recover.md` before changing any
+mirror wiring, so a sync doesn't overwrite what you are trying to recover.
