@@ -6,6 +6,13 @@ project**: the trees are verbatim, unformatted, un-upgraded. Do not lint or
 modernise them — read them, take what is right, and build the real thing at the
 project root.
 
+**Its dependency alerts are dismissed, not fixed.** These lockfiles are full of
+2014–2020 packages with known vulnerabilities, and that is correct: nothing here
+is ever installed, built, run or deployed. Dependabot's 328 alerts against this
+folder were dismissed as `not_used` on 2026-08-02. `.github/dependabot.yml`
+cannot prevent new ones — security updates are alert-driven, not config-driven —
+so dismiss any that appear rather than "fixing" the archive.
+
 ## Provenance
 
 Everything came out of one place. The force push the author remembered did not
