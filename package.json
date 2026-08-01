@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "build": "tsc --noEmit && vite build && ./amq/amq-lulas-build-sw",
+    "build": "tsc --noEmit && vite build && ./amq/amq-lulas-build-versions && ./amq/amq-lulas-build-sw",
     "preview": "vite preview",
     "test": "vitest run",
     "test-with-coverage": "vitest run --coverage",
@@ -18,6 +18,7 @@
   "devDependencies": {
     "@types/node": "^24.3.0",
     "@vitest/coverage-v8": "^4.1.10",
+    "esbuild": "^0.28.1",
     "jest-canvas-mock": "^2.5.8",
     "jsdom": "^29.1.1",
     "typescript": "^7.0.2",

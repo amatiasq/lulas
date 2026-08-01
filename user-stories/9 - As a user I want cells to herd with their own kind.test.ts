@@ -8,11 +8,11 @@ import { entity, TEST_WORLD } from '../test/test-duplicates';
 
 setFilename(__dirname, __filename);
 
-const { size } = TEST_WORLD;
+const { worldSize } = TEST_WORLD;
 const HERE = vector(500, 500);
 
 test('A cell on its own has nobody to herd with', () => {
-  ok(isZero(flock(entity('herbivore', HERE, 5), [], size)));
+  ok(isZero(flock(entity('herbivore', HERE, 5), [], worldSize)));
 });
 
 test('Only its own kind counts as a neighbour', () => {
@@ -20,7 +20,7 @@ test('Only its own kind counts as a neighbour', () => {
   const carnivore = entity('carnivore', vector(560, 500), 4);
 
   ok(
-    isZero(flock(herbivore, [carnivore], size)),
+    isZero(flock(herbivore, [carnivore], worldSize)),
     'a herbivore must never steer itself by a carnivore',
   );
 });
@@ -33,7 +33,7 @@ test('Cohesion pulls a lone cell toward the group', () => {
     entity('herbivore', vector(585, 480), 5),
   ];
 
-  const force = flock(herbivore, herd, size);
+  const force = flock(herbivore, herd, worldSize);
 
   ok(force.x > 0, `expected a pull to the right, got ${force.x}`);
 });
@@ -46,7 +46,7 @@ test('Separation pushes it back out when the group is on top of it', () => {
     entity('herbivore', vector(507, 498), 5),
   ];
 
-  const force = flock(herbivore, crowd, size);
+  const force = flock(herbivore, crowd, worldSize);
 
   ok(force.x < 0, `expected a push to the left, got ${force.x}`);
 });
@@ -63,7 +63,7 @@ test('Alignment turns a cell toward the heading of its neighbours', () => {
   ];
   herd.forEach((cell) => (cell.velocity = vector(3, 0)));
 
-  const force = flock(herbivore, herd, size);
+  const force = flock(herbivore, herd, worldSize);
 
   ok(force.x > 0, `expected it to pick up their heading, got ${force.x}`);
 });
@@ -75,7 +75,7 @@ test('Herding works across the map edge', () => {
     entity('herbivore', vector(55, 520), 5),
   ];
 
-  const force = flock(herbivore, herd, size);
+  const force = flock(herbivore, herd, worldSize);
 
   ok(force.x > 0, 'it heads across the edge, not back through the map');
 });
@@ -89,7 +89,7 @@ test('A threat still outranks the herd', () => {
   ];
   const carnivore = entity('carnivore', vector(560, 500), 12);
 
-  equal(decide(herbivore, [...herd, carnivore], size).action, 'flee');
+  equal(decide(herbivore, [...herd, carnivore], worldSize).action, 'flee');
 });
 
 test('Food still outranks the herd', () => {
@@ -97,7 +97,7 @@ test('Food still outranks the herd', () => {
   const herd = [entity('herbivore', vector(580, 500), 5)];
   const plant = entity('plant', vector(560, 500), 3);
 
-  equal(decide(herbivore, [...herd, plant], size).action, 'hunt');
+  equal(decide(herbivore, [...herd, plant], worldSize).action, 'hunt');
 });
 
 test('Herding is gentler than hunting — it never looks urgent', () => {
@@ -105,8 +105,8 @@ test('Herding is gentler than hunting — it never looks urgent', () => {
   const herd = [entity('herbivore', vector(590, 560), 5)];
   const plant = entity('plant', vector(590, 560), 3);
 
-  const herding = decide(herbivore, herd, size);
-  const hunting = decide(herbivore, [plant], size);
+  const herding = decide(herbivore, herd, worldSize);
+  const hunting = decide(herbivore, [plant], worldSize);
 
   ok(herding.action === 'flock' && hunting.action === 'hunt');
   ok(magnitude(herding.force) < magnitude(hunting.force));

@@ -1,0 +1,22 @@
+services:
+  lulas:
+    # Built and pushed by `amq lulas deploy`, which also tags every build with a timestamp,
+    # so rolling back is just pinning an older tag here. The image is nginx with the built
+    # site (and its nginx.conf) baked in — the source of truth is mono/lulas.
+    image: docker.amatiasq.com/lulas:latest
+    container_name: amq-lulas
+    restart: unless-stopped
+    expose:
+      - 80
+    volumes:
+      - ./logs:/var/log/nginx
+    environment:
+      - VIRTUAL_HOST=lulas.amatiasq.com,lulas.amq.im
+      - LETSENCRYPT_HOST=lulas.amatiasq.com,lulas.amq.im
+      - LETSENCRYPT_EMAIL=amatiasq@gmail.com
+    networks:
+      - exposed
+
+networks:
+  exposed:
+    external: true

@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 
-import { controls } from './controls';
 import { simulation } from './simulation';
 
 setStyles();
@@ -15,19 +14,20 @@ function start() {
 
   const game = simulation({ canvas });
 
-  const time = controls(game);
-
+  let isPaused = false;
   window.addEventListener('keydown', (event) => {
-    if (!time.press(event.code, event.key)) return;
-
-    event.preventDefault();
-    game.render();
-    document.title = time.status;
+    if (event.code === 'Space') {
+      event.preventDefault();
+      isPaused = !isPaused;
+    }
   });
 
   game.render();
   requestAnimationFrame(function frame() {
-    time.frame();
+    if (!isPaused) {
+      game.step();
+    }
+
     game.render();
     requestAnimationFrame(frame);
   });

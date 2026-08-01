@@ -7,28 +7,11 @@
 //
 // Sizes are radii in pixels; energy is area in px² (energy = π·size²).
 
-// --- Population, per screenful ----------------------------------------------
-//
-// Populations are DENSITIES, not counts. A phone and an 8K monitor would
-// otherwise get the same fifty cells, and fifty cells in a huge world never meet
-// each other: the same numbers would be a crowd on one screen and an empty field
-// on the other, and none of the tuning below would mean anything.
-//
-// So the numbers here are "how many on a screen this big", and the real count is
-// scaled by area. This is the screen everything was tuned on.
-export const REFERENCE_WIDTH = 1440;
-export const REFERENCE_HEIGHT = 900;
+// --- Population at start ---------------------------------------------------
 
-// Below this much world, the populations are too small to survive their own bad
-// luck: measured, a phone-sized world (0.21 screenfuls) lost everything in 2 runs
-// out of 3, while 0.42 survived 3 out of 3. A world smaller than this is kept at
-// this size and DRAWN SMALLER instead — the camera pulls back, the ecosystem
-// stays the same one.
-export const MIN_WORLD_SCREENFULS = 0.5;
-
-export const PLANTS_PER_SCREEN = 80;
-export const HERBIVORES_PER_SCREEN = 40;
-export const CARNIVORES_PER_SCREEN = 4;
+export const INITIAL_PLANTS = 80;
+export const INITIAL_HERBIVORES = 40;
+export const INITIAL_CARNIVORES = 4;
 
 // --- Sizes -----------------------------------------------------------------
 
@@ -56,15 +39,12 @@ export const PLANT_MAX_AREA = 200;
 // patch to zero, and a plant population of zero can never recover on growth
 // alone. See AGENTS.md invariant 8 — this is part of the plant source, not a
 // second one.
-// Ticks between seedlings on a reference screen. Scaled with the area too: twice
-// the world needs twice the seedlings to hold the same density, so on a bigger
-// screen they arrive proportionally more often.
 export const PLANT_SEED_INTERVAL = 4;
 
-// Seeding stops above this many plants per screenful. Without it a world whose
-// herbivores died out keeps filling with plants forever — a density cap, not an
-// energy term.
-export const PLANT_LIMIT_PER_SCREEN = 220;
+// Seeding stops above this many plants. Without it a world whose herbivores
+// died out keeps filling with plants forever — a density cap, not an energy
+// term.
+export const PLANT_MAX_COUNT = 220;
 
 // --- Movement --------------------------------------------------------------
 
@@ -78,18 +58,6 @@ export const ESCAPE_FORCE = 0.2;
 // the line between them, scaled by (1 - this): 1 stops both dead, 0 is a perfect
 // bounce. Sideways speed is never touched, so grazing is free — see collision.ts.
 export const COLLISION_FRICTION = 0.35;
-
-// --- Time travel -----------------------------------------------------------
-
-// How many past frames are kept so the arrow keys can walk back through them.
-// 600 is ten seconds at 60fps; each frame is a full copy of the world, so this
-// is the memory knob as well as the how-far-back one.
-export const HISTORY_SIZE = 600;
-
-// How far `+` and `-` can take the simulation: one step every eight frames, up
-// to eight steps per frame.
-export const MIN_SPEED_SCALE = 1 / 8;
-export const MAX_SPEED_SCALE = 8;
 
 // --- Flocking --------------------------------------------------------------
 //

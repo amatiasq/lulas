@@ -1,0 +1,36 @@
+#!/bin/bash -e
+
+# Build the lulas image (linux/amd64), push it, and restart the container on the VPS.
+# The image is also tagged with a timestamp, so rolling back is pinning an older tag in
+# lulas/infra/compose.yml.
+#
+# The image is nginx with the built site baked in — there is nothing to serve from the host.
+# The build inside it also emits /2014 (the recovered 2014 simulation) and the service
+# worker, so `amq lulas build-versions` and `build-sw` run in the image, not here.
+#
+# Run via `amq lulas deploy`.
+
+IMAGE="docker.amatiasq.com/lulas"
+SERVICE="lulas"
+STAMP="$(date +%Y-%m-%dT%H-%M-%S)"
+
+case "$1" in
+  -h|--help)
+    echo "Usage: amq lulas deploy — build, push and restart lulas on the VPS"
+    exit 0;;
+esac
+
+echo "==> building image (linux/amd64)"
+docker buildx build --platform linux/amd64 --pull -t "$IMAGE:latest" -t "$IMAGE:$STAMP" .
+
+echo "==> pushing image"
+docker push "$IMAGE:latest"
+docker push "$IMAGE:$STAMP"
+
+echo "==> ship infra (compose) to VPS"
+amq deploy-infra "$SERVICE"
+
+echo "==> pull-and-restart on VPS"
+amq vps pull-and-restart "$SERVICE"
+
+echo "==> https://lulas.amatiasq.com  (tagged $STAMP)"

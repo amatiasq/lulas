@@ -1,0 +1,27 @@
+<!--
+  Injected into the DEPLOYED COPY of the 2014 page by amq/amq-lulas-build-versions.
+  Not part of commit 1261b88, and not written into recover/.
+
+  The 2014 page paints its canvas white (`canvas { background-color: white }` in
+  its own <style>; the renderer only ever calls clearRect, so the colour is pure
+  CSS). The current simulation runs on black. Any query string or hash — /2014/?a,
+  /2014/#a, anything — switches the old one to black too, so the two can be looked
+  at side by side.
+-->
+<style>
+  html.on-black canvas {
+    background-color: black;
+  }
+</style>
+<script>
+  (function () {
+    var marked = function () {
+      var on = location.search.length > 1 || location.hash.length > 1;
+      document.documentElement.classList.toggle('on-black', on);
+    };
+
+    marked();
+    // So adding or removing #a flips it without a reload.
+    addEventListener('hashchange', marked);
+  })();
+</script>

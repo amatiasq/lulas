@@ -22,7 +22,7 @@ test('A cell splits only once it passes the threshold', () => {
 
 test('Mitosis makes exactly two children, each at half the radius', () => {
   const parent = entity('herbivore', vector(500, 500), BIG);
-  const children = split(parent, TEST_WORLD.size);
+  const children = split(parent, TEST_WORLD.worldSize);
 
   equal(children.length, 2);
   children.forEach((child) => equal(child.size, parent.size / 2));
@@ -30,7 +30,7 @@ test('Mitosis makes exactly two children, each at half the radius', () => {
 
 test('The two children together hold half the area — the loss is the point', () => {
   const parent = entity('herbivore', vector(500, 500), BIG);
-  const children = split(parent, TEST_WORLD.size);
+  const children = split(parent, TEST_WORLD.worldSize);
   const total = children.reduce((sum, child) => sum + energyOf(child), 0);
 
   assertBetween(
@@ -41,7 +41,7 @@ test('The two children together hold half the area — the loss is the point', (
 });
 
 test('The children leave in opposite directions', () => {
-  const [left, right] = split(entity('herbivore', vector(500, 500), BIG), TEST_WORLD.size);
+  const [left, right] = split(entity('herbivore', vector(500, 500), BIG), TEST_WORLD.worldSize);
 
   assertBetween(left.velocity.x + right.velocity.x, -0.0001, 0.0001);
   assertBetween(left.velocity.y + right.velocity.y, -0.0001, 0.0001);
@@ -52,7 +52,7 @@ test('The children leave in opposite directions', () => {
 });
 
 test('Children keep the parent type', () => {
-  split(entity('carnivore', vector(500, 500), BIG), TEST_WORLD.size).forEach((child) =>
+  split(entity('carnivore', vector(500, 500), BIG), TEST_WORLD.worldSize).forEach((child) =>
     equal(child.type, 'carnivore'),
   );
 });
@@ -66,7 +66,7 @@ test('A step replaces the splitting cell with its two children', () => {
 });
 
 test('Two children of the same split cannot eat each other — they are the same size', () => {
-  let entities: Entity[] = split(entity('carnivore', vector(500, 500), BIG), TEST_WORLD.size);
+  let entities: Entity[] = split(entity('carnivore', vector(500, 500), BIG), TEST_WORLD.worldSize);
 
   // They are born touching; if equal sizes could eat, one would vanish here.
   entities = step(entities, TEST_WORLD);

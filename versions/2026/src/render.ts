@@ -1,5 +1,5 @@
 import { Entity, EntityType, isAnimal } from './entity';
-import { magnitude, radians, Vector } from './vector';
+import { radians, Vector } from './vector';
 
 /**
  * The 2014 palette — dark green plants, light green herbivores, red carnivores —
@@ -17,12 +17,8 @@ export const PALETTE: Record<EntityType, { body: string; rim: string }> = {
 
 const BACKGROUND = '#000000';
 
-// How far ahead of the cell the point reaches, per px/tick of speed. Speed is
-// read off its length, exactly as it was off the old stick.
-const VELOCITY_TIP_FACTOR = 3.5;
-
-// How wide the point's base is, as a fraction of the body radius.
-const TIP_BASE_FACTOR = 1;
+// How much of the velocity the stick shows. Speed is read off its length.
+const VELOCITY_STICK_FACTOR = 6;
 
 // The rim scales with the cell, or a fat carnivore reads as a flat disc with a
 // hairline on it and a seedling reads as pure outline. Clamped at both ends.
@@ -62,7 +58,7 @@ function renderEntity(
   entity: Entity,
 ) {
   const { position } = entity;
-  const reach = entity.size + VELOCITY_TIP_FACTOR * 2;
+  const reach = entity.size + VELOCITY_STICK_FACTOR * 2;
 
   drawAt(context, entity, position);
 
@@ -95,45 +91,26 @@ function drawAt(
   const radius = Math.max(MIN_BODY_RADIUS, entity.size - width / 2);
 
   context.lineWidth = width;
-
-  // The point goes on FIRST, so the body is drawn over its base and there is no
-  // chord line across the cell — what is left showing is a cell with a nose.
-  if (isAnimal(entity)) drawPoint(context, entity, radius);
-
   context.beginPath();
   context.arc(0, 0, radius, 0, Math.PI * 2);
   context.fill();
   context.stroke();
 
+  if (isAnimal(entity)) {
+    // The stick IS the velocity readout: direction is the heading, length is
+    // the speed. No numbers on screen.
+    const angle = radians(entity.velocity);
+    const length =
+      Math.hypot(entity.velocity.x, entity.velocity.y) * VELOCITY_STICK_FACTOR;
+
+    if (length > 0) {
+      context.lineWidth = 2;
+      context.beginPath();
+      context.moveTo(0, 0);
+      context.lineTo(Math.cos(angle) * length, Math.sin(angle) * length);
+      context.stroke();
+    }
+  }
+
   context.restore();
-}
-
-/**
- * The velocity readout: a triangle from the flanks of the cell to a point ahead
- * of it. Direction is the heading and LENGTH IS THE SPEED — the same reading the
- * old stick gave, with a shape that belongs to the cell instead of poking out of
- * it. A cell that has stopped has no point at all; a fast one is a dart.
- */
-function drawPoint(
-  context: CanvasRenderingContext2D,
-  entity: Entity,
-  radius: number,
-) {
-  const speed = magnitude(entity.velocity);
-  const tip = speed * VELOCITY_TIP_FACTOR;
-
-  // Still, or too slow for the point to clear the body: nothing to draw.
-  if (tip <= radius) return;
-
-  const angle = radians(entity.velocity);
-  const half = radius * TIP_BASE_FACTOR;
-  const flank = angle + Math.PI / 2;
-
-  context.beginPath();
-  context.moveTo(Math.cos(flank) * half, Math.sin(flank) * half);
-  context.lineTo(Math.cos(angle) * tip, Math.sin(angle) * tip);
-  context.lineTo(Math.cos(flank) * -half, Math.sin(flank) * -half);
-  context.closePath();
-  context.fill();
-  context.stroke();
 }

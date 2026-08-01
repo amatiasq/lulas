@@ -122,6 +122,21 @@ the ugliest code by a distance.
   constructors; `ts-2020` hardcodes them inline in `GameEntities.setUpCell`
   (`MITOSIS_MIN_RADIUS` 50, `VISION_RANGE` 300, …). Neither has one file to tune.
 
+## `js-2014` does not boot as archived
+
+Found when it was first actually served, rather than read. `main.js` at
+`1261b88` does `require('ticker')` and **`src/ticker.js` is not in that commit**:
+RequireJS 404s and `main` never executes.
+
+Nothing was lost in the recovery — upstream, the file was committed separately
+the same day in `2f5e35a`, named *"Missed file"*. It was uncommitted on the
+author's machine when `1261b88` was made. The commit archived here is the state
+of the repository, faithfully, including that.
+
+The tree stays as it is. The deployed copy at `/2014` gets the file (and
+RequireJS itself, also never committed) patched in on its way to `dist/` — see
+[`../versions/README.md`](../versions/README.md).
+
 ## Bugs found while reading
 
 Worth knowing before copying any of it.

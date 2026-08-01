@@ -9,10 +9,19 @@ eat enough split in two. Watch it run and see whether it settles or collapses.
 > [`.agents/decisions/2026-08-01 build-outcome.md`](.agents/decisions/2026-08-01%20build-outcome.md).
 >
 > ```sh
-> amq lulas dev     # http://localhost:5173, space pauses
+> amq lulas dev     # http://localhost:5173
 > amq lulas test    # the specs in user-stories/
 > amq lulas check   # everything CI would run
 > ```
+>
+> **Controls:** `space` pauses · `←` `→` step one frame back and forward, through
+> ten seconds of recorded history · `+` `−` run it from eight times slow to eight
+> times fast. The tab title says where in time you are.
+>
+> Live at **https://lulas.amatiasq.com**. The 2014 original — the only old
+> version that actually eats — runs alongside it at
+> **[/2014](https://lulas.amatiasq.com/2014/)**; add any `?query` or `#hash` to
+> paint it on black.
 >
 > `recover/` holds the three older versions this was rebuilt from. It is a closed
 > archive: read it, don't build in it.
@@ -24,7 +33,15 @@ eat enough split in two. Watch it run and see whether it settles or collapses.
 
 ## The world
 
-A rectangle that **wraps on both axes**. Leave through the right edge and you
+A rectangle that **wraps on both axes**.
+
+It is sized to your screen, and so is everything in it: the populations are
+densities, not counts, so a phone and an 8K monitor get the same crowding rather
+than the same fifty cells adrift in very different amounts of space. Below a
+certain size the world stops shrinking and is drawn scaled down instead — the
+camera pulls back. A world much smaller than that holds populations too small to
+survive their own bad luck, and it simply dies.
+ Leave through the right edge and you
 come back on the left; leave through the top and you come back on the bottom.
 
 This is not decoration — it is a rule the rest of the simulation has to respect.
@@ -35,7 +52,7 @@ wrong and cells near the edges go blind to half the world.
 
 ## The inhabitants
 
-### Plants — dark green squares
+### Plants — dark green circles
 
 They do nothing but grow, slowly, up to a maximum size. They are the only thing
 that puts energy **into** the system.
@@ -47,6 +64,10 @@ plants, so a world whose herbivores died out does not fill up with green forever
 
 They are drawn under everything else: a herbivore sitting on a plant covers it,
 never the other way round.
+
+Everything in the world is a circle, and everything is drawn the same way: a
+dimmed body with the full-strength colour as a rim around it. A flat disc reads
+as a blob; a dark disc with a lit edge reads as a cell.
 
 ### Herbivores — light green circles
 

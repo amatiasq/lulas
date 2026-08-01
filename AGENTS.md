@@ -40,10 +40,31 @@ One concern per file; none of them is big.
 | `src/life.ts` | `bite`, `grow`, `move`, `burnMovementEnergy`, `split` |
 | `src/step.ts` | one tick: perceive from a snapshot, act, move, split, bury |
 | `src/render.ts` | canvas drawing, wrap-aware |
+| `src/timeline.ts` | the recorded past, so time can be stepped backwards |
+| `src/controls.ts` | space / arrows / +- , kept away from the DOM so it is testable |
 | `src/simulation.ts` | wires it to a canvas, spawns the world, seeds plants |
 
 Every vision check goes through `senses.look`, and every "can this eat that"
 through `diet.canEat`, so there is exactly one place either rule can be wrong.
+
+## Time is steppable, and that constrains the code
+
+`←` and `→` walk the simulation a frame at a time through `HISTORY_SIZE` frames
+of recorded past. Two things fall out of that and are easy to break:
+
+- **Frames are deep copies.** `step()` mutates the entities it is given and
+  returns those same objects, so a frame stored by reference would keep moving
+  and "the past" would be a copy of the present. `timeline.ts` clones before
+  advancing.
+- **Going forward after going back REPLAYS.** It does not recompute: mitosis
+  angles and plant seeding are random, so recomputing would hand back a different
+  frame and stepping back and forth would not land where you started. That is
+  also why seeding happens inside the timeline's advance rather than after it.
+
+`controls.ts` holds no DOM at all — the page turns keydown into `press()` and
+`requestAnimationFrame` into `frame()`. Keyboard behaviour is untestable through
+a browser automation harness (the keystrokes never reached the page when this was
+tried), so the logic lives where a spec can reach it and the wiring stays trivial.
 
 ## History, so the names make sense
 
@@ -213,8 +234,17 @@ Nothing else creates or destroys area. Eating only moves it.
 
 Two cells cannot stand in the same place: `collision.resolveCollisions` runs once
 per tick, AFTER everyone has moved (resolving overlaps as they appear would give
-whoever is early in the array a free shove), pushes each of the pair half the
-overlap apart and has them trade velocities damped by `COLLISION_FRICTION`.
+whoever is early in the array a free shove), and pushes each of the pair half the
+overlap apart.
+
+**Only the velocity ALONG the line between them is traded**, damped by
+`COLLISION_FRICTION`; sideways speed is untouched, so cells slide past each other
+and only head-on hits cost anything. Porting `flocking/`'s whole-vector swap was
+the first attempt and it is what made the simulation feel sluggish — in a herd
+cells are in contact almost continuously, and every graze cost half the speed.
+Measured: 2.2 px/tick average against a 3.6 limit, 2.7 after the fix. If the
+thing ever feels slow again, measure the average speed before looking at the
+frame time; `step()` costs ~0.2 ms a tick, about 1% of a frame.
 
 **Two exemptions, and both are load-bearing:**
 
@@ -253,6 +283,13 @@ before assuming it looks nicer.
 
 ## Naming
 
+**`size` is always a radius; the map is `worldSize`.** There are two sizes in
+this codebase and they turn up in the same functions: `Entity.size` (a number,
+the radius, what the spec means by size when it decides who eats whom) and the
+map's dimensions (a `Vector`). A parameter called plain `size` told you nothing
+about which one you were holding — this is how the 2018 version had it and it
+never read well. Every world dimension is `worldSize`, including `World.worldSize`.
+
 Use `HERBIVORE_*`, not `HERVIVORE_*`. The Spanish *herbívoro* leaks the wrong
 spelling into English identifiers, and old versions of this code have it as
 `hervivore` in filenames and constants. Normalise on the way in, and grep for
@@ -267,6 +304,23 @@ glance. `flocking/src/CONFIGURATION.ts` is the shape to copy.
 The tuning loop is "change a number, watch, change it again", dozens of times in
 a sitting. Anything else living in that file makes that loop worse, and a
 constant computed elsewhere means the value you read is not the value that runs.
+
+### Populations are densities
+
+`PLANTS_PER_SCREEN` and friends are counts **per reference screen**
+(`REFERENCE_WIDTH` × `REFERENCE_HEIGHT`, the 1440×900 everything was tuned on),
+scaled by area in `populate`. The plant cap and the seeding interval scale the
+same way — twice the world needs twice the seedlings to hold one density.
+
+`viableWorld` then puts a floor under it: a canvas below `MIN_WORLD_SCREENFULS`
+gets a **bigger world drawn scaled down** rather than a proportionally tiny
+population. Measured over 25k ticks — a phone-sized world (0.21 screenfuls) lost
+everything in 2 runs of 3; 0.42 survived 3 of 3. Small populations die of their
+own randomness, and no amount of tuning fixes that; the fix is to not have small
+populations. The aspect ratio is preserved so the render scale is one number.
+
+An explicitly passed `worldSize` is left alone — the floor only applies when the
+world is being derived from a canvas, so specs stay in control of their world.
 
 ### Tuning, and the one trap in it
 
@@ -302,16 +356,65 @@ other) is in all three recovered versions and is deliberately NOT here: children
 of a split are exactly the same size, and the equal-size rule already stops them
 eating each other. See `README.md` under "Mitosis".
 
+## The 2014 version, served at `/2014`
+
+`amq/amq-lulas-build-versions` copies `recover/js-2014` into `dist/2014/` so the
+original simulation runs next to the current one. No bundler — it is plain JS
+that RequireJS loads at runtime.
+
+It needs two files the archived commit does not contain, and they live in
+[`versions/`](versions/) because **nothing may be added to `recover/`**:
+RequireJS itself (`bower_components/` was never tracked) and `src/ticker.js`,
+without which `main.js` 404s and the whole thing never starts. That one was
+committed upstream the same day under the name "Missed file" —
+[`versions/README.md`](versions/README.md) has the provenance.
+
+The copy also gets `versions/2014/on-black.html` injected before `</body>`: any
+query string or hash (`/2014/?a`, `/2014/#a`) repaints its canvas black, so it
+can be compared against the current simulation without one of the two being
+inverted. Injecting into the copy is fine; editing the archive is not.
+
+`ts-2018` and `ts-2020` are deliberately NOT deployed: they have no species, so
+there is nothing to watch. They are kept for the shape of the code.
+
 ## Offline
 
 `amq/amq-lulas-build-sw` walks `dist/` after `vite build` and emits a `sw.js`
-that precaches everything, with the cache name hashed from the file list. It is
-chained into `bun run build`, and `src/index.ts` registers it behind
+that precaches everything — including `/2014` — with the cache name hashed from
+the file list. It is chained into `bun run build` (after `build-versions`, so it
+sees what that emitted), and `src/index.ts` registers it behind
 `import.meta.env.PROD`. Not VitePWA/Workbox — nothing here syncs data.
+
+Two rules in there exist because of `/2014` and both fail silently if broken:
+every `index.html` is cached under its **directory** URL as well as its file URL
+(a navigation asks for `/2014/`, never `/2014/index.html`), and the offline
+navigation fallback picks the **nearest** shell, so `/2014/` can never boot the
+current simulation by mistake. RequireJS's `urlArgs` cache-busting is harmless
+because the fetch handler matches with `ignoreSearch: true`.
 
 ## Deployment
 
-None yet. The folder is mirrored to the standalone repo `amatiasq/lulas` by
-`.github/workflows/push-to-lulas.yml`, which is also the archive the `recover/`
-trees came out of, so never force-push or prune that repo. Nothing is published
-anywhere. Read `.agents/plans/recover.md` before changing any mirror wiring.
+**https://lulas.amatiasq.com** (and `lulas.amq.im`), the sanremo pattern exactly:
+an nginx image with the built site baked in, pushed to `docker.amatiasq.com`,
+recreated on the VPS.
+
+```sh
+amq lulas deploy      # buildx (linux/amd64) + push + deploy-infra + pull-and-restart
+```
+
+- `Dockerfile` builds with Bun and copies `dist/` into `nginx:alpine`. The
+  version copy and the service worker are generated **inside** the image, so
+  `recover/` and `versions/` must stay in the build context — `.dockerignore`
+  keeps everything else out.
+- `nginx.conf` — hashed `/assets/*.js|css` immutable for a year; `/sw.js` and the
+  whole of `/2014/` `no-cache`, because those are served under names that never
+  change and a redeploy has to reach people.
+- `infra/compose.yml` is the source of truth for the stack; `amq deploy-infra`
+  rsyncs it to the VPS. Rolling back is pinning an older timestamp tag there.
+- DNS was declared with `amq dns add lulas` (both zones). Do not hand-edit
+  `dns/shared.ts`.
+
+The folder is also mirrored to the standalone repo `amatiasq/lulas` by
+`.github/workflows/push-to-lulas.yml`, which is the archive the `recover/` trees
+came out of — never force-push or prune that repo. Read
+`.agents/plans/recover.md` before changing any mirror wiring.

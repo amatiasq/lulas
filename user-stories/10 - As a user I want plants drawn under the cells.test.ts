@@ -1,5 +1,6 @@
 import { ok } from 'assert';
 
+import { PALETTE } from '../src/render';
 import { render } from '../src/render';
 import { vector } from '../src/vector';
 import { setFilename, test } from '../test/index';
@@ -22,6 +23,14 @@ function recordingContext() {
 
   const context = {
     calls,
+    // Recorded as an event too: every shape is a circle now, so the fill colour
+    // is the only thing that says whether it was a plant or a cell.
+    set fillStyle(value: string) {
+      calls.push(`fillStyle(${value})`);
+    },
+    get fillStyle() {
+      return '';
+    },
     save: record('save'),
     restore: record('restore'),
     translate: record('translate'),
@@ -32,7 +41,6 @@ function recordingContext() {
     moveTo: record('moveTo'),
     lineTo: record('lineTo'),
     stroke: record('stroke'),
-    fillStyle: '',
     strokeStyle: '',
     lineWidth: 0,
   };
@@ -40,20 +48,33 @@ function recordingContext() {
   return context as typeof context & CanvasRenderingContext2D;
 }
 
-// Plants are squares (fillRect), animals are circles (arc). The background is a
-// fillRect too, so the first one is skipped.
-const drawings = (calls: string[]) =>
-  calls
-    .filter((call) => call.startsWith('fillRect') || call.startsWith('arc'))
-    .slice(1)
-    .map((call) => (call.startsWith('arc') ? 'cell' : 'plant'));
+// Everything is drawn as a circle, so what was drawn is read off the fill colour
+// that was set right before it. The background fill is not followed by an arc,
+// which is what drops it here.
+const drawings = (calls: string[]) => {
+  const drawn: string[] = [];
+
+  for (let i = 0; i < calls.length; i++) {
+    if (!calls[i].startsWith('arc(')) continue;
+
+    const fill = calls
+      .slice(0, i)
+      .reverse()
+      .find((call) => call.startsWith('fillStyle('))
+      ?.slice('fillStyle('.length, -1);
+
+    drawn.push(fill === PALETTE.plant.body ? 'plant' : 'cell');
+  }
+
+  return drawn;
+};
 
 test('Every plant is drawn before any cell', () => {
   const context = recordingContext();
 
   // Interleaved on purpose: in array order this would paint a plant over the
   // herbivore that is eating it.
-  render(context, TEST_WORLD.size, [
+  render(context, TEST_WORLD.worldSize, [
     entity('herbivore', vector(100, 100), 6),
     entity('plant', vector(300, 300), 4),
     entity('carnivore', vector(500, 500), 14),
@@ -72,7 +93,7 @@ test('Every plant is drawn before any cell', () => {
 test('A herbivore sitting on a plant is drawn on top of it', () => {
   const context = recordingContext();
 
-  render(context, TEST_WORLD.size, [
+  render(context, TEST_WORLD.worldSize, [
     entity('herbivore', vector(500, 500), 8),
     entity('plant', vector(500, 500), 4),
   ]);

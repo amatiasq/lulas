@@ -1,0 +1,123 @@
+#!/usr/bin/env node
+/**
+ * amq lulas build-versions — put every frozen version of the simulation into dist/.
+ *
+ * Two of them today:
+ *
+ * - `/2014` — `recover/js-2014`, copied. No bundler: it is plain JS that
+ *   RequireJS loads at runtime. Plus the two files the archived commit does not
+ *   contain, and the black-background snippet (see versions/README.md).
+ * - `/2026` — `versions/2026`, a frozen copy of this project's own sources,
+ *   bundled with esbuild. It is how the current simulation looked on the day it
+ *   was taken, and it is never updated again.
+ *
+ * The 2018 and 2020 trees stay in recover/ and are NOT deployed: they are kept
+ * for the shape of the code, and neither has any species in it, so there would
+ * be nothing to watch.
+ *
+ * `recover/` is never written to. Everything is read from it and written to
+ * dist/, and the patches come from versions/.
+ *
+ * Runs after `vite build` and BEFORE `amq lulas build-sw`, so the service worker
+ * precaches what this emits and /2014 works offline too.
+ *
+ * Plain JS on purpose: an `amq` command is an executable with no extension, so
+ * node cannot type-strip it.
+ *
+ * Flags:
+ *   --help   show this help, copy nothing
+ */
+import { build } from 'esbuild';
+import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  console.log('Usage: amq lulas build-versions');
+  console.log('');
+  console.log('Copies the recovered simulations into dist/ (today: /2014).');
+  console.log('Must run after `vite build` and before `amq lulas build-sw`.');
+  process.exit(0);
+}
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const DIST = join(ROOT, 'dist');
+
+const VERSIONS = [
+  {
+    path: '2014',
+    source: 'recover/js-2014',
+    // Only what it takes to run. The Gruntfile, karma config, bower.json, the
+    // test suite and lib/sinon are archive, not exhibit — and every file copied
+    // here is a file the service worker will precache.
+    include: ['index.html', 'main.js', 'src'],
+    // Files the archived commit is missing; see versions/README.md for where
+    // each one comes from and why it is not in recover/.
+    patches: [
+      ['versions/2014/require.js', 'bower_components/requirejs/require.js'],
+      ['versions/2014/ticker.js', 'src/ticker.js'],
+    ],
+    // Appended to the copied index.html, before </body>. Additions to the
+    // deployed page only — the archived one is never edited.
+    inject: { into: 'index.html', from: 'versions/2014/on-black.html' },
+  },
+  {
+    path: '2026',
+    source: 'versions/2026',
+    include: ['index.html'],
+    patches: [],
+    // Bundled, not copied: it is TypeScript. esbuild only strips the types, and
+    // `import.meta.env.PROD` is pinned false so the snapshot never tries to
+    // register the service worker — its page lives under /2026/, so it could not
+    // claim the root scope anyway, and the root worker already precaches it.
+    bundle: { entry: 'src/index.ts', out: 'bundle.js' },
+  },
+];
+
+for (const version of VERSIONS) {
+  const target = join(DIST, version.path);
+  await mkdir(target, { recursive: true });
+
+  for (const entry of version.include) {
+    await cp(join(ROOT, version.source, entry), join(target, entry), {
+      recursive: true,
+    });
+  }
+
+  if (version.bundle) {
+    await build({
+      entryPoints: [join(ROOT, version.source, version.bundle.entry)],
+      outfile: join(target, version.bundle.out),
+      bundle: true,
+      format: 'esm',
+      target: 'es2020',
+      minify: true,
+      define: { 'import.meta.env.PROD': 'false' },
+      logLevel: 'warning',
+    });
+  }
+
+  for (const [from, to] of version.patches) {
+    await mkdir(dirname(join(target, to)), { recursive: true });
+    await cp(join(ROOT, from), join(target, to));
+  }
+
+  if (version.inject) {
+    const page = join(target, version.inject.into);
+    const html = await readFile(page, 'utf8');
+    const snippet = await readFile(join(ROOT, version.inject.from), 'utf8');
+
+    if (!html.includes('</body>')) {
+      throw new Error(`${version.inject.into} has no </body> to inject into`);
+    }
+
+    await writeFile(page, html.replace('</body>', `${snippet}</body>`));
+  }
+
+  console.log(
+    `Wrote dist/${version.path}/ — ${version.source}` +
+      (version.bundle ? `, bundled ${version.bundle.entry}` : '') +
+      (version.patches.length ? ` + ${version.patches.length} patched files` : '') +
+      (version.inject ? `, ${version.inject.from} injected` : ''),
+  );
+}
