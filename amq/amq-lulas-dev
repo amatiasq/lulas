@@ -1,0 +1,8 @@
+#!/bin/bash -e
+# amq lulas dev — Vite dev server with HMR. Foreground; Ctrl-C stops it.
+
+case "$1" in
+  -h|--help) echo "Usage: amq lulas dev — start the Vite dev server"; exit 0;;
+esac
+
+exec bun run dev

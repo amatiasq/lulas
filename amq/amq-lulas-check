@@ -1,0 +1,23 @@
+#!/bin/bash -e
+# amq lulas check — full local CI check.
+#
+# Installs deps only when node_modules is missing (fast repeat runs), then runs
+# tests with coverage followed by typecheck + build. Runtime is Bun, like the
+# sibling `flocking` project this toolchain was copied from.
+
+case "$1" in
+  -h|--help)
+    echo "Usage: amq lulas check — run the full check (Bun)"
+    echo
+    echo "  bun install (if needed) + test-with-coverage + (typecheck && build)"
+    exit 0;;
+esac
+
+if [ ! -d node_modules ]; then
+  echo "==> bun install"; bun install --frozen-lockfile
+else
+  echo "==> deps present, skipping bun install"
+fi
+
+echo "==> test (with coverage)"; bun run test-with-coverage
+echo "==> typecheck and build"; bun run build

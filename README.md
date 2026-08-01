@@ -4,12 +4,18 @@ An ecosystem simulation. Plants grow, herbivores eat plants, carnivores eat
 herbivores, and anything big enough eats anything smaller than itself. Cells that
 eat enough split in two. Watch it run and see whether it settles or collapses.
 
-> **Status: specification only — there is no code here yet.**
+> **Status: it runs.** Built 2026-08-01 from this spec, with the rules ported
+> from `recover/js-2014` and the shape from `recover/ts-2020` — see
+> [`.agents/decisions/2026-08-01 build-outcome.md`](.agents/decisions/2026-08-01%20build-outcome.md).
 >
-> This project existed before, in several versions, and the goal is to recover
-> the best one rather than start from scratch. The hunt is
-> [`.agents/plans/recover.md`](.agents/plans/recover.md); recovered candidates
-> land in `recover/<name>/`. This README is the spec they get measured against.
+> ```sh
+> amq lulas dev     # http://localhost:5173, space pauses
+> amq lulas test    # the specs in user-stories/
+> amq lulas check   # everything CI would run
+> ```
+>
+> `recover/` holds the three older versions this was rebuilt from. It is a closed
+> archive: read it, don't build in it.
 
 > **Name.** `lulas` used to be the folder holding a *boids/flocking* simulation.
 > That project was renamed to [`flocking/`](../flocking/), which is what it
@@ -31,8 +37,16 @@ wrong and cells near the edges go blind to half the world.
 
 ### Plants — dark green squares
 
-They do nothing but grow, slowly. They are the only thing that puts energy
-**into** the system.
+They do nothing but grow, slowly, up to a maximum size. They are the only thing
+that puts energy **into** the system.
+
+A new seedling appears somewhere at random every `PLANT_SEED_INTERVAL` ticks,
+because grazing can take a patch to zero and a plant population of zero can
+never recover on growth alone. Seeding stops once there are `PLANT_MAX_COUNT`
+plants, so a world whose herbivores died out does not fill up with green forever.
+
+They are drawn under everything else: a herbivore sitting on a plant covers it,
+never the other way round.
 
 ### Herbivores — light green circles
 
@@ -51,6 +65,38 @@ Same drawing as herbivores, red. They hunt the nearest herbivore inside
 
 If no herbivore is in range but another carnivore is, they will go for the
 carnivore instead — subject to the size rule below.
+
+## Cells are solid
+
+Two cells cannot stand in the same place. They bump, push each other apart and
+lose speed doing it.
+
+With two exceptions, both of which exist so that eating still works:
+
+- **A predator and the prey it can eat go through each other.** Eating happens by
+  touching, so a solid predator would shove its meal away the moment it caught
+  it. That overlap is a meal, not a collision.
+- **Plants are not solid.** A herbivore sits on one to eat it.
+
+Everything else bumps — including two herbivores, and a carnivore against a
+herbivore too big for it to eat.
+
+## Herds and packs
+
+When a cell has nothing chasing it and nothing to eat, it does not just coast: it
+falls in with its own kind, the way the boids in [`flocking/`](../flocking/) do —
+match their heading, drift toward them, and keep out of the ones that get too
+close.
+
+Two limits keep this from turning into a different game:
+
+- **Only its own kind.** A herbivore that took its heading from a carnivore would
+  be steering into its own predator.
+- **Only when idle.** Fleeing beats it, eating beats it. It is never mixed in
+  with either; it is what a cell does with the time it has left over.
+
+**Herbivores herd. Carnivores only keep their distance** — no packs. A pack hunts
+the same herd and splits the same meal, and it turns out that starves them.
 
 ## Eating
 
@@ -88,7 +134,8 @@ watch a cell sitting on a plant, consuming it.
 
 Cells burn area just by going somewhere. It is slow — a cell loses a little on
 every tick it moves — but it never stops, and **the faster it goes the more it
-costs**.
+costs**. The cost is **quadratic** in speed (`factor × speed²`), which is the
+choice that punishes sprinting and rewards a predator that waits.
 
 This is what makes the whole thing an ecosystem rather than a screensaver:
 
@@ -107,6 +154,13 @@ they are opposed).
 **Each child gets half the parent's *radius*.** A parent of radius 20 produces
 two children of radius 10.
 
+**Relatives are not special.** Two cells that just split from the same parent can
+eat each other like anybody else — except that they are exactly the same size, so
+the size rule already means they cannot, and by the time one has outgrown the
+other they are strangers. (Every recovered version had an `isFamily` check; this
+one deliberately does not. The equal-size rule does the job the check was there
+for.)
+
 That is deliberately lossy, and it is the point. Halving the radius quarters the
 area, so two children hold **half** the area the parent had. The rest is gone —
 spent on splitting.
@@ -123,17 +177,23 @@ and read in ten seconds. This simulation is tuned by feel, and the tuning sessio
 is a lot of small edits to these values; anything else in that file gets in the
 way. (`flocking/` does the same in `src/CONFIGURATION.ts` — copy the shape.)
 
+They live in [`src/CONFIGURATION.ts`](src/CONFIGURATION.ts). The ones that decide
+whether the ecosystem lives or dies:
+
 | constant | what it controls |
 | --- | --- |
 | `HERBIVORE_VISION_RANGE` | how far a herbivore sees plants and threats |
 | `CARNIVORE_VISION_RANGE` | how far a carnivore sees prey |
-| plant growth rate | how fast energy enters the system |
-| mitosis threshold | the size at which a cell splits |
-| movement energy factor | how much area speed costs per tick |
-| eat duration | ticks to drain a plant / a cell |
+| `PLANT_GROWTH_RATE`, `PLANT_SEED_INTERVAL` | how fast energy enters the system |
+| `HERBIVORE_MITOSIS_SIZE`, `CARNIVORE_MITOSIS_SIZE` | the size at which a cell splits |
+| `MOVEMENT_ENERGY_FACTOR` | how much area speed costs per tick |
+| `MAX_BITE_FRACTION` | how many ticks it takes to drain a plant / a cell |
+| `COLLISION_FRICTION` | how much speed a bump costs |
+| `FLOCKING_*` | how tightly herbivores herd, and how far cells stay off each other |
 
-The first five are the ones that decide whether the ecosystem lives or dies, so
-they are the ones you will actually be turning.
+The two mitosis sizes are one knob in practice: a herbivore lives between half
+`HERBIVORE_MITOSIS_SIZE` and all of it, and a carnivore that drops under that
+band has nothing left it is allowed to eat, so it is a dead carnivore walking.
 
 Recovered code may spell it `HERVIVORE_*` (the Spanish spelling leaking in);
 normalise to `HERBIVORE_*` when bringing it in.
@@ -149,5 +209,8 @@ predators — [`flocking/.agents/plans/keyboard-controlled-boid.md`](../flocking
 
 ## See also
 
-- [`AGENTS.md`](AGENTS.md) — the rules restated as implementable invariants.
+- [`AGENTS.md`](AGENTS.md) — the rules restated as implementable invariants,
+  plus what lives in which file.
+- [`.agents/decisions/2026-08-01 build-outcome.md`](.agents/decisions/2026-08-01%20build-outcome.md)
+  — what was ported from where, and the calls made while building.
 - [`.agents/plans/recover.md`](.agents/plans/recover.md) — finding the old code.

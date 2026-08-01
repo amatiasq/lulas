@@ -1,8 +1,11 @@
 # Plan: build the simulation
 
-**Status:** not started. Recovery is done — read that first.
+**Status: DONE** (2026-08-01). All 11 steps executed; outcome, deviations and
+the calls made along the way are in
+[`../decisions/2026-08-01 build-outcome.md`](../decisions/2026-08-01%20build-outcome.md).
+Kept for the reasoning behind the order, which the code still follows.
 **Effort:** L · **Risk:** low technically; the risk is tuning it into something
-that dies or explodes on every run.
+that dies or explodes on every run — and that is exactly where the time went.
 
 ## Read before starting
 
