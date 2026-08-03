@@ -21,8 +21,17 @@ const BACKGROUND = '#000000';
 // read off its length, exactly as it was off the old stick.
 const VELOCITY_TIP_FACTOR = 3.5;
 
-// How wide the point's base is, as a fraction of the body radius.
-const TIP_BASE_FACTOR = 1;
+// How much of the body the nose grows out of: the arc stops this far short of
+// the heading on each side, so the body covers 2π minus twice this. A quarter
+// turn leaves the same three-quarter body `flocking/` draws.
+const NOSE_OPENING = Math.PI / 4;
+
+// A nose shorter than this much of the radius is not worth drawing — the cell is
+// barely moving and it only makes the outline lumpy.
+const NOSE_MIN_REACH = 1.15;
+
+// How far each cell's shade may stray from its type's colour, up or down.
+const SHADE_VARIATION = 0.22;
 
 // The rim scales with the cell, or a fat carnivore reads as a flat disc with a
 // hairline on it and a seedling reads as pure outline. Clamped at both ends.
@@ -80,7 +89,7 @@ function drawAt(
   entity: Entity,
   position: Vector,
 ) {
-  const { body, rim } = PALETTE[entity.type];
+  const { body, rim } = shadeOf(entity);
 
   context.save();
   context.translate(position.x, position.y);
@@ -95,13 +104,28 @@ function drawAt(
   const radius = Math.max(MIN_BODY_RADIUS, entity.size - width / 2);
 
   context.lineWidth = width;
-
-  // The point goes on FIRST, so the body is drawn over its base and there is no
-  // chord line across the cell — what is left showing is a cell with a nose.
-  if (isAnimal(entity)) drawPoint(context, entity, radius);
-
   context.beginPath();
-  context.arc(0, 0, radius, 0, Math.PI * 2);
+
+  // ONE silhouette, filled and outlined once — the look borrowed from
+  // `flocking/`. It used to be a circle with a triangle tucked behind it, which
+  // is two shapes pretending to be one and reads as a ball with a dart stuck in
+  // it. A cell with nowhere to be is simply a circle.
+  const speed = magnitude(entity.velocity);
+  const tip = radius + speed * VELOCITY_TIP_FACTOR;
+
+  if (!isAnimal(entity) || tip <= radius * NOSE_MIN_REACH) {
+    context.arc(0, 0, radius, 0, Math.PI * 2);
+  } else {
+    const angle = radians(entity.velocity);
+
+    // The back three quarters of the body, then out to the point and back. The
+    // arc stops short of the heading on both sides, so the nose grows out of the
+    // flanks instead of being glued to a full circle.
+    context.arc(0, 0, radius, angle + NOSE_OPENING, angle - NOSE_OPENING);
+    context.lineTo(Math.cos(angle) * tip, Math.sin(angle) * tip);
+  }
+
+  context.closePath();
   context.fill();
   context.stroke();
 
@@ -109,31 +133,30 @@ function drawAt(
 }
 
 /**
- * The velocity readout: a triangle from the flanks of the cell to a point ahead
- * of it. Direction is the heading and LENGTH IS THE SPEED — the same reading the
- * old stick gave, with a shape that belongs to the cell instead of poking out of
- * it. A cell that has stopped has no point at all; a fast one is a dart.
+ * The type's colours, nudged a little per cell.
+ *
+ * Type still has to be readable at a glance — that is the whole spec — so the
+ * nudge is small and never crosses between greens and reds. It is what makes
+ * `flocking/` pleasant to look at: fifty identical shapes in one flat colour
+ * read as a texture, and the same fifty in fifty shades read as a crowd.
+ *
+ * Derived from the id, so a cell keeps its shade for life instead of shimmering
+ * every frame.
  */
-function drawPoint(
-  context: CanvasRenderingContext2D,
-  entity: Entity,
-  radius: number,
-) {
-  const speed = magnitude(entity.velocity);
-  const tip = speed * VELOCITY_TIP_FACTOR;
+export function shadeOf(entity: Entity) {
+  const { body, rim } = PALETTE[entity.type];
+  // A cheap hash: consecutive ids must not come out as a gradient.
+  const noise = Math.sin(Number(entity.id) * 12.9898) * 43758.5453;
+  const shade = 1 + ((noise - Math.floor(noise)) * 2 - 1) * SHADE_VARIATION;
 
-  // Still, or too slow for the point to clear the body: nothing to draw.
-  if (tip <= radius) return;
+  return { body: scaleColor(body, shade), rim: scaleColor(rim, shade) };
+}
 
-  const angle = radians(entity.velocity);
-  const half = radius * TIP_BASE_FACTOR;
-  const flank = angle + Math.PI / 2;
+function scaleColor(color: string, factor: number) {
+  const channels = [1, 3, 5].map((at) => {
+    const value = Math.round(parseInt(color.slice(at, at + 2), 16) * factor);
+    return Math.min(255, Math.max(0, value)).toString(16).padStart(2, '0');
+  });
 
-  context.beginPath();
-  context.moveTo(Math.cos(flank) * half, Math.sin(flank) * half);
-  context.lineTo(Math.cos(angle) * tip, Math.sin(angle) * tip);
-  context.lineTo(Math.cos(flank) * -half, Math.sin(flank) * -half);
-  context.closePath();
-  context.fill();
-  context.stroke();
+  return `#${channels.join('')}`;
 }
