@@ -1,6 +1,7 @@
 import { COLLISION_FRICTION } from './CONFIGURATION';
 import { canEat } from './diet';
 import { Entity, isAlive, isAnimal } from './entity';
+import { indexEntities } from './spatial';
 import {
   dotProduct,
   magnitude,
@@ -34,12 +35,24 @@ import { shortestDelta, wrapPosition } from './world';
  */
 export function resolveCollisions(entities: Entity[], worldSize: Vector) {
   const bodies = entities.filter((entity) => isAnimal(entity) && isAlive(entity));
+  if (bodies.length < 2) return;
+
+  const index = indexEntities(bodies, worldSize);
+  const position = new Map(bodies.map((body, i) => [body.id, i]));
+  const reach = broadPhaseReach(bodies);
 
   for (let i = 0; i < bodies.length; i++) {
-    for (let j = i + 1; j < bodies.length; j++) {
-      const left = bodies[i];
-      const right = bodies[j];
+    const left = bodies[i];
 
+    // Each pair is still visited once, in the order the nested loops used to
+    // visit it: `separate` moves both bodies, so a different order is a
+    // different simulation.
+    const candidates = index
+      .candidatesNear(left.position, left.size + reach)
+      .filter((other) => position.get(other.id)! > i)
+      .sort((a, b) => position.get(a.id)! - position.get(b.id)!);
+
+    for (const right of candidates) {
       if (canEat(left, right) || canEat(right, left)) continue;
 
       const delta = shortestDelta(left.position, right.position, worldSize);
@@ -51,6 +64,32 @@ export function resolveCollisions(entities: Entity[], worldSize: Vector) {
       separate(left, right, delta, distance, minDistance, worldSize);
     }
   }
+}
+
+/**
+ * How far past its own radius a body has to ask for candidates.
+ *
+ * The index is built once, before anything moves, but `separate` moves bodies
+ * while the pass runs — so a pair that was out of reach when the tree was built
+ * can be shoved into contact before it is looked at. One `maxSize` covers the
+ * other body's radius; the other two cover that drift, since a single shove is
+ * at most half the pair's combined radii and a body is rarely shoved more than
+ * twice in a tick.
+ *
+ * The cost of getting this wrong is one missed overlap for one tick — the pair
+ * is still overlapping next tick, and gets separated then. The cost of dropping
+ * the slack and being wrong is jitter that never resolves.
+ *
+ * Exported for the spec that proves the broad phase never loses a pair.
+ */
+export function broadPhaseReach(bodies: Entity[]) {
+  let maxSize = 0;
+
+  for (const body of bodies) {
+    if (body.size > maxSize) maxSize = body.size;
+  }
+
+  return maxSize * 3;
 }
 
 function separate(

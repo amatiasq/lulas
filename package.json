@@ -13,7 +13,7 @@
     "test-with-coverage": "vitest run --coverage",
     "coverage": "bun run test-with-coverage"
   },
-  "author": "A. Matías Quezada (amatiasq@gmail.com)",
+  "author": "A. Mat\u00edas Quezada (amatiasq@gmail.com)",
   "license": "BSD-2-Clause",
   "devDependencies": {
     "@types/node": "^24.3.0",
@@ -25,5 +25,8 @@
     "vite": "^8.1.5",
     "vitest": "^4.1.10"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@amatiasq/geometry": "^0.3.0",
+    "@amatiasq/quadtree": "^0.3.0"
+  }
 }

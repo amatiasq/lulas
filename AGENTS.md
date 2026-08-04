@@ -11,6 +11,12 @@ implement and test, plus the traps.
 toolchain copied from [`../flocking/`](../flocking/), specs in `user-stories/`.
 `amq lulas dev | test | build | check`.
 
+It joins the `mono/npm` workspace (`"workspaces": ["../npm/*"]`) for
+`@amatiasq/quadtree` + `@amatiasq/geometry`, as `workspace:*`. The standalone
+repo has no `../npm`, so `amq mono push-subtree` strips `workspaces` and pins
+the published versions on the way out — **the libs must be published before the
+mirror runs**, or `bun install` there 404s.
+
 Three older versions are archived in [`recover/`](recover/): `js-2014`,
 `ts-2018`, `ts-2020`. The rules came from `js-2014`, the shape from `ts-2020` —
 [`recover/README.md`](recover/README.md) has the rule-by-rule scorecard,
@@ -33,7 +39,8 @@ One concern per file; none of them is big.
 | `src/vector.ts` | plain vector maths |
 | `src/entity.ts` | the entity, per-type stats, and `energy ⇄ size` |
 | `src/diet.ts` | `canEat` / `flees` — invariant 2, in one place |
-| `src/senses.ts` | `look` and `nearest`, both toroidal |
+| `src/senses.ts` | `look` and `nearest`, both toroidal; `lookAround` asks the index first |
+| `src/spatial.ts` | the quadtree broad phase: "what is near here", wrap included |
 | `src/behavior.ts` | `decide` — flee, else hunt/eat, else flock, else coast |
 | `src/flock.ts` | boids, same species only, idle only |
 | `src/collision.ts` | solid bodies: nothing stands inside anything else |
@@ -46,6 +53,29 @@ One concern per file; none of them is big.
 
 Every vision check goes through `senses.look`, and every "can this eat that"
 through `diet.canEat`, so there is exactly one place either rule can be wrong.
+
+### The spatial index (`src/spatial.ts`)
+
+Perception and collisions used to measure the distance to every entity on the
+map, twice per tick. Both now start from a quadtree
+(`@amatiasq/quadtree`) built from the same snapshot `step` perceives from —
+32.7 → 4.5 ms/tick at 1000 entities, 299 → 26 at 3000.
+
+It is a **broad phase and nothing else**: it answers with a superset and the
+caller keeps its own predicate, because the tree's questions are rectangular and
+this world's are circular and toroidal. `senses.look` still decides what is in
+range (invariant 1 stays in one place), and `collision.resolveCollisions` still
+decides what overlaps.
+
+The wrap is handled by splitting the query at the seams — a reach that runs off
+the right edge is asked again on the left, so a corner query becomes four boxes.
+Get this wrong and nothing crashes; cells simply go blind near the borders.
+User story 14 compares the index against the brute-force scan, edge-hugging
+layouts included.
+
+`resolveCollisions` pads its queries (`broadPhaseReach`) because separating a
+pair moves it while the pass is still running, and the index was frozen before
+that. A missed pair costs one tick — they are still overlapping next tick.
 
 ## Time is steppable, and that constrains the code
 

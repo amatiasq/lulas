@@ -1,4 +1,5 @@
 import { Entity, visionOf } from './entity';
+import { EntityIndex } from './spatial';
 import { Vector } from './vector';
 import { shortestDistance } from './world';
 
@@ -14,6 +15,27 @@ export function look(cell: Entity, entities: Entity[], worldSize: Vector): Entit
     (other) =>
       other.id !== cell.id &&
       shortestDistance(cell.position, other.position, worldSize) <= range,
+  );
+}
+
+/**
+ * `look`, asked of a spatial index instead of of the whole world: the index
+ * narrows the field to the cells whose rectangle could be in range, and `look`
+ * itself still decides. Same answer, without measuring the distance to every
+ * plant on the map — which is what made this O(n²) per tick.
+ *
+ * The predicate deliberately stays in `look`. An index that also filtered would
+ * be a second place the wrap could be got wrong.
+ */
+export function lookAround(
+  cell: Entity,
+  index: EntityIndex,
+  worldSize: Vector,
+): Entity[] {
+  return look(
+    cell,
+    index.candidatesNear(cell.position, visionOf(cell)),
+    worldSize,
   );
 }
 

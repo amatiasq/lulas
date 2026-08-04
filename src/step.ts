@@ -11,7 +11,8 @@ import {
   move,
   split,
 } from './life';
-import { look } from './senses';
+import { lookAround } from './senses';
+import { indexEntities } from './spatial';
 import { World } from './world';
 
 /**
@@ -28,6 +29,10 @@ export function step(entities: Entity[], world: World): Entity[] {
   const seen = entities.map(snapshot);
   const live = new Map(entities.map((entity) => [entity.id, entity]));
 
+  // Indexed once, off the same snapshot perception reads. Nothing in the
+  // perception loop moves anything, so the tree stays true for the whole pass.
+  const index = indexEntities(seen, worldSize);
+
   for (const perceived of seen) {
     const cell = live.get(perceived.id)!;
 
@@ -38,7 +43,11 @@ export function step(entities: Entity[], world: World): Entity[] {
       continue;
     }
 
-    const intent = decide(perceived, look(perceived, seen, worldSize), worldSize);
+    const intent = decide(
+      perceived,
+      lookAround(perceived, index, worldSize),
+      worldSize,
+    );
 
     if (intent.action === 'idle') continue;
 
