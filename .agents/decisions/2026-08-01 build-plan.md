@@ -2,7 +2,7 @@
 
 **Status: DONE** (2026-08-01). All 11 steps executed; outcome, deviations and
 the calls made along the way are in
-[`../decisions/2026-08-01 build-outcome.md`](../decisions/2026-08-01%20build-outcome.md).
+[`./2026-08-01 build-outcome.md`](./2026-08-01%20build-outcome.md).
 Kept for the reasoning behind the order, which the code still follows.
 **Effort:** L · **Risk:** low technically; the risk is tuning it into something
 that dies or explodes on every run — and that is exactly where the time went.
@@ -13,7 +13,7 @@ that dies or explodes on every run — and that is exactly where the time went.
 2. [`../../AGENTS.md`](../../AGENTS.md) — the same rules as invariants, with the
    traps. Invariant 2 (type **and** size) and invariant 7 (movement costs area)
    are the two that decide whether this works.
-3. [`../decisions/2026-08-01 recovery-outcome.md`](../decisions/2026-08-01%20recovery-outcome.md)
+3. [`./2026-08-01 recovery-outcome.md`](./2026-08-01%20recovery-outcome.md)
    — what survived and what to take from where.
 4. [`../../recover/README.md`](../../recover/README.md) — the scorecard and the
    bugs found in the old code.

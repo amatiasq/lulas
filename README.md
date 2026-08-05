@@ -16,7 +16,10 @@ eat enough split in two. Watch it run and see whether it settles or collapses.
 >
 > **Controls:** `space` pauses · `←` `→` step one frame back and forward, through
 > ten seconds of recorded history · `+` `−` run it from eight times slow to eight
-> times fast. The tab title says where in time you are.
+> times fast · `d` draws the debug overlay: the quadtree's own grid over the
+> world, and a panel with the frame rate, the milliseconds a tick costs, how
+> many of each kind are alive and the total energy. The tab title says where in
+> time you are.
 >
 > Live at **https://lulas.amatiasq.com**. The 2014 original — the only old
 > version that actually eats — runs alongside it at

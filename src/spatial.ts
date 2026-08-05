@@ -16,6 +16,13 @@ import { Vector } from './vector';
  */
 export interface EntityIndex {
   candidatesNear(centre: Vector, radius: number): Entity[];
+  /**
+   * Every box the tree split itself into, for the debug overlay. Nothing in the
+   * simulation reads it: where the tree divided is invisible from the outside —
+   * the answers are the same either way — and a spatial index you cannot see is
+   * one you have to take on faith.
+   */
+  quadrants(): Rectangle[];
 }
 
 interface IndexedEntity extends IQuadEntity {
@@ -23,20 +30,30 @@ interface IndexedEntity extends IQuadEntity {
 }
 
 const EMPTY: Entity[] = [];
+const NO_QUADRANTS: Rectangle[] = [];
 
 export function indexEntities(
   entities: Entity[],
   worldSize: Vector,
 ): EntityIndex {
-  if (entities.length === 0) return { candidatesNear: () => EMPTY };
+  if (entities.length === 0) {
+    return { candidatesNear: () => EMPTY, quadrants: () => NO_QUADRANTS };
+  }
 
-  // Bounds from the entities, not from `worldSize`: `Quadnode` throws on an
-  // entity its root does not contain, and a position exactly on the far edge
-  // (or a hair outside it, mid-tick, before `wrapPosition` runs) would do it.
-  let left = Infinity;
-  let top = Infinity;
-  let right = -Infinity;
-  let bottom = -Infinity;
+  // THE WORLD, not the bounding box of the entities. Measured bounds shift by a
+  // pixel or two every tick — one cell wandering towards an edge drags the whole
+  // root with it — so every quadrant line moves every frame, and a cell changes
+  // quadrant because something else moved. Invisible until the debug overlay
+  // draws the grid, at which point the whole thing crawls.
+  //
+  // Widened to hold anything that strayed outside, because `Quadnode` throws on
+  // an entity its root does not contain rather than clamping. Positions are
+  // wrapped before every call, so this is a guard, not the normal case: while
+  // nothing is out, the root is exactly the world and the grid stands still.
+  let left = 0;
+  let top = 0;
+  let right = worldSize.x;
+  let bottom = worldSize.y;
 
   for (const { position } of entities) {
     if (position.x < left) left = position.x;
@@ -75,6 +92,10 @@ export function indexEntities(
   }
 
   return {
+    quadrants() {
+      return tree.quadrants;
+    },
+
     candidatesNear(centre: Vector, radius: number) {
       const xs = spans(centre.x, radius, worldSize.x, left, right);
       const ys = spans(centre.y, radius, worldSize.y, top, bottom);

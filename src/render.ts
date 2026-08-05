@@ -2,12 +2,12 @@ import { Entity, EntityType, isAnimal } from './entity';
 import { magnitude, radians, Vector } from './vector';
 
 /**
- * The 2014 palette — dark green plants, light green herbivores, red carnivores —
- * split in two: a dimmed body and the full-strength colour as a rim around it.
- * A flat disc reads as a blob; a dark disc with a lit edge reads as a cell.
+ * Dark green plants, light green herbivores, red carnivores, each split into a
+ * dimmed body and the full-strength colour as a rim. A flat disc reads as a
+ * blob; a dark disc with a lit edge reads as a cell.
  *
- * Exported so the render spec can tell the three apart by colour: everything is
- * a circle now, so the shape no longer says what something is.
+ * Exported because every entity is a circle, so colour is the only thing the
+ * render spec can tell the three apart by.
  */
 export const PALETTE: Record<EntityType, { body: string; rim: string }> = {
   plant: { body: '#053200', rim: '#0f9600' },
@@ -106,10 +106,9 @@ function drawAt(
   context.lineWidth = width;
   context.beginPath();
 
-  // ONE silhouette, filled and outlined once — the look borrowed from
-  // `flocking/`. It used to be a circle with a triangle tucked behind it, which
-  // is two shapes pretending to be one and reads as a ball with a dart stuck in
-  // it. A cell with nowhere to be is simply a circle.
+  // ONE silhouette, filled and outlined once. Two shapes pretending to be one
+  // (a circle with a triangle behind it) read as a ball with a dart stuck in it.
+  // A cell with nowhere to be is simply a circle.
   const speed = magnitude(entity.velocity);
   const tip = radius + speed * VELOCITY_TIP_FACTOR;
 

@@ -9,6 +9,8 @@ export interface Controllable {
 
 export interface Controls {
   readonly isPaused: boolean;
+  /** Whether the debug panel is showing. Toggled with **D**. */
+  readonly isDebug: boolean;
   /** Simulation steps per animation frame. 1 is real time. */
   readonly speed: number;
   /** One line for the tab title — the canvas carries no numbers. */
@@ -28,9 +30,12 @@ export interface Controls {
  *   history computes a new frame, so you can step forward through a chase.
  * - **+ / −** halve and double the speed, from one step every eight frames to
  *   eight steps per frame.
+ * - **D** shows the debug panel (`debug.ts`). Time control and the panel share
+ *   this file because they share the keyboard, and the page only forwards keys.
  */
 export function controls(game: Controllable): Controls {
   let isPaused = false;
+  let isDebug = false;
   let speed = 1;
   // Fractional speeds need somewhere to keep the remainder, or 0.5 truncates to
   // zero steps every frame and the simulation just stops.
@@ -44,6 +49,9 @@ export function controls(game: Controllable): Controls {
   return {
     get isPaused() {
       return isPaused;
+    },
+    get isDebug() {
+      return isDebug;
     },
     get speed() {
       return speed;
@@ -60,6 +68,10 @@ export function controls(game: Controllable): Controls {
       switch (true) {
         case code === 'Space':
           isPaused = !isPaused;
+          return true;
+
+        case code === 'KeyD':
+          isDebug = !isDebug;
           return true;
 
         case code === 'ArrowLeft':

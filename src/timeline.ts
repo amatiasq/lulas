@@ -4,17 +4,13 @@ import { Entity } from './entity';
 /**
  * The simulation plus its recent past, so time can be stepped backwards.
  *
- * Every frame is kept as a deep copy: `step()` mutates the entities it is given
- * and hands back an array of those same objects, so a stored frame that shared
- * them would quietly change under you and "the past" would be a copy of the
- * present. Advancing therefore clones the current frame first and steps the
- * clone.
+ * Every frame is a deep copy: `step()` mutates the entities it is given and
+ * hands back those same objects, so a frame that shared them would change under
+ * you and "the past" would be a copy of the present. Advancing clones first.
  *
- * The cursor is what makes it a timeline rather than a log. While it sits at the
- * end, `forward()` computes new frames; once it has been walked back, `forward()`
- * REPLAYS what already happened instead of recomputing it — the simulation has
- * randomness in it (mitosis angles, seeding), so recomputing would not give the
- * same frame back and stepping back and forth would not land where you started.
+ * While the cursor sits at the end, `forward()` computes new frames; once walked
+ * back it REPLAYS instead of recomputing — mitosis angles and seeding are
+ * random, so recomputing would not land where you started.
  */
 export interface Timeline {
   readonly current: Entity[];

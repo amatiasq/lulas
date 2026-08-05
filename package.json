@@ -27,6 +27,6 @@
   },
   "dependencies": {
     "@amatiasq/geometry": "^0.3.0",
-    "@amatiasq/quadtree": "^0.3.0"
+    "@amatiasq/quadtree": "^0.4.0"
   }
 }

@@ -18,22 +18,17 @@ import {
 import { shortestDelta } from './world';
 
 /**
- * Boids, borrowed from the sibling `flocking/` project: alignment, cohesion and
- * separation, summed and capped at FLOCKING_FORCE.
- *
- * Two rules keep it from breaking the ecosystem:
+ * Boids: alignment, cohesion and separation, summed and capped at
+ * FLOCKING_FORCE. Two rules keep it from breaking the ecosystem:
  *
  * 1. **Same species only.** A herbivore that aligns with a carnivore steers
- *    itself into its own predator; a herd is herbivores, a pack is carnivores.
- * 2. **Idle only.** `decide` reaches this after the threat scan and the prey
- *    scan have both come up empty, so flocking never gets summed with fleeing or
- *    hunting. Invariant 3 is about exactly that: a blended force leaves a
- *    herbivore drifting into the predator. This is what a cell does with the
- *    time it has left over, nothing more.
+ *    itself into its own predator.
+ * 2. **Idle only.** `decide` reaches this only after the threat and prey scans
+ *    came up empty, so flocking is never summed with fleeing or hunting — a
+ *    blended force leaves a herbivore drifting into the predator.
  *
- * Every position here goes through `shortestDelta`, so the averages are relative
- * to the cell and the wrap is handled: neighbours across an edge pull the cell
- * across it, not back through the middle of the map.
+ * Every position goes through `shortestDelta`, so neighbours across an edge pull
+ * the cell across it rather than back through the middle of the map.
  */
 export function flock(cell: Entity, visible: Entity[], worldSize: Vector): Vector {
   const neighbors = visible.filter((other) => other.type === cell.type);

@@ -8,9 +8,18 @@ import {
   REFERENCE_HEIGHT,
   REFERENCE_WIDTH,
 } from './CONFIGURATION';
+import {
+  countByType,
+  DebugStats,
+  renderDebugPanel,
+  renderQuadrants,
+  rollingAverage,
+  totalEnergy,
+} from './debug';
 import { createEntity, Entity, EntityType, maxSpeedOf } from './entity';
 import { random } from './math';
 import { render } from './render';
+import { indexEntities } from './spatial';
 import { step } from './step';
 import { timeline } from './timeline';
 import { vector, Vector } from './vector';
@@ -31,6 +40,7 @@ export function simulation({
   const interval = seedInterval(worldSize);
   const limit = plantLimit(worldSize);
   const context = canvas.getContext('2d')!;
+  const tickTime = rollingAverage();
   let ticks = 0;
 
   const time = timeline(entities, (previous) => {
@@ -48,10 +58,26 @@ export function simulation({
     return next;
   });
 
+  function stats(fps: number): DebugStats {
+    const entities = time.current;
+
+    return {
+      fps,
+      msPerTick: tickTime.value,
+      ...countByType(entities),
+      energy: totalEnergy(entities),
+    };
+  }
+
   return {
     get entities() {
       return time.current;
     },
+    /**
+     * What the debug panel shows, as numbers. The frame rate is the page's to
+     * measure — this module never sees a `requestAnimationFrame` timestamp.
+     */
+    debug: stats,
     get world() {
       return map;
     },
@@ -60,13 +86,20 @@ export function simulation({
       return time.behind;
     },
     step() {
+      // Timed for the debug panel. It measures `forward`, not `step`: the frame
+      // is cloned before it is advanced (timeline.ts) and that clone is part of
+      // what a tick costs. Replayed frames are in the average too — they are
+      // genuinely cheap, and that is the truth about walking back through time.
+      const start = performance.now();
       time.forward();
+      tickTime.add(performance.now() - start);
     },
     /** One frame into the past, as far back as HISTORY_SIZE allows. */
     back() {
       time.back();
     },
-    render() {
+    /** The world, and — when the page asks for it — the debug panel over it. */
+    render(fps?: number) {
       // The world can be bigger than the canvas (see `viableWorld`), so the
       // drawing is scaled to fit. Uniform, because the aspect ratio is kept —
       // squashed circles would lie about who is about to eat whom.
@@ -75,7 +108,30 @@ export function simulation({
       context.save();
       context.setTransform(scale, 0, 0, scale, 0, 0);
       render(context, worldSize, time.current);
+
+      // Rebuilt here rather than kept from the tick: `step` throws its index
+      // away every frame by design, and the one it built was over the positions
+      // BEFORE anything moved. This is the tree of the frame on the screen —
+      // which is the one to draw, and the one the next tick will perceive from.
+      //
+      // It is the perception tree, over everything. `resolveCollisions` builds a
+      // second one over the animals alone, and drawing both would be two grids
+      // on top of each other saying nearly the same thing.
+      //
+      // After `render`, which paints the background over anything under it.
+      if (fps != null) {
+        renderQuadrants(
+          context,
+          indexEntities(time.current, worldSize).quadrants(),
+          scale,
+        );
+      }
+
       context.restore();
+
+      // Outside the transform on purpose: the panel is measured in screen
+      // pixels, or it comes out tiny on a phone and huge on a monitor.
+      if (fps != null) renderDebugPanel(context, stats(fps));
     },
   };
 }

@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 
 import { controls } from './controls';
+import { fpsMeter } from './debug';
 import { simulation } from './simulation';
 
 setStyles();
@@ -16,19 +17,25 @@ function start() {
   const game = simulation({ canvas });
 
   const time = controls(game);
+  const fps = fpsMeter();
+
+  // `undefined` hides the panel: the frame rate is the only thing the page owns,
+  // so passing it is also how it asks for the panel to be drawn.
+  const overlay = () => (time.isDebug ? fps.fps : undefined);
 
   window.addEventListener('keydown', (event) => {
     if (!time.press(event.code, event.key)) return;
 
     event.preventDefault();
-    game.render();
+    game.render(overlay());
     document.title = time.status;
   });
 
   game.render();
-  requestAnimationFrame(function frame() {
+  requestAnimationFrame(function frame(now) {
+    fps.sample(now);
     time.frame();
-    game.render();
+    game.render(overlay());
     requestAnimationFrame(frame);
   });
 }
