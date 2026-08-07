@@ -9,13 +9,10 @@
 
 // --- Population, per screenful ----------------------------------------------
 //
-// Populations are DENSITIES, not counts. A phone and an 8K monitor would
-// otherwise get the same fifty cells, and fifty cells in a huge world never meet
-// each other: the same numbers would be a crowd on one screen and an empty field
-// on the other, and none of the tuning below would mean anything.
-//
-// So the numbers here are "how many on a screen this big", and the real count is
-// scaled by area. This is the screen everything was tuned on.
+// Populations are DENSITIES, not counts: "how many on a screen this big", scaled
+// by area. The same absolute numbers would be a crowd on a phone and an empty
+// field on an 8K monitor, and none of the tuning below would mean anything.
+// This is the screen everything was tuned on.
 export const REFERENCE_WIDTH = 1440;
 export const REFERENCE_HEIGHT = 900;
 
@@ -52,13 +49,9 @@ export const CARNIVORE_VISION_RANGE = 190;
 export const PLANT_GROWTH_RATE = 0.8;
 export const PLANT_MAX_AREA = 200;
 
-// Ticks between new seedlings appearing somewhere at random. Grazing can take a
-// patch to zero, and a plant population of zero can never recover on growth
-// alone. See AGENTS.md invariant 8 — this is part of the plant source, not a
-// second one.
-// Ticks between seedlings on a reference screen. Scaled with the area too: twice
-// the world needs twice the seedlings to hold the same density, so on a bigger
-// screen they arrive proportionally more often.
+// Ticks between seedlings on a reference screen, scaled with the area like every
+// other population figure. Grazing can take a patch to zero and growth is
+// multiplicative, so without this a flattened world stays dead forever.
 export const PLANT_SEED_INTERVAL = 4;
 
 // Seeding stops above this many plants per screenful. Without it a world whose
@@ -78,6 +71,11 @@ export const ESCAPE_FORCE = 0.2;
 // the line between them, scaled by (1 - this): 1 stops both dead, 0 is a perfect
 // bounce. Sideways speed is never touched, so grazing is free — see collision.ts.
 export const COLLISION_FRICTION = 0.35;
+
+// Area burned per tick, QUADRATIC in speed: cost = FACTOR × speed². Quadratic
+// not linear on purpose — it punishes sprinting and rewards patient predators.
+// See AGENTS.md invariant 7.
+export const MOVEMENT_ENERGY_FACTOR = 0.045;
 
 // --- Time travel -----------------------------------------------------------
 
@@ -106,11 +104,6 @@ export const FLOCKING_SEPARATION_RANGE = 0.35;
 // Cap on the summed flocking force. Well under HUNT_FORCE on purpose: herding is
 // what a cell does with its spare time, and it should never look urgent.
 export const FLOCKING_FORCE = 0.06;
-
-// Area burned per tick, QUADRATIC in speed: cost = FACTOR × speed².
-// Quadratic (not linear) on purpose — it punishes sprinting and rewards patient
-// predators, which is the strategy space we want. See AGENTS.md invariant 7.
-export const MOVEMENT_ENERGY_FACTOR = 0.045;
 
 // --- Eating ----------------------------------------------------------------
 

@@ -3,11 +3,8 @@ import { EntityIndex } from './spatial';
 import { Vector } from './vector';
 import { shortestDistance } from './world';
 
-/**
- * Everything inside the cell's vision range. Toroidal: a cell 2px from an edge
- * sees across it — every vision check in the simulation comes through here so
- * there is only one place that could get the wrap wrong.
- */
+/** Toroidal, and the only vision check in the simulation, so there is exactly one
+ * place the wrap could be got wrong. */
 export function look(cell: Entity, entities: Entity[], worldSize: Vector): Entity[] {
   const range = visionOf(cell);
 
@@ -18,15 +15,9 @@ export function look(cell: Entity, entities: Entity[], worldSize: Vector): Entit
   );
 }
 
-/**
- * `look`, asked of a spatial index instead of of the whole world: the index
- * narrows the field to the cells whose rectangle could be in range, and `look`
- * itself still decides. Same answer, without measuring the distance to every
- * plant on the map — which is what made this O(n²) per tick.
- *
- * The predicate deliberately stays in `look`. An index that also filtered would
- * be a second place the wrap could be got wrong.
- */
+/** `look` over an index's candidates instead of the whole world. The predicate
+ * deliberately stays in `look`: an index that filtered too would be a second
+ * place the wrap could be got wrong. */
 export function lookAround(
   cell: Entity,
   index: EntityIndex,

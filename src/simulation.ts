@@ -46,11 +46,8 @@ export function simulation({
   const time = timeline(entities, (previous) => {
     const next = step(previous, map);
 
-    // Seeding lives here rather than in `step` so a tick stays deterministic for
-    // the tests. It is part of the plant energy source, not a second one — see
-    // AGENTS.md invariant 8. Inside the timeline's advance, though: a seedling
-    // is part of the frame it appeared in, so walking back and forward again
-    // replays it instead of sprouting a different one.
+    // Outside `step` so a tick stays deterministic for the specs, but inside the
+    // timeline's advance so walking back and forward replays the same seedling.
     if (++ticks % interval === 0 && plantCount(next) < limit) {
       next.push(spawn('plant', worldSize));
     }
@@ -73,10 +70,7 @@ export function simulation({
     get entities() {
       return time.current;
     },
-    /**
-     * What the debug panel shows, as numbers. The frame rate is the page's to
-     * measure — this module never sees a `requestAnimationFrame` timestamp.
-     */
+    /** The frame rate is the page's to measure; nothing here sees a rAF timestamp. */
     debug: stats,
     get world() {
       return map;
@@ -86,10 +80,8 @@ export function simulation({
       return time.behind;
     },
     step() {
-      // Timed for the debug panel. It measures `forward`, not `step`: the frame
-      // is cloned before it is advanced (timeline.ts) and that clone is part of
-      // what a tick costs. Replayed frames are in the average too — they are
-      // genuinely cheap, and that is the truth about walking back through time.
+      // The panel's ms/tick measures `forward`, not `step`: the deep copy is part
+      // of what a tick costs, and replayed frames are genuinely that cheap.
       const start = performance.now();
       time.forward();
       tickTime.add(performance.now() - start);
@@ -98,10 +90,9 @@ export function simulation({
     back() {
       time.back();
     },
-    /** The world, and — when the page asks for it — the debug panel over it. */
+    /** The world, and — when the page passes an fps — the debug panel over it. */
     render(fps?: number) {
-      // The world can be bigger than the canvas (see `viableWorld`), so the
-      // drawing is scaled to fit. Uniform, because the aspect ratio is kept —
+      // The world can be bigger than the canvas (`viableWorld`). Uniform because
       // squashed circles would lie about who is about to eat whom.
       const scale = canvas.width / worldSize.x;
 
@@ -109,16 +100,10 @@ export function simulation({
       context.setTransform(scale, 0, 0, scale, 0, 0);
       render(context, worldSize, time.current);
 
-      // Rebuilt here rather than kept from the tick: `step` throws its index
-      // away every frame by design, and the one it built was over the positions
-      // BEFORE anything moved. This is the tree of the frame on the screen —
-      // which is the one to draw, and the one the next tick will perceive from.
-      //
-      // It is the perception tree, over everything. `resolveCollisions` builds a
-      // second one over the animals alone, and drawing both would be two grids
-      // on top of each other saying nearly the same thing.
-      //
-      // After `render`, which paints the background over anything under it.
+      // Rebuilt, not kept from the tick: `step`'s index was over the positions
+      // BEFORE anything moved, and this is the frame on the screen. The
+      // perception tree only — `resolveCollisions` builds a near-identical one
+      // over the animals alone. After `render`, which paints over anything under it.
       if (fps != null) {
         renderQuadrants(
           context,
@@ -129,22 +114,15 @@ export function simulation({
 
       context.restore();
 
-      // Outside the transform on purpose: the panel is measured in screen
-      // pixels, or it comes out tiny on a phone and huge on a monitor.
+      // Outside the transform: the panel is measured in screen pixels.
       if (fps != null) renderDebugPanel(context, stats(fps));
     },
   };
 }
 
-/**
- * The world to simulate on a canvas this size: the canvas itself, unless that is
- * so small the populations could not survive it, in which case the world is
- * grown to MIN_WORLD_SCREENFULS and drawn scaled down.
- *
- * The aspect ratio is kept, so the scaling is uniform and nothing is distorted.
- * A phone therefore shows the same simulation as a monitor, smaller — rather
- * than a fifth of the cells, which dies.
- */
+/** The canvas itself, unless that is too small for the populations to survive it
+ * — then MIN_WORLD_SCREENFULS, same aspect ratio, drawn scaled down. A phone
+ * shows the same simulation as a monitor, smaller; a fifth of the cells dies. */
 export function viableWorld(canvasSize: Vector): Vector {
   const area = screenfuls(canvasSize);
   if (area >= MIN_WORLD_SCREENFULS) return canvasSize;
@@ -153,12 +131,8 @@ export function viableWorld(canvasSize: Vector): Vector {
   return vector(canvasSize.x * grow, canvasSize.y * grow);
 }
 
-/**
- * How many screenfuls this world is, against the screen the simulation was tuned
- * on. Everything counted per-screen goes through here, so a phone gets a sparse
- * handful and an 8K monitor gets a crowd — at the same density, which is what
- * makes the two behave alike.
- */
+/** This world measured against the screen it was all tuned on. Every per-screen
+ * figure goes through here, so every screen gets the same density. */
 export function screenfuls(worldSize: Vector) {
   return (worldSize.x * worldSize.y) / (REFERENCE_WIDTH * REFERENCE_HEIGHT);
 }
@@ -205,5 +179,3 @@ function plantCount(entities: Entity[]) {
 function times<T>(count: number, create: () => T): T[] {
   return Array.from({ length: count }, create);
 }
-
-export default simulation;

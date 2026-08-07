@@ -2,28 +2,17 @@ import { Rectangle } from '@amatiasq/geometry';
 import { Entity, energyOf } from './entity';
 import { PALETTE } from './render';
 
-/**
- * The numbers the canvas cannot show: how fast it is running, how many of each
- * kind are alive, and how much area the world holds. **D** toggles the panel.
- *
- * Total energy is here because invariant 8 is a budget — one source (plants),
- * two sinks (mitosis, movement) — and a budget you cannot read is a budget you
- * are guessing at. A number that climbs forever, or falls to nothing, says which
- * side of it is winning long before the populations do.
- *
- * The measuring lives here and the DOM stays in `index.ts`: the page feeds
- * `requestAnimationFrame` timestamps into `fpsMeter` and hands the stats back to
- * be drawn, so everything below is reachable from a spec.
- */
 export interface DebugStats {
-  /** Animation frames per second — what the browser draws, not what it simulates. */
+  /** Frames the browser draws, not ticks simulated. */
   fps: number;
-  /** Milliseconds one simulation tick costs, averaged. 0 before the first one. */
+  /** Milliseconds one tick costs, averaged. 0 before the first one. */
   msPerTick: number;
   plants: number;
   herbivores: number;
   carnivores: number;
-  /** Total area, px². The whole of invariant 8 in one number. */
+  /** Total area in px². Invariant 8's budget in one number: climbing forever or
+   * falling to nothing says which side is winning long before the populations
+   * do. */
   energy: number;
 }
 
@@ -59,11 +48,8 @@ export function rollingAverage(size = 30) {
   };
 }
 
-/**
- * Frames per second from the timestamps the page already receives. Averaged over
- * the gaps rather than counted per second: a count needs a second to say
- * anything, and the panel is opened to watch a number move.
- */
+/** Averaged over the gaps rather than counted per second: a count needs a whole
+ * second to say anything, and the panel is opened to watch a number move. */
 export function fpsMeter(size = 30) {
   const gaps = rollingAverage(size);
   let previous = 0;
@@ -98,10 +84,7 @@ export function totalEnergy(entities: Entity[]) {
   return entities.reduce((total, entity) => total + energyOf(entity), 0);
 }
 
-/**
- * The panel's contents as text, separately from drawing them: a spec can read
- * these, and nothing about what the panel SAYS depends on a canvas.
- */
+/** Separate from drawing so a spec can read what the panel says without a canvas. */
 export function debugRows(stats: DebugStats): [string, string, string][] {
   const { plants, herbivores, carnivores } = stats;
 
@@ -116,16 +99,9 @@ export function debugRows(stats: DebugStats): [string, string, string][] {
   ];
 }
 
-/**
- * The tree's own boxes, drawn over the world. Unlike the panel this one IS in
- * world units — the boxes are world coordinates — so the caller draws it inside
- * the same transform as the cells and passes the scale, because a line one world
- * unit wide is a fat band on a world drawn small.
- *
- * What it shows: dense patches subdivide and empty water stays one big box, so a
- * herd is a knot of small squares. Parents are drawn as well as leaves, so a
- * deeply split corner reads darker — the overlapping edges stack up.
- */
+/** In WORLD units, so the caller draws it inside the same transform as the cells
+ * and passes the scale — a line one world unit wide is a fat band on a world
+ * drawn small. */
 export function renderQuadrants(
   context: CanvasRenderingContext2D,
   quadrants: Rectangle[],
@@ -142,11 +118,8 @@ export function renderQuadrants(
   context.restore();
 }
 
-/**
- * Drawn in canvas pixels, NOT in world units: the world is scaled to fit the
- * canvas (`simulation.render`), so a panel drawn inside that transform would be
- * a different size on every screen. The caller restores the transform first.
- */
+/** In canvas pixels, NOT world units — the caller restores the transform first,
+ * or the panel comes out a different size on every screen. */
 export function renderDebugPanel(
   context: CanvasRenderingContext2D,
   stats: DebugStats,

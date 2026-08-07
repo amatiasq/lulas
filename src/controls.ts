@@ -21,24 +21,13 @@ export interface Controls {
   frame(): void;
 }
 
-/**
- * Time control, kept away from the DOM so it can be tested: the page only turns
- * keydown into `press()` and requestAnimationFrame into `frame()`.
- *
- * - **space** pauses.
- * - **left / right** walk one frame at a time, and pause — right off the end of
- *   history computes a new frame, so you can step forward through a chase.
- * - **+ / −** halve and double the speed, from one step every eight frames to
- *   eight steps per frame.
- * - **D** shows the debug panel (`debug.ts`). Time control and the panel share
- *   this file because they share the keyboard, and the page only forwards keys.
- */
+/** Time control and the debug toggle, kept away from the DOM so a spec can reach
+ * them: the page only turns keydown into `press()` and rAF into `frame()`. */
 export function controls(game: Controllable): Controls {
   let isPaused = false;
   let isDebug = false;
   let speed = 1;
-  // Fractional speeds need somewhere to keep the remainder, or 0.5 truncates to
-  // zero steps every frame and the simulation just stops.
+  // The remainder of a fractional speed, or 0.5 truncates to zero steps a frame.
   let pending = 0;
 
   function scale(factor: number) {

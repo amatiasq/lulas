@@ -1,14 +1,9 @@
 import { Entity, EntityType, isAnimal } from './entity';
 import { magnitude, radians, Vector } from './vector';
 
-/**
- * Dark green plants, light green herbivores, red carnivores, each split into a
- * dimmed body and the full-strength colour as a rim. A flat disc reads as a
- * blob; a dark disc with a lit edge reads as a cell.
- *
- * Exported because every entity is a circle, so colour is the only thing the
- * render spec can tell the three apart by.
- */
+/** A dimmed body and the full-strength colour as a rim: a flat disc reads as a
+ * blob, a dark disc with a lit edge reads as a cell. Exported because every
+ * entity is a circle, so colour is all the render spec can tell them apart by. */
 export const PALETTE: Record<EntityType, { body: string; rim: string }> = {
   plant: { body: '#053200', rim: '#0f9600' },
   herbivore: { body: '#1e5e1e', rim: '#7dff7d' },
@@ -48,9 +43,8 @@ export function render(
   context.fillStyle = BACKGROUND;
   context.fillRect(0, 0, worldSize.x, worldSize.y);
 
-  // Plants are the ground layer, always under the cells: a herbivore sits ON a
-  // plant to eat it, and drawing them in array order let the plant cover the
-  // cell that was eating it. Two passes, cheaper than sorting every frame.
+  // Plants are the ground layer: a herbivore sits ON one to eat it, and array
+  // order let the plant cover the cell eating it. Two passes beat sorting.
   for (const entity of entities) {
     if (entity.type === 'plant') renderEntity(context, worldSize, entity);
   }
@@ -60,11 +54,7 @@ export function render(
   }
 }
 
-/**
- * Draw the entity, plus a copy on the far side for anything near an edge, so
- * the wrap looks seamless instead of things popping in and out.
- * (Same trick as `flocking/src/cell.ts` → `renderCell`.)
- */
+/** Anything near an edge is drawn on the far side too, or the wrap pops. */
 function renderEntity(
   context: CanvasRenderingContext2D,
   worldSize: Vector,
@@ -96,19 +86,16 @@ function drawAt(
   context.fillStyle = body;
   context.strokeStyle = rim;
 
-  // Everything is a circle, plants included. A stroke straddles the path, so the
-  // circle is drawn half a rim short of the real radius: `entity.size` is what
-  // decides who eats whom and who bumps into whom, and the drawing has to be the
-  // same size as the thing it is drawing.
+  // Half a rim short of the real radius, because a stroke straddles the path and
+  // the drawing has to be the size of the `entity.size` that decides who eats whom.
   const width = Math.min(RIM_MAX, Math.max(RIM_MIN, entity.size * RIM_FACTOR));
   const radius = Math.max(MIN_BODY_RADIUS, entity.size - width / 2);
 
   context.lineWidth = width;
   context.beginPath();
 
-  // ONE silhouette, filled and outlined once. Two shapes pretending to be one
-  // (a circle with a triangle behind it) read as a ball with a dart stuck in it.
-  // A cell with nowhere to be is simply a circle.
+  // ONE silhouette: a circle plus a separate triangle reads as a ball with a dart
+  // stuck in it. A cell with nowhere to be is simply a circle.
   const speed = magnitude(entity.velocity);
   const tip = radius + speed * VELOCITY_TIP_FACTOR;
 
@@ -117,9 +104,8 @@ function drawAt(
   } else {
     const angle = radians(entity.velocity);
 
-    // The back three quarters of the body, then out to the point and back. The
-    // arc stops short of the heading on both sides, so the nose grows out of the
-    // flanks instead of being glued to a full circle.
+    // The arc stops short of the heading on both sides, so the nose grows out of
+    // the flanks instead of being glued onto a full circle.
     context.arc(0, 0, radius, angle + NOSE_OPENING, angle - NOSE_OPENING);
     context.lineTo(Math.cos(angle) * tip, Math.sin(angle) * tip);
   }
@@ -131,17 +117,9 @@ function drawAt(
   context.restore();
 }
 
-/**
- * The type's colours, nudged a little per cell.
- *
- * Type still has to be readable at a glance — that is the whole spec — so the
- * nudge is small and never crosses between greens and reds. It is what makes
- * `flocking/` pleasant to look at: fifty identical shapes in one flat colour
- * read as a texture, and the same fifty in fifty shades read as a crowd.
- *
- * Derived from the id, so a cell keeps its shade for life instead of shimmering
- * every frame.
- */
+/** The type's colours nudged per cell — fifty shapes in one flat colour read as a
+ * texture, the same fifty in fifty shades read as a crowd. Small enough that
+ * type stays readable, and derived from the id so a cell keeps its shade. */
 export function shadeOf(entity: Entity) {
   const { body, rim } = PALETTE[entity.type];
   // A cheap hash: consecutive ids must not come out as a gradient.

@@ -28,11 +28,7 @@ export interface Entity {
   position: Vector;
   velocity: Vector;
   acceleration: Vector;
-  /**
-   * Radius, in pixels — the number the spec means by "size" everywhere (who eats
-   * whom, the mitosis threshold). Energy is derived from it; see `energyOf`.
-   * The map's dimensions are `World.worldSize`, never `size`.
-   */
+  /** Radius in pixels. The map's dimensions are `World.worldSize`, never `size`. */
   size: number;
 }
 
@@ -96,11 +92,8 @@ export function isAlive(entity: Entity) {
   return entity.size >= MIN_SIZE;
 }
 
-/**
- * Energy IS area. Ported from `recover/ts-2020/src/cell/CellBody.ts` — with one
- * field for both, "eating transfers area", "movement burns area" and "mitosis
- * loses half the area" all become arithmetic on the same number.
- */
+/** Energy IS area: one field makes eating, burning and mitosis arithmetic on the
+ * same number. From `recover/ts-2020/src/cell/CellBody.ts`. */
 export function energyOf(entity: Entity) {
   return Math.PI * entity.size ** 2;
 }

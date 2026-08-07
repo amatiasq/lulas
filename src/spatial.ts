@@ -4,24 +4,14 @@ import { Entity } from './entity';
 import { Vector } from './vector';
 
 /**
- * A frozen snapshot of where everything was, answering "what is near here?"
- * without touching the rest of the world. Rebuilt from scratch each time it is
- * needed — everything has moved since the last one, and a tree that is half
- * this frame and half the previous one is worse than no tree.
- *
- * BROAD PHASE ONLY. What comes back is a superset: the query is a rectangle (or
- * several, at the seams), the real questions are circular and toroidal. Callers
- * must keep their own predicate — `senses.look` and `resolveCollisions` do, and
- * they are the reason this returns candidates instead of answers.
+ * BROAD PHASE ONLY: what comes back is a superset, because the queries are
+ * rectangular and this world's questions are circular and toroidal. Callers keep
+ * their own predicate — that is why this returns candidates, not answers.
  */
 export interface EntityIndex {
   candidatesNear(centre: Vector, radius: number): Entity[];
-  /**
-   * Every box the tree split itself into, for the debug overlay. Nothing in the
-   * simulation reads it: where the tree divided is invisible from the outside —
-   * the answers are the same either way — and a spatial index you cannot see is
-   * one you have to take on faith.
-   */
+  /** For the debug overlay only — a spatial index you cannot see is one you have
+   * to take on faith. */
   quadrants(): Rectangle[];
 }
 
@@ -40,16 +30,9 @@ export function indexEntities(
     return { candidatesNear: () => EMPTY, quadrants: () => NO_QUADRANTS };
   }
 
-  // THE WORLD, not the bounding box of the entities. Measured bounds shift by a
-  // pixel or two every tick — one cell wandering towards an edge drags the whole
-  // root with it — so every quadrant line moves every frame, and a cell changes
-  // quadrant because something else moved. Invisible until the debug overlay
-  // draws the grid, at which point the whole thing crawls.
-  //
-  // Widened to hold anything that strayed outside, because `Quadnode` throws on
-  // an entity its root does not contain rather than clamping. Positions are
-  // wrapped before every call, so this is a guard, not the normal case: while
-  // nothing is out, the root is exactly the world and the grid stands still.
+  // THE WORLD, not the bounding box of the entities: measured bounds shift every
+  // tick, so every quadrant line moves and the debug grid crawls. Widened only
+  // as a guard, because `Quadnode` throws on an entity its root does not hold.
   let left = 0;
   let top = 0;
   let right = worldSize.x;
@@ -62,10 +45,9 @@ export function indexEntities(
     if (position.y > bottom) bottom = position.y;
   }
 
-  // A pixel of air on every side. `Rectangle` stores a centre and a half-width
-  // and derives the edges back from them, so an entity sitting exactly on the
-  // bounding box it was measured from can land a rounding error outside it —
-  // and `Quadnode` throws rather than clamp. Nothing here is precise to a pixel.
+  // A pixel of air on every side: `Rectangle` derives its edges from a centre
+  // and a half-width, so an entity sitting exactly on the bounds it was measured
+  // from can round to just outside them, and `Quadnode` throws rather than clamp.
   const pad = 1;
 
   const tree = new Quadtree(
@@ -100,10 +82,8 @@ export function indexEntities(
       const xs = spans(centre.x, radius, worldSize.x, left, right);
       const ys = spans(centre.y, radius, worldSize.y, top, bottom);
 
-      // Up to four boxes: a query near a corner reaches around both seams, and
-      // the corner diagonally opposite is inside all the same. Dropping the
-      // wrap here would be a silent regression — every vision check in this
-      // simulation is toroidal.
+      // Up to four boxes: a corner query reaches around both seams. Dropping the
+      // wrap is a silent regression — every vision check here is toroidal.
       const found = new Set<Entity>();
 
       for (const [x0, x1] of xs) {
@@ -121,11 +101,8 @@ export function indexEntities(
   };
 }
 
-/**
- * The one or two intervals a `centre ± radius` reach covers on a ring of length
- * `size`, clamped to what the tree actually holds. Two when the reach crosses
- * the seam: the part that fell off one end comes back at the other.
- */
+/** The one or two intervals a `centre ± radius` reach covers on a ring of length
+ * `size`; two when it crosses the seam and comes back at the other end. */
 function spans(
   centre: number,
   radius: number,
@@ -133,9 +110,7 @@ function spans(
   min: number,
   max: number,
 ): [number, number][] {
-  // The reach goes all the way round and meets itself. Splitting would produce
-  // overlapping boxes and double-counted candidates; the whole extent is the
-  // honest answer.
+  // The reach meets itself: splitting would double-count, so answer the lot.
   if (radius * 2 >= size) return [[min, max]];
 
   const low = centre - radius;

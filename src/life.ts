@@ -30,13 +30,8 @@ export function applyForce(cell: Entity, force: Vector) {
   cell.acceleration = sumVectors(cell.acceleration, force);
 }
 
-/**
- * One bite, capped at a fraction of the EATER's own energy — that cap is what
- * makes a big meal take several ticks. The prey shrinks and the eater grows in
- * the same step, and the transfer can never take more than is there.
- *
- * Ported from `recover/ts-2020/src/cell/CellDiet.ts`.
- */
+/** Capped at a fraction of the EATER's own energy, which is what makes a big meal
+ * take several ticks. From `recover/ts-2020/src/cell/CellDiet.ts`. */
 export function bite(eater: Entity, prey: Entity) {
   const maxBite = energyOf(eater) * MAX_BITE_FRACTION;
   const amount = Math.min(energyOf(prey), maxBite);
@@ -68,11 +63,8 @@ export function move(cell: Entity, worldSize: Vector) {
   );
 }
 
-/**
- * Moving costs area, QUADRATICALLY in speed. Small per tick, never stops, and it
- * is what makes this an ecosystem instead of a screensaver: with no plants, a
- * herbivore shrinks until it is gone.
- */
+/** QUADRATIC in speed, and the only place the cost lives — invariant 7. It is what
+ * makes this an ecosystem: with no plants, a herbivore shrinks until it is gone. */
 export function burnMovementEnergy(cell: Entity) {
   const speed = magnitude(cell.velocity);
   if (speed === 0) return 0;
@@ -86,14 +78,9 @@ export function canSplit(cell: Entity) {
   return isAlive(cell) && cell.size > mitosisSizeOf(cell);
 }
 
-/**
- * Mitosis: exactly TWO children, each at HALF the parent's radius, leaving in
- * opposite directions.
- *
- * Half the radius is a quarter of the area each, so the two together hold half
- * of what the parent had. That loss is the energy sink balancing the plants —
- * do not "fix" it. Ported from `recover/js-2014/src/life/cell.js` → `reproduce`.
- */
+/** Exactly TWO children at HALF the parent's radius, so the pair holds half its
+ * area: that loss is the sink balancing the plants, do not "fix" it. From
+ * `recover/js-2014/src/life/cell.js` → `reproduce`. */
 export function split(parent: Entity, worldSize: Vector): [Entity, Entity] {
   const size = parent.size / 2;
   const angle = Math.random() * Math.PI * 2;

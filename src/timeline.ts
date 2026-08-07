@@ -2,15 +2,10 @@ import { HISTORY_SIZE } from './CONFIGURATION';
 import { Entity } from './entity';
 
 /**
- * The simulation plus its recent past, so time can be stepped backwards.
- *
- * Every frame is a deep copy: `step()` mutates the entities it is given and
- * hands back those same objects, so a frame that shared them would change under
- * you and "the past" would be a copy of the present. Advancing clones first.
- *
- * While the cursor sits at the end, `forward()` computes new frames; once walked
- * back it REPLAYS instead of recomputing — mitosis angles and seeding are
- * random, so recomputing would not land where you started.
+ * The simulation plus its recent past. Every frame is a deep copy, because
+ * `step()` hands back the same objects it mutated; and walking forward after
+ * walking back REPLAYS rather than recomputes, because mitosis angles and
+ * seeding are random and you have to land where you started.
  */
 export interface Timeline {
   readonly current: Entity[];

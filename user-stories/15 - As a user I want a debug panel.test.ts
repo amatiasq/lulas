@@ -164,9 +164,9 @@ test('The index hands out the boxes it split itself into', () => {
   }
 });
 
-// The grid used to crawl: the root was the bounding box of the entities, so one
-// cell drifting towards an edge moved every line on the screen, and a cell could
-// change quadrant because something else moved.
+// The root must be the world, not the bounding box of the entities: with the
+// latter, one cell drifting towards an edge moves every line on the screen, and
+// a cell can change quadrant because something else moved.
 test('The grid stands still while the cells move', () => {
   const worldSize = vector(1000, 1000);
   const box = (position: ReturnType<typeof vector>) =>

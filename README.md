@@ -4,237 +4,158 @@ An ecosystem simulation. Plants grow, herbivores eat plants, carnivores eat
 herbivores, and anything big enough eats anything smaller than itself. Cells that
 eat enough split in two. Watch it run and see whether it settles or collapses.
 
-> **Status: it runs.** Built 2026-08-01 from this spec, with the rules ported
-> from `recover/js-2014` and the shape from `recover/ts-2020` — see
-> [`.agents/decisions/2026-08-01 build-outcome.md`](.agents/decisions/2026-08-01%20build-outcome.md).
->
-> ```sh
-> amq lulas dev     # http://localhost:5173
-> amq lulas test    # the specs in user-stories/
-> amq lulas check   # everything CI would run
-> ```
->
-> **Controls:** `space` pauses · `←` `→` step one frame back and forward, through
-> ten seconds of recorded history · `+` `−` run it from eight times slow to eight
-> times fast · `d` draws the debug overlay: the quadtree's own grid over the
-> world, and a panel with the frame rate, the milliseconds a tick costs, how
-> many of each kind are alive and the total energy. The tab title says where in
-> time you are.
->
-> Live at **https://lulas.amatiasq.com**. The 2014 original — the only old
-> version that actually eats — runs alongside it at
-> **[/2014](https://lulas.amatiasq.com/2014/)**; add any `?query` or `#hash` to
-> paint it on black.
->
-> `recover/` holds the three older versions this was rebuilt from. It is a closed
-> archive: read it, don't build in it.
+Live at **https://lulas.amatiasq.com**. The 2014 original — the only old version
+that actually eats — runs alongside it at
+**[/2014](https://lulas.amatiasq.com/2014/)**; add any `?query` or `#hash` to
+paint it on black. `recover/` holds the three older versions this was rebuilt
+from: read it, don't build in it.
 
-> **Name.** `lulas` used to be the folder holding a *boids/flocking* simulation.
-> That project was renamed to [`flocking/`](../flocking/), which is what it
-> actually is, and the `lulas` name came back here — to the cell-eating
-> simulation it originally belonged to.
+**Controls:** `space` pauses · `←` `→` step one frame back and forward, through
+ten seconds of recorded history · `+` `−` run it from eight times slow to eight
+times fast · `d` draws the debug overlay — the quadtree's grid over the world,
+plus frame rate, ms per tick, how many of each kind are alive and the total
+energy. The tab title says where in time you are.
 
 ## The world
 
-A rectangle that **wraps on both axes**.
+A rectangle that **wraps on both axes**: leave through the right edge and you
+come back on the left, leave through the top and you come back on the bottom.
+This is not decoration — it is a rule the rest of the simulation has to respect.
+A cell two pixels from the right edge sees most of its vision radius on the right
+*and* the rest of it wrapped around on the left, and distance between two things
+is the shortest distance across the wrap. Get it wrong and cells near the edges
+go blind to half the world.
 
 It is sized to your screen, and so is everything in it: the populations are
 densities, not counts, so a phone and an 8K monitor get the same crowding rather
 than the same fifty cells adrift in very different amounts of space. Below a
 certain size the world stops shrinking and is drawn scaled down instead — the
-camera pulls back. A world much smaller than that holds populations too small to
-survive their own bad luck, and it simply dies.
- Leave through the right edge and you
-come back on the left; leave through the top and you come back on the bottom.
-
-This is not decoration — it is a rule the rest of the simulation has to respect.
-A cell two pixels from the right edge can see most of its vision radius on the
-right side *and* the rest of it wrapped around on the left. Distance between two
-things is the shortest distance across the wrap, not the naive one. Get this
-wrong and cells near the edges go blind to half the world.
+camera pulls back — because a world much smaller than that holds populations too
+small to survive their own bad luck, and it simply dies.
 
 ## The inhabitants
 
-### Plants — dark green circles
+Everything is a circle, drawn the same way: a dimmed body with the full-strength
+colour as a rim around it. A flat disc reads as a blob; a dark disc with a lit
+edge reads as a cell.
 
-They do nothing but grow, slowly, up to a maximum size. They are the only thing
-that puts energy **into** the system.
+**Plants — dark green.** They do nothing but grow, slowly, up to a maximum size,
+and they are the only thing that puts energy **into** the system. A new seedling
+appears somewhere at random every so often, because grazing can take a patch to
+zero and a plant population of zero can never recover on growth alone; seeding
+stops at a cap, so a world whose herbivores died out does not fill up with green
+forever. They are drawn under everything else: a herbivore sitting on a plant
+covers it, never the other way round.
 
-A new seedling appears somewhere at random every `PLANT_SEED_INTERVAL` ticks,
-because grazing can take a patch to zero and a plant population of zero can
-never recover on growth alone. Seeding stops once there are `PLANT_MAX_COUNT`
-plants, so a world whose herbivores died out does not fill up with green forever.
+**Herbivores — light green.** A circle with a stick pointing out of it. The stick
+*is* the velocity readout: its direction is where the cell is heading, its length
+is how fast. No numbers on screen — you read speed off the length of the line.
+They want to eat plants, and they very much do not want to be eaten, and that
+comes first: **survival beats lunch**.
 
-They are drawn under everything else: a herbivore sitting on a plant covers it,
-never the other way round.
-
-Everything in the world is a circle, and everything is drawn the same way: a
-dimmed body with the full-strength colour as a rim around it. A flat disc reads
-as a blob; a dark disc with a lit edge reads as a cell.
-
-### Herbivores — light green circles
-
-A circle with a stick pointing out of it. The stick *is* the velocity readout:
-its direction is where the cell is heading, its length is how fast. No numbers
-on screen — you read speed off the length of the line.
-
-They want to eat plants. They also very much do not want to be eaten, and that
-comes first: **survival beats lunch**. A herbivore with a plant in front of it
-and a carnivore behind it runs.
-
-### Carnivores — red circles
-
-Same drawing as herbivores, red. They hunt the nearest herbivore inside
-`CARNIVORE_VISION_RANGE` and catch it by touching it.
-
-If no herbivore is in range but another carnivore is, they will go for the
-carnivore instead — subject to the size rule below.
-
-## Cells are solid
-
-Two cells cannot stand in the same place. They bump, push each other apart and
-lose speed doing it.
-
-With two exceptions, both of which exist so that eating still works:
-
-- **A predator and the prey it can eat go through each other.** Eating happens by
-  touching, so a solid predator would shove its meal away the moment it caught
-  it. That overlap is a meal, not a collision.
-- **Plants are not solid.** A herbivore sits on one to eat it.
-
-Everything else bumps — including two herbivores, and a carnivore against a
-herbivore too big for it to eat.
-
-## Herds and packs
-
-When a cell has nothing chasing it and nothing to eat, it does not just coast: it
-falls in with its own kind, the way the boids in [`flocking/`](../flocking/) do —
-match their heading, drift toward them, and keep out of the ones that get too
-close.
-
-Two limits keep this from turning into a different game:
-
-- **Only its own kind.** A herbivore that took its heading from a carnivore would
-  be steering into its own predator.
-- **Only when idle.** Fleeing beats it, eating beats it. It is never mixed in
-  with either; it is what a cell does with the time it has left over.
-
-**Herbivores herd. Carnivores only keep their distance** — no packs. A pack hunts
-the same herd and splits the same meal, and it turns out that starves them.
+**Carnivores — red.** Same drawing. They hunt the nearest herbivore in range and
+catch it by touching it. If no herbivore is in range but another carnivore is,
+they go for the carnivore instead — subject to the size rule.
 
 ## Eating
 
-Two things decide, and you need **both**: *what* the other cell is, and *how big*
-it is.
+Two things decide, and you need **both**.
 
 **Type says whether it is even on the menu.** Herbivores eat plants. Carnivores
 eat herbivores, and — when there is no herbivore around — other carnivores.
 Herbivores do not eat other herbivores. Carnivores do not eat plants.
 
-**Size breaks the tie.** Among cells, you can only eat one that is **strictly
-smaller** than you. Equal sizes cannot eat each other: they meet, touch, and
-drift apart.
+**Size breaks the tie.** Among cells, you can only eat one **strictly smaller**
+than you. Equal sizes cannot eat each other: they meet, touch, and drift apart.
 
-### Fear follows the same rule
-
-A cell flees what **can eat it** — which means it has to check the type too, not
-just the size. That one rule gives you all four cases:
-
-- a herbivore does **not** flee a bigger herbivore — that one cannot eat it, so
-  they pass each other by;
-- a herbivore **does** flee a bigger carnivore;
-- a carnivore does **not** flee a bigger herbivore — it just goes around it;
-- a carnivore **does** flee a bigger carnivore.
-
-So a big fat herbivore is terrifying to nobody, and a small carnivore in a field
-of large herbivores is in no danger at all — it simply cannot eat them yet.
+**Fear follows the same rule**: a cell flees what **can eat it**, which means
+checking the type too, not just the size. That one rule gives all four cases — a
+herbivore does not flee a bigger herbivore, but does flee a bigger carnivore; a
+carnivore does not flee a bigger herbivore, but does flee a bigger carnivore. So
+a big fat herbivore is terrifying to nobody, and a small carnivore in a field of
+large herbivores is in no danger at all: it simply cannot eat them yet.
 
 **Eating is a transfer of area, and it takes time.** A plant of 10 px² makes the
 cell that eats it 10 px² bigger — but not in one frame. It drains over a few
-ticks, more for a bigger plant (call it ~5 ticks for a large one), so you can
-watch a cell sitting on a plant, consuming it.
+ticks, more for a bigger plant (call it ~5 for a large one), so you can watch a
+cell sitting on a plant, consuming it.
+
+## Cells are solid
+
+Two cells cannot stand in the same place: they bump, push each other apart and
+lose speed doing it. With two exceptions, both of which exist so that eating
+still works — **a predator and the prey it can eat go through each other**
+(eating happens by touching, so a solid predator would shove its meal away the
+moment it caught it), and **plants are not solid**, so a herbivore can sit on one
+to eat it. Everything else bumps, including two herbivores and a carnivore
+against a herbivore too big for it.
+
+## Herds and packs
+
+When a cell has nothing chasing it and nothing to eat, it does not just coast: it
+falls in with its own kind, the way the boids in [`flocking/`](../flocking/) do —
+match their heading, drift toward them, keep out of the ones that get too close.
+
+Two limits keep it from turning into a different game. **Only its own kind**: a
+herbivore that took its heading from a carnivore would be steering into its own
+predator. **Only when idle**: fleeing beats it, eating beats it, and it is never
+mixed in with either.
+
+**Herbivores herd. Carnivores only keep their distance** — no packs. A pack hunts
+the same herd and splits the same meal, and it turns out that starves them.
 
 ## Moving costs energy
 
-Cells burn area just by going somewhere. It is slow — a cell loses a little on
-every tick it moves — but it never stops, and **the faster it goes the more it
-costs**. The cost is **quadratic** in speed (`factor × speed²`), which is the
-choice that punishes sprinting and rewards a predator that waits.
+Cells burn area just by going somewhere. It is slow, but it never stops, and
+**the faster it goes the more it costs**: the cost is **quadratic** in speed,
+which is the choice that punishes sprinting and rewards a predator that waits.
 
-This is what makes the whole thing an ecosystem rather than a screensaver:
-
-- take the plants away and the herbivores shrink, tick by tick, until they are
-  gone;
-- a carnivore that keeps missing its prey starves the same way;
-- and chasing is expensive, so a hunt that goes on too long costs more than the
-  meal at the end of it.
+This is what makes the whole thing an ecosystem rather than a screensaver. Take
+the plants away and the herbivores shrink, tick by tick, until they are gone; a
+carnivore that keeps missing its prey starves the same way; and chasing is
+expensive, so a hunt that goes on too long costs more than the meal at the end.
 
 ## Mitosis
 
-Every cell — herbivore or carnivore — splits when it reaches a maximum size. The
-two children shoot off in **opposite directions** (any axis; what matters is that
-they are opposed).
+Every cell splits when it reaches a maximum size. The two children shoot off in
+**opposite directions** and **each gets half the parent's *radius***: a parent of
+radius 20 produces two children of radius 10.
 
-**Each child gets half the parent's *radius*.** A parent of radius 20 produces
-two children of radius 10.
+That is deliberately lossy, and it is the point. Halving the radius quarters the
+area, so the two children hold **half** the area the parent had. The rest is
+gone, spent on splitting.
 
 **Relatives are not special.** Two cells that just split from the same parent can
 eat each other like anybody else — except that they are exactly the same size, so
 the size rule already means they cannot, and by the time one has outgrown the
 other they are strangers. (Every recovered version had an `isFamily` check; this
-one deliberately does not. The equal-size rule does the job the check was there
-for.)
-
-That is deliberately lossy, and it is the point. Halving the radius quarters the
-area, so two children hold **half** the area the parent had. The rest is gone —
-spent on splitting.
+one deliberately does not, because the equal-size rule does its job.)
 
 So the whole system is a budget. **Plants are the only thing paying energy in.
 Two things burn it: splitting, and simply moving around.** Whether the population
 booms, starves or oscillates falls out of the balance between them.
 
-## Tuning knobs
+## Tuning
 
-**One file, constants and nothing else.** No logic, no helpers, no computed
-defaults reaching into other modules — a flat list of named numbers you can open
-and read in ten seconds. This simulation is tuned by feel, and the tuning session
-is a lot of small edits to these values; anything else in that file gets in the
-way. (`flocking/` does the same in `src/CONFIGURATION.ts` — copy the shape.)
+Every number lives in [`src/CONFIGURATION.ts`](src/CONFIGURATION.ts) — **one
+file, constants and nothing else**. This simulation is tuned by feel, and a
+tuning session is a lot of small edits to those values; anything else in that
+file gets in the way. (`flocking/` does the same — copy the shape.)
 
-They live in [`src/CONFIGURATION.ts`](src/CONFIGURATION.ts). The ones that decide
-whether the ecosystem lives or dies:
+The pairing that decides whether the ecosystem lives or dies: a herbivore lives
+between half `HERBIVORE_MITOSIS_SIZE` and all of it, and a carnivore that drops
+under that band has nothing left it is allowed to eat, so it is a dead carnivore
+walking. [`AGENTS.md`](AGENTS.md) has the measurements.
 
-| constant | what it controls |
-| --- | --- |
-| `HERBIVORE_VISION_RANGE` | how far a herbivore sees plants and threats |
-| `CARNIVORE_VISION_RANGE` | how far a carnivore sees prey |
-| `PLANT_GROWTH_RATE`, `PLANT_SEED_INTERVAL` | how fast energy enters the system |
-| `HERBIVORE_MITOSIS_SIZE`, `CARNIVORE_MITOSIS_SIZE` | the size at which a cell splits |
-| `MOVEMENT_ENERGY_FACTOR` | how much area speed costs per tick |
-| `MAX_BITE_FRACTION` | how many ticks it takes to drain a plant / a cell |
-| `COLLISION_FRICTION` | how much speed a bump costs |
-| `FLOCKING_*` | how tightly herbivores herd, and how far cells stay off each other |
+## Not built yet
 
-The two mitosis sizes are one knob in practice: a herbivore lives between half
-`HERBIVORE_MITOSIS_SIZE` and all of it, and a carnivore that drops under that
-band has nothing left it is allowed to eat, so it is a dead carnivore walking.
-
-Recovered code may spell it `HERVIVORE_*` (the Spanish spelling leaking in);
-normalise to `HERBIVORE_*` when bringing it in.
-
-## Phase 2 — take the wheel
-
-Let the arrow keys drive one cell. It behaves normally on its own, but while the
-user is steering, the user wins. Being bigger or smaller than what you steer into
-still decides who eats whom.
-
-(The flocking project has its own version of this idea, for boids rather than
-predators — [`flocking/.agents/plans/keyboard-controlled-boid.md`](../flocking/.agents/plans/keyboard-controlled-boid.md).)
+**Take the wheel:** let the arrow keys drive one cell. It behaves normally on its
+own, but while the user is steering, the user wins; being bigger or smaller than
+what you steer into still decides who eats whom. The flocking project has the
+same idea for boids, with the input-layer landmines written up:
+[`flocking/.agents/plans/keyboard-controlled-boid.md`](../flocking/.agents/plans/keyboard-controlled-boid.md).
 
 ## See also
 
-- [`AGENTS.md`](AGENTS.md) — the rules restated as implementable invariants,
-  plus what lives in which file.
-- [`.agents/decisions/2026-08-01 build-outcome.md`](.agents/decisions/2026-08-01%20build-outcome.md)
-  — what was ported from where, and the calls made while building.
-- [`.agents/plans/recover.md`](.agents/plans/recover.md) — finding the old code.
+[`AGENTS.md`](AGENTS.md) — the glossary and the same rules as invariants, with
+the traps. [`.agents/decisions/`](.agents/decisions) — how it got here.

@@ -17,19 +17,8 @@ import {
 } from './vector';
 import { shortestDelta } from './world';
 
-/**
- * Boids: alignment, cohesion and separation, summed and capped at
- * FLOCKING_FORCE. Two rules keep it from breaking the ecosystem:
- *
- * 1. **Same species only.** A herbivore that aligns with a carnivore steers
- *    itself into its own predator.
- * 2. **Idle only.** `decide` reaches this only after the threat and prey scans
- *    came up empty, so flocking is never summed with fleeing or hunting — a
- *    blended force leaves a herbivore drifting into the predator.
- *
- * Every position goes through `shortestDelta`, so neighbours across an edge pull
- * the cell across it rather than back through the middle of the map.
- */
+/** Boids among cells of the same type only, and only when idle — AGENTS.md
+ * invariant 10. Callers must not sum this with fleeing or hunting. */
 export function flock(cell: Entity, visible: Entity[], worldSize: Vector): Vector {
   const neighbors = visible.filter((other) => other.type === cell.type);
 
@@ -39,10 +28,8 @@ export function flock(cell: Entity, visible: Entity[], worldSize: Vector): Vecto
     shortestDelta(cell.position, other.position, worldSize),
   );
 
-  // Carnivores get separation and nothing else: they spread out to cover the
-  // map instead of travelling as a pack. This is not decoration — a pack hunts
-  // the same herd, splits the same meal and burns the same area doing it, and
-  // with cohesion on, carnivores went extinct in half the long runs.
+  // Separation only: with cohesion on, carnivores went extinct in half the long
+  // runs — a pack hunts the same herd and splits the same meal.
   if (cell.type === 'carnivore') {
     return limitVector(separation(cell, deltas), FLOCKING_FORCE);
   }
@@ -76,11 +63,8 @@ function cohesion(deltas: Vector[]) {
   return multiplyVectors(average, FLOCKING_COHESION_FACTOR);
 }
 
-/**
- * Keep out of the ones that got too close. This is the soft version of
- * `collision.ts`: it steers a cell away before contact, where the collision code
- * only untangles cells that already overlap.
- */
+/** Keep out of the ones that got too close — the soft version of `collision.ts`,
+ * which only untangles cells that already overlap. */
 function separation(cell: Entity, deltas: Vector[]) {
   const limit = visionOf(cell) * FLOCKING_SEPARATION_RANGE;
   const close = deltas.filter((delta) => magnitude(delta) < limit);

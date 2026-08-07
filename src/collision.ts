@@ -14,19 +14,8 @@ import {
 } from './vector';
 import { shortestDelta, wrapPosition } from './world';
 
-/**
- * Cells are solid: overlaps are pushed apart, each cell giving half the
- * correction, and the pair trades velocities damped by COLLISION_FRICTION.
- *
- * TWO THINGS ARE DELIBERATELY NOT SOLID:
- *
- * - **A pair where one can eat the other.** Eating is gated on `isTouching`, so
- *   a solid predator would shove its meal away and never take a second bite.
- * - **Plants.** Scenery and food, not bodies: a herbivore has to sit on one.
- *
- * So the pairs that collide are exactly the ones `canEat` rejects in both
- * directions, equal sizes included.
- */
+/** Cells are solid, except plants and any pair where one can eat the other —
+ * AGENTS.md invariant 9, which is where the exemptions are argued. */
 export function resolveCollisions(entities: Entity[], worldSize: Vector) {
   const bodies = entities.filter((entity) => isAnimal(entity) && isAlive(entity));
   if (bodies.length < 2) return;
@@ -59,19 +48,9 @@ export function resolveCollisions(entities: Entity[], worldSize: Vector) {
   }
 }
 
-/**
- * How far past its own radius a body has to ask for candidates.
- *
- * The index is built once, before anything moves, but `separate` moves bodies
- * while the pass runs, so a pair out of reach when the tree was built can be
- * shoved into contact before it is looked at. One `maxSize` covers the other
- * body's radius; the other two cover that drift.
- *
- * Too little slack costs one missed overlap for one tick, which the next tick
- * resolves. No slack at all costs jitter that never resolves.
- *
- * Exported for the spec that proves the broad phase never loses a pair.
- */
+/** Slack on top of the querying body's radius: the index was frozen before
+ * `separate` started shoving bodies into contact behind its back. One `maxSize`
+ * covers the other body, the other two that drift. */
 export function broadPhaseReach(bodies: Entity[]) {
   let maxSize = 0;
 
@@ -101,13 +80,9 @@ function separate(
   );
   right.position = wrapPosition(sumVectors(right.position, push), worldSize);
 
-  // Trade velocity ALONG THE LINE BETWEEN THEM, and only that. Two cells meeting
-  // head-on still stop; two brushing past each other keep the speed that was
-  // never aimed at the other one and slide.
-  //
-  // Swapping the whole velocity vector instead makes the sim feel sluggish: in a
-  // herd cells are in near-continuous contact, so every graze — even at a right
-  // angle — costs half the speed (2.2 px/tick average against a 3.6 limit).
+  // Trade velocity ALONG THE LINE BETWEEN THEM and nothing else, so grazing is
+  // free and only head-on hits cost. Swapping whole vectors averaged 2.2 px/tick
+  // against a 3.6 limit — a herd is in near-continuous contact.
   const normal = normalize(direction);
   const leftSpeed = dotProduct(left.velocity, normal);
   const rightSpeed = dotProduct(right.velocity, normal);

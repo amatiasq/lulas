@@ -16,13 +16,10 @@ import { indexEntities } from './spatial';
 import { World } from './world';
 
 /**
- * One tick of the world, as a pure-ish function: it mutates the entities it is
- * given and returns the next generation (splits added, the dead dropped).
- *
- * Perception reads a SNAPSHOT taken before anything moves — a double buffer, so
- * a cell reacts to the frame it saw, not to a world half-updated by the cells
- * that happened to be earlier in the array. Eating and movement then apply to
- * the live entities, matched back by id.
+ * One tick: mutates the entities it is given and returns the next generation.
+ * Everyone perceives a SNAPSHOT taken before anything moves, so a cell reacts to
+ * the frame it saw and not to a world half-updated by whoever came earlier in
+ * the array; acting then applies to the live entities, matched back by id.
  */
 export function step(entities: Entity[], world: World): Entity[] {
   const { worldSize } = world;
