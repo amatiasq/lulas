@@ -5,14 +5,6 @@
 # tests with coverage followed by typecheck + build. Runtime is Bun, like the
 # sibling `flocking` project this toolchain was copied from.
 
-case "$1" in
-  -h|--help)
-    echo "Usage: amq lulas check — run the full check (Bun)"
-    echo
-    echo "  bun install (if needed) + test-with-coverage + (typecheck && build)"
-    exit 0;;
-esac
-
 if [ ! -d node_modules ]; then
   echo "==> bun install"; bun install --frozen-lockfile
 else

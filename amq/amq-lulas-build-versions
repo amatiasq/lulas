@@ -23,22 +23,11 @@
  *
  * Plain JS on purpose: an `amq` command is an executable with no extension, so
  * node cannot type-strip it.
- *
- * Flags:
- *   --help   show this help, copy nothing
  */
 import { build } from 'esbuild';
 import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
-if (process.argv.includes('--help') || process.argv.includes('-h')) {
-  console.log('Usage: amq lulas build-versions');
-  console.log('');
-  console.log('Copies the recovered simulations into dist/ (today: /2014).');
-  console.log('Must run after `vite build` and before `amq lulas build-sw`.');
-  process.exit(0);
-}
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');

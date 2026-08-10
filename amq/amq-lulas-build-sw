@@ -13,22 +13,11 @@
  * Adapted from `sanremo/amq/amq-sanremo-build-sw`; sanremo's core/optional split is gone
  * because here everything is core. Plain JS on purpose: an `amq` command is an executable
  * with no extension, so node cannot type-strip it.
- *
- * Flags:
- *   --help   show this help, generate nothing
  */
 import { createHash } from 'node:crypto';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
-if (process.argv.includes('--help') || process.argv.includes('-h')) {
-  console.log('Usage: amq lulas build-sw');
-  console.log('');
-  console.log('Generates dist/sw.js precaching the whole built site, so the');
-  console.log('simulation runs offline. Must run after `vite build`.');
-  process.exit(0);
-}
 
 // amq/ sits at the project root, so `..` is lulas/.
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

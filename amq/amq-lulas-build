@@ -2,8 +2,4 @@
 # amq lulas build — typecheck (tsc --noEmit), produce the Vite bundle in dist/,
 # then generate dist/sw.js from what was emitted.
 
-case "$1" in
-  -h|--help) echo "Usage: amq lulas build — typecheck + build the production bundle"; exit 0;;
-esac
-
 exec bun run build
