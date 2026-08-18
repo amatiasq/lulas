@@ -153,7 +153,7 @@ walking. [`AGENTS.md`](AGENTS.md) has the measurements.
 own, but while the user is steering, the user wins; being bigger or smaller than
 what you steer into still decides who eats whom. The flocking project has the
 same idea for boids, with the input-layer landmines written up:
-[`flocking/.agents/plans/keyboard-controlled-boid.md`](../flocking/.agents/plans/keyboard-controlled-boid.md).
+[`flocking/.agents/decisions/2026-08-04 keyboard-slider-offline.md`](../flocking/.agents/decisions/2026-08-04%20keyboard-slider-offline.md).
 
 ## See also
 
