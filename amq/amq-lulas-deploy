@@ -22,7 +22,7 @@ docker push "$IMAGE:latest"
 docker push "$IMAGE:$STAMP"
 
 echo "==> ship infra (compose) to VPS"
-amq deploy-infra "$SERVICE"
+amq vps deploy "$SERVICE"
 
 echo "==> pull-and-restart on VPS"
 amq vps pull-and-restart "$SERVICE"
