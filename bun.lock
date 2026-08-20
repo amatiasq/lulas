@@ -35,28 +35,11 @@
       "name": "@amatiasq/geometry",
       "version": "0.3.0",
     },
-    "../npm/json-socket": {
-      "name": "@amatiasq/json-socket",
-      "version": "3.0.0",
-      "dependencies": {
-        "@amatiasq/emitter": "workspace:^",
-      },
-    },
     "../npm/keyboard": {
       "name": "@amatiasq/keyboard",
       "version": "2.0.0",
       "dependencies": {
         "@amatiasq/emitter": "workspace:^",
-      },
-    },
-    "../npm/nice-socket": {
-      "name": "@amatiasq/nice-socket",
-      "version": "0.2.0",
-      "dependencies": {
-        "ws": "^7.3.1",
-      },
-      "devDependencies": {
-        "@types/ws": "^7.4.7",
       },
     },
     "../npm/peer-connection": {
@@ -74,11 +57,11 @@
         "@amatiasq/geometry": "workspace:^",
       },
     },
-    "../npm/resilient-socket": {
-      "name": "@amatiasq/resilient-socket",
-      "version": "0.2.0",
-      "dependencies": {
-        "@amatiasq/emitter": "workspace:^",
+    "../npm/scad-ts": {
+      "name": "scad-ts",
+      "version": "1.0.0",
+      "bin": {
+        "openscad": "./bin/openscad.js",
       },
     },
     "../npm/scheduler": {
@@ -87,15 +70,9 @@
     },
     "../npm/socket": {
       "name": "@amatiasq/socket",
-      "version": "0.3.0",
+      "version": "2.0.0",
       "dependencies": {
         "@amatiasq/emitter": "workspace:^",
-        "@amatiasq/resilient-socket": "workspace:^",
-        "ws": "^7.3.1",
-      },
-      "devDependencies": {
-        "@types/node": "^24.0.0",
-        "@types/ws": "^7.4.7",
       },
     },
   },
@@ -108,17 +85,11 @@
 
     "@amatiasq/geometry": ["@amatiasq/geometry@workspace:../npm/geometry"],
 
-    "@amatiasq/json-socket": ["@amatiasq/json-socket@workspace:../npm/json-socket"],
-
     "@amatiasq/keyboard": ["@amatiasq/keyboard@workspace:../npm/keyboard"],
-
-    "@amatiasq/nice-socket": ["@amatiasq/nice-socket@workspace:../npm/nice-socket"],
 
     "@amatiasq/peer-connection": ["@amatiasq/peer-connection@workspace:../npm/peer-connection"],
 
     "@amatiasq/quadtree": ["@amatiasq/quadtree@workspace:../npm/quadtree"],
-
-    "@amatiasq/resilient-socket": ["@amatiasq/resilient-socket@workspace:../npm/resilient-socket"],
 
     "@amatiasq/scheduler": ["@amatiasq/scheduler@workspace:../npm/scheduler"],
 
@@ -269,8 +240,6 @@
     "@types/estree": ["@types/estree@1.0.9", "", {}, "sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg=="],
 
     "@types/node": ["@types/node@24.13.3", "", { "dependencies": { "undici-types": "~7.18.0" } }, "sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q=="],
-
-    "@types/ws": ["@types/ws@7.4.7", "", { "dependencies": { "@types/node": "*" } }, "sha512-JQbbmxZTZehdc2iszGKs5oC3NFnjeay7mtAWrdt7qNtAVK0g19muApzAy4bm9byz79xa2ZnO/BOBC2R8RC5Lww=="],
 
     "@typescript/typescript-aix-ppc64": ["@typescript/typescript-aix-ppc64@7.0.2", "", { "os": "aix", "cpu": "ppc64" }, "sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ=="],
 
@@ -446,6 +415,8 @@
 
     "saxes": ["saxes@6.0.0", "", { "dependencies": { "xmlchars": "^2.2.0" } }, "sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA=="],
 
+    "scad-ts": ["scad-ts@workspace:../npm/scad-ts"],
+
     "semver": ["semver@7.8.5", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA=="],
 
     "siginfo": ["siginfo@2.0.0", "", {}, "sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g=="],
@@ -497,8 +468,6 @@
     "whatwg-url": ["whatwg-url@16.0.1", "", { "dependencies": { "@exodus/bytes": "^1.11.0", "tr46": "^6.0.0", "webidl-conversions": "^8.0.1" } }, "sha512-1to4zXBxmXHV3IiSSEInrreIlu02vUOvrhxJJH5vcxYTBDAx51cqZiKdyTxlecdKNSjj8EcxGBxNf6Vg+945gw=="],
 
     "why-is-node-running": ["why-is-node-running@2.3.0", "", { "dependencies": { "siginfo": "^2.0.0", "stackback": "0.0.2" }, "bin": { "why-is-node-running": "cli.js" } }, "sha512-hUrmaWBdVDcxvYqnyh09zunKzROWjbZTiNy8dBEjkS7ehEDQibXJ7XvlmtbwuTclUiIyN+CyXQD4Vmko8fNm8w=="],
-
-    "ws": ["ws@7.5.13", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": "^5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-rsKI6xDBFVf4r/x8XyChGK04QR/XHroxs/jUcoWvtEZM8TPU/X/uIY9B1CsSzYws9ZJb/6bbBu7dPhFW00CAoA=="],
 
     "xml-name-validator": ["xml-name-validator@5.0.0", "", {}, "sha512-EvGK8EJ3DhaHfbRlETOWAS5pO9MZITeauHKJyb8wyajUfQUenkIg2MvLDTZ4T/TgIcm3HU0TFBgWWboAZ30UHg=="],
 
