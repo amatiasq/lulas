@@ -1,9 +1,8 @@
 # lulas — AGENTS.md
 
-Predator/prey ecosystem simulation on a map that wraps on both axes. The spec in
-prose is [`README.md`](README.md); this file is the glossary and the invariants,
-none of which crash when broken — they make the simulation quietly wrong, so each
-carries the reason it exists.
+Predator/prey ecosystem simulation on a map that wraps on both axes. This file
+is the spec: the glossary and the invariants, none of which crash when broken —
+they make the simulation quietly wrong, so each carries the reason it exists.
 
 `recover/` (`js-2014`, `ts-2018`, `ts-2020`) and `versions/` are a **closed
 archive**: read them, port from them, never lint, format, build on or **add a

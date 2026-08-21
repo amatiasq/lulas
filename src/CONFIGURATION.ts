@@ -1,11 +1,7 @@
-// Every tunable number in the simulation.
-//
-// CONSTANTS AND NOTHING ELSE. No logic, no helpers, no value computed from
-// another module — the tuning loop is "change a number, watch, change it again",
-// and a constant computed elsewhere means the value you read is not the value
-// that runs. See AGENTS.md.
-//
-// Sizes are radii in pixels; energy is area in px² (energy = π·size²).
+// Every tunable number in the simulation. CONSTANTS AND NOTHING ELSE — the
+// tuning loop is "change a number, watch, change it again", and a constant
+// computed elsewhere means the value you read is not the value that runs
+// (AGENTS.md). Sizes are radii in px; energy is area in px² (π·size²).
 
 // --- Population, per screenful ----------------------------------------------
 //

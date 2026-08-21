@@ -14,14 +14,12 @@ setFilename(__dirname, __filename);
 const { worldSize } = TEST_WORLD;
 
 /**
- * Perception and collisions go through a quadtree now, so "the same answer as
- * measuring the distance to everything" stopped being true by construction. A
- * lost neighbour does not crash anything — the ecosystem just quietly behaves
- * differently — which is why it gets a spec instead of a smoke test.
- *
- * The wrap is the sharp edge: the tree knows nothing about a toroidal world, so
- * a query near an edge has to be split and asked again on the far side. Half
- * the layouts below are deliberately pressed against the edges and corners.
+ * Perception and collisions go through a quadtree, so "same answer as
+ * measuring the distance to everything" became something to prove: a lost
+ * neighbour just quietly changes the ecosystem. The wrap is the sharp edge —
+ * the tree knows nothing about a toroidal world, so edge queries split and
+ * ask again on the far side; half the layouts below press against edges and
+ * corners on purpose.
  */
 function randoms(seed: number) {
   let state = seed;

@@ -6,12 +6,9 @@ project**: the trees are verbatim, unformatted, un-upgraded. Do not lint or
 modernise them — read them, take what is right, and build the real thing at the
 project root.
 
-**Its dependency alerts are dismissed, not fixed.** These lockfiles are full of
-2014–2020 packages with known vulnerabilities, and that is correct: nothing here
-is ever installed, built, run or deployed. Dependabot's 328 alerts against this
-folder were dismissed as `not_used` on 2026-08-02. `.github/dependabot.yml`
-cannot prevent new ones — security updates are alert-driven, not config-driven —
-so dismiss any that appear rather than "fixing" the archive.
+**Its dependency alerts are dismissed, not fixed** — nothing here is ever
+installed or run. Config cannot prevent new alerts, so dismiss any that appear
+(`not_used`) rather than "fixing" the archive.
 
 ## Provenance
 
@@ -34,14 +31,6 @@ git --git-dir=lulas.git archive <commit> | tar -x -C <dir>
 The `.git` directories were deliberately **not** copied in — a nested repo inside
 mono becomes a gitlink and stops being readable. The commits above are the
 provenance; the mirror clone is one command away.
-
-### About the VPS copy
-
-`amatiasq.com:~/vps/repos/lulas` is a detached-HEAD checkout at `2bcd8c1`,
-last touched 2024-03-19. It is **byte-identical in provenance to `ts-2020/`** —
-same commit — so it is not a fourth version and nothing was uniquely at risk
-there. The earlier worry that it might be the only copy was wrong: the commit is
-on two GitHub branches.
 
 ## Scorecard
 
@@ -164,9 +153,9 @@ Worth knowing before copying any of it.
 - **`ts-2020` mitosis conserves energy and can make more than two children.**
   `childCount = floor(size / (minSize / 2))`, `childEnergy = energy / childCount`.
   No loss, no opposite directions. Contradicts the spec twice over.
-- Both TS versions carry `isFamily` — relatives never eat each other. Not in the
+- All three versions carry `isFamily` — relatives never eat each other. Not in the
   spec. It is a nice idea; decide deliberately rather than inheriting it.
 
 ## Recommendation
 
-See [`../.agents/decisions/2026-08-01 recovery-outcome.md`](../.agents/decisions/2026-08-01%20recovery-outcome.md).
+See [`../.agents/decisions/2026-08-01 recovery-and-build.md`](../.agents/decisions/2026-08-01%20recovery-and-build.md).
