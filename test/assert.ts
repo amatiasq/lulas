@@ -4,7 +4,7 @@
 // tests use is implemented here; it works identically in the browser and in
 // Vitest's node environment.
 
-export class AssertionError extends Error {
+class AssertionError extends Error {
   constructor(message?: string) {
     super(message || 'Assertion failed');
     this.name = 'AssertionError';
@@ -24,7 +24,7 @@ export function equal(actual: unknown, expected: unknown, message?: string) {
   assert(actual == expected, message ?? `${actual} == ${expected}`);
 }
 
-export function notEqual(actual: unknown, expected: unknown, message?: string) {
+function notEqual(actual: unknown, expected: unknown, message?: string) {
   assert(actual != expected, message ?? `${actual} != ${expected}`);
 }
 

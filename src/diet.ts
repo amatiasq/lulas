@@ -8,7 +8,7 @@ const MENU: Record<EntityType, readonly EntityType[]> = {
   carnivore: ['herbivore', 'carnivore'],
 };
 
-export function isOnMenu(eater: Entity, target: Entity) {
+function isOnMenu(eater: Entity, target: Entity) {
   return MENU[eater.type].includes(target.type);
 }
 

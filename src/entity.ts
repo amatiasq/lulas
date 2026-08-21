@@ -114,8 +114,3 @@ export function isTouching(left: Entity, right: Entity, worldSize: Vector) {
   );
 }
 
-export function logEntity(entity: Entity) {
-  return `${entity.type}(${entity.id}) r=${entity.size.toFixed(2)} { pos: ${logVector(
-    entity.position,
-  )}, vel: ${logVector(entity.velocity)} }`;
-}
