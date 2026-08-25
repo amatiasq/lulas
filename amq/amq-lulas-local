@@ -1,4 +1,8 @@
 #!/bin/bash -e
 # amq lulas local — Vite dev server with HMR. Foreground; Ctrl-C stops it.
 
+case "$1" in
+  -h|--help|help) awk 'NR>1 && !/^#/{exit} NR>1{sub(/^# ?/, ""); print}' "$0"; exit 0;;
+esac
+
 exec bun run dev

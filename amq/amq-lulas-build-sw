@@ -2,22 +2,26 @@
 /**
  * amq lulas build-sw — generate dist/sw.js from the built site.
  *
- * The simulation has no server state at all: it is an index.html, one bundle and a canvas.
- * So the worker PRECACHES everything `vite build` emitted and serves it cache-first. The
- * file list is only known at build time (hashed names), and the cache name is a hash of
- * that list, so any deploy that changes a byte ships a new cache and drops the old one.
+ * No server state at all, so the worker PRECACHES everything `vite build` emitted and
+ * serves it cache-first. The cache name hashes the contents, so any deploy that changes
+ * a byte ships a new cache and drops the old one. Reads dist/, so it must run AFTER
+ * `vite build` — `bun run build` chains it, and that is normally the only place it is
+ * invoked from.
  *
- * Reads dist/, so it must run AFTER `vite build` — `bun run build` chains it, and that is
- * normally the only place it is invoked from.
- *
- * Adapted from `sanremo/amq/amq-sanremo-build-sw`; sanremo's core/optional split is gone
- * because here everything is core. Plain JS on purpose: an `amq` command is an executable
- * with no extension, so node cannot type-strip it.
+ * Plain JS on purpose: an `amq` command is an executable with no extension, so node
+ * cannot type-strip it.
  */
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+if (['-h', '--help', 'help'].includes(process.argv[2])) {
+  const src = readFileSync(fileURLToPath(import.meta.url), 'utf8');
+  console.log(src.slice(0, src.indexOf('*/')).split('\n').slice(1).map((l) => l.replace(/^\s*\/?\*+ ?/, '')).join('\n').trim());
+  process.exit(0);
+}
 
 // amq/ sits at the project root, so `..` is lulas/.
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

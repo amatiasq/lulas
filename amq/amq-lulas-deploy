@@ -1,14 +1,16 @@
 #!/bin/bash -e
+# amq lulas deploy — build the lulas image (linux/amd64), push it, and restart the
+# container on the VPS. The image is also tagged with a timestamp, so rolling back
+# is pinning an older tag in lulas/infra/compose.yml.
+#
+# The image is nginx with the built site baked in — nothing to serve from the host.
+# The build inside it also emits /2014 (the recovered 2014 simulation) and the
+# service worker, so `amq lulas build-versions` and `build-sw` run in the image,
+# not here.
 
-# Build the lulas image (linux/amd64), push it, and restart the container on the VPS.
-# The image is also tagged with a timestamp, so rolling back is pinning an older tag in
-# lulas/infra/compose.yml.
-#
-# The image is nginx with the built site baked in — there is nothing to serve from the host.
-# The build inside it also emits /2014 (the recovered 2014 simulation) and the service
-# worker, so `amq lulas build-versions` and `build-sw` run in the image, not here.
-#
-# Run via `amq lulas deploy`.
+case "$1" in
+  -h|--help|help) awk 'NR>1 && !/^#/{exit} NR>1{sub(/^# ?/, ""); print}' "$0"; exit 0;;
+esac
 
 IMAGE="docker.amatiasq.com/lulas"
 SERVICE="lulas"

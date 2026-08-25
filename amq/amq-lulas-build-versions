@@ -2,32 +2,29 @@
 /**
  * amq lulas build-versions — put every frozen version of the simulation into dist/.
  *
- * Two of them today:
+ * - `/2014` — `recover/js-2014`, copied (plain JS, RequireJS at runtime), plus the
+ *   missing files and the black-background snippet from versions/ (see versions/README.md).
+ * - `/2026` — `versions/2026`, a frozen copy of this project's own sources, bundled
+ *   with esbuild and never updated again.
  *
- * - `/2014` — `recover/js-2014`, copied. No bundler: it is plain JS that
- *   RequireJS loads at runtime. Plus the two files the archived commit does not
- *   contain, and the black-background snippet (see versions/README.md).
- * - `/2026` — `versions/2026`, a frozen copy of this project's own sources,
- *   bundled with esbuild. It is how the current simulation looked on the day it
- *   was taken, and it is never updated again.
- *
- * The 2018 and 2020 trees stay in recover/ and are NOT deployed: they are kept
- * for the shape of the code, and neither has any species in it, so there would
- * be nothing to watch.
- *
- * `recover/` is never written to. Everything is read from it and written to
- * dist/, and the patches come from versions/.
- *
- * Runs after `vite build` and BEFORE `amq lulas build-sw`, so the service worker
- * precaches what this emits and /2014 works offline too.
+ * The 2018/2020 trees stay in recover/ and are NOT deployed: no species, nothing to
+ * watch. `recover/` is never written to. Runs after `vite build` and BEFORE
+ * `amq lulas build-sw`, so the service worker precaches this and /2014 works offline.
  *
  * Plain JS on purpose: an `amq` command is an executable with no extension, so
  * node cannot type-strip it.
  */
 import { build } from 'esbuild';
+import { readFileSync } from 'node:fs';
 import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+if (['-h', '--help', 'help'].includes(process.argv[2])) {
+  const src = readFileSync(fileURLToPath(import.meta.url), 'utf8');
+  console.log(src.slice(0, src.indexOf('*/')).split('\n').slice(1).map((l) => l.replace(/^\s*\/?\*+ ?/, '')).join('\n').trim());
+  process.exit(0);
+}
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
