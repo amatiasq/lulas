@@ -2,7 +2,7 @@ services:
   lulas:
     # Built and pushed by `amq lulas deploy`, which also tags every build with a timestamp,
     # so rolling back is just pinning an older tag here. The image is nginx with the built
-    # site (and its nginx.conf) baked in — the source of truth is mono/lulas.
+    # site (and its nginx.conf) baked in — the source of truth is mono/web/lulas.
     image: docker.amatiasq.com/lulas:latest
     container_name: amq-lulas
     restart: unless-stopped
