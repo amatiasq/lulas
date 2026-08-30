@@ -15,7 +15,7 @@ import { shortestDistance } from './world';
 
 export type EntityType = 'plant' | 'herbivore' | 'carnivore';
 
-export type EntityId = '[number EntityId]';
+type EntityId = '[number EntityId]';
 let lastId = 0;
 
 function getNextId() {

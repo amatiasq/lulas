@@ -5,10 +5,6 @@
 
 type TestRun<T extends any[]> = (...args: T) => Promise<any> | void;
 
-// The specs still branch on this to pick the jsdom/canvas-mock code path.
-// Always true now: tests only ever run under the runner.
-export const isJestTesting = true;
-
 export function test(message: string, run: TestRun<[]>): void;
 export function test<T extends any[]>(
   message: string,
