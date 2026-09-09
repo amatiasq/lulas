@@ -12,6 +12,8 @@ case "$1" in
   -h|--help|help) awk 'NR>1 && !/^#/{exit} NR>1{sub(/^# ?/, ""); print}' "$0"; exit 0;;
 esac
 
+amq need docker
+
 IMAGE="docker.amatiasq.com/lulas"
 SERVICE="lulas"
 STAMP="$(date +%Y-%m-%dT%H-%M-%S)"

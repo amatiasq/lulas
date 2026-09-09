@@ -14,7 +14,6 @@
  * Plain JS on purpose: an `amq` command is an executable with no extension, so
  * node cannot type-strip it.
  */
-import { build } from 'esbuild';
 import { readFileSync } from 'node:fs';
 import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
@@ -25,6 +24,10 @@ if (['-h', '--help', 'help'].includes(process.argv[2])) {
   console.log(src.slice(0, src.indexOf('*/')).split('\n').slice(1).map((l) => l.replace(/^\s*\/?\*+ ?/, '')).join('\n').trim());
   process.exit(0);
 }
+
+// Behind the gate: a static import resolves before anything runs, so it would
+// take node_modules just to answer `help` — and a clean checkout has none.
+const { build } = await import('esbuild');
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
