@@ -14,6 +14,8 @@ esac
 
 amq need docker
 
+cd "$(dirname "$0")/.."
+
 IMAGE="docker.amatiasq.com/lulas"
 SERVICE="lulas"
 STAMP="$(date +%Y-%m-%dT%H-%M-%S)"
@@ -25,10 +27,6 @@ echo "==> pushing image"
 docker push "$IMAGE:latest"
 docker push "$IMAGE:$STAMP"
 
-echo "==> ship infra (compose) to VPS"
-amq vps deploy "$SERVICE"
-
-echo "==> pull-and-restart on VPS"
-amq vps pull-and-restart "$SERVICE"
+amq services deploy "$SERVICE" --from infra
 
 echo "==> https://lulas.amatiasq.com  (tagged $STAMP)"
